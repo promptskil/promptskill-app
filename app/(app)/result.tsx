@@ -1,6 +1,6 @@
 // Screen 3 — Result — Phase 12, Step 12.5 + Launchpad
 // Displays generated prompt with inline edit, regenerate, cancel.
-// CopyPromptButton: Claude-style copy with thumbs-up confirmation.
+// CopyPromptButton + ThumbsFeedback: aligned linearly, small.
 // ModelLaunchChips: opens model web chat (separate from copy).
 // ThumbsFeedback: deselect = client-only, no API call.
 // HistoryNavButton: captureResultSnapshot() before navigate.
@@ -12,7 +12,6 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import PromptDisplay from "../../components/PromptDisplay";
 import CopyPromptButton from "../../components/CopyPromptButton";
 import ModelLaunchChips from "../../components/ModelLaunchChips";
-import SendButton from "../../components/SendButton";
 import ThumbsFeedback from "../../components/ThumbsFeedback";
 import NewPromptButton from "../../components/NewPromptButton";
 import HistoryNavButton from "../../components/HistoryNavButton";
@@ -172,27 +171,26 @@ export default function Result() {
         </View>
       )}
 
-      {/* Copy button + Model chips — visible when not editing */}
+      {/* Copy + Thumbs — linear row, small */}
       {!editing && !regenerating && currentPrompt.length > 0 && (
-        <>
+        <View style={styles.feedbackRow}>
           <CopyPromptButton promptText={currentPrompt} />
-          <ModelLaunchChips generatedBy={selectedModel} />
-        </>
-      )}
-
-      {/* Action row */}
-      {!editing && (
-        <View style={styles.actions}>
-          {currentPrompt && promptId && (
-            <SendButton generatedPrompt={currentPrompt} />
-          )}
-
           <ThumbsFeedback
             vote={feedbackVote}
             onVote={handleVote}
             onDeselect={handleDeselect}
           />
+        </View>
+      )}
 
+      {/* Model launch chips */}
+      {!editing && !regenerating && currentPrompt.length > 0 && (
+        <ModelLaunchChips generatedBy={selectedModel} />
+      )}
+
+      {/* New prompt */}
+      {!editing && (
+        <View style={styles.actions}>
           <NewPromptButton onPress={handleNewPrompt} />
         </View>
       )}
@@ -255,12 +253,19 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
-    backgroundColor: "#007AFF",
+    backgroundColor: "#000",
   },
   regenText: {
     fontSize: 14,
     color: "#fff",
     fontWeight: "600",
+  },
+  feedbackRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    marginTop: 12,
   },
   actions: {
     gap: 16,

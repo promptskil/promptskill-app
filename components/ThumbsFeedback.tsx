@@ -1,5 +1,6 @@
 // ThumbsFeedback (3.4) — Phase 12, Step 12.4
-// Thumbs up/down toggle. Deselect (same tap) = client-only, no API call.
+// Thumbs up/down toggle, small inline style.
+// Deselect (same tap) = client-only, no API call.
 // DB retains prior vote on deselect.
 
 import { View, Pressable, Text, StyleSheet } from "react-native";
@@ -29,13 +30,13 @@ export default function ThumbsFeedback({
         style={[styles.thumb, vote === "up" && styles.thumbActive]}
         onPress={() => handlePress("up")}
       >
-        <Text style={styles.thumbText}>👍</Text>
+        <Text style={styles.thumbText}>{"\uD83D\uDC4D"}</Text>
       </Pressable>
       <Pressable
         style={[styles.thumb, vote === "down" && styles.thumbActive]}
         onPress={() => handlePress("down")}
       >
-        <Text style={styles.thumbText}>👎</Text>
+        <Text style={styles.thumbText}>{"\uD83D\uDC4E"}</Text>
       </Pressable>
     </View>
   );
@@ -44,21 +45,21 @@ export default function ThumbsFeedback({
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    gap: 12,
-    justifyContent: "center",
+    gap: 6,
+    alignItems: "center",
   },
   thumb: {
-    padding: 12,
-    borderRadius: 8,
+    padding: 6,
+    borderRadius: 6,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#ddd",
     backgroundColor: "#fff",
   },
   thumbActive: {
     backgroundColor: "#e8f0fe",
-    borderColor: "#007AFF",
+    borderColor: "#333",
   },
   thumbText: {
-    fontSize: 24,
+    fontSize: 16,
   },
 });

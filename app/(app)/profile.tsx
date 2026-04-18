@@ -1,6 +1,5 @@
 // Screen 5 — Profile — Phase 13, Step 13.4
 // GET /user on mount. Email update via PATCH /user/email.
-// Model preference: AsyncStorage only.
 // Logout: 8-step sequence — token cleared, onboarding preserved, navigate Login.
 // Back gesture: ENABLED
 
@@ -9,16 +8,13 @@ import { View, Text, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import EmailField from "../../components/EmailField";
-import PreferencesPanel from "../../components/PreferencesPanel";
 import LogoutButton from "../../components/LogoutButton";
 import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
-import { getDefaultModel, setDefaultModel, clearToken } from "../../storage/storage";
-import type { Model } from "../../types";
+import { clearToken } from "../../storage/storage";
 
 export default function Profile() {
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [defaultModel, setDefaultModelState] = useState<Model>("claude");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,9 +31,6 @@ export default function Profile() {
           return;
         }
       }
-
-      const model = await getDefaultModel();
-      setDefaultModelState(model as Model);
       setLoading(false);
     }
 
@@ -68,11 +61,6 @@ export default function Profile() {
     }
   }
 
-  function handleModelChange(model: Model) {
-    setDefaultModelState(model);
-    setDefaultModel(model);
-  }
-
   async function handleLogout() {
     try {
       await apiCall("POST", "/auth/logout");
@@ -80,7 +68,6 @@ export default function Profile() {
       // Proceed with local cleanup even if server call fails
     }
     await clearToken();
-    // AsyncStorage preserved: onboarding_complete + defaultModel kept
     router.replace("/(auth)/login");
   }
 
@@ -103,13 +90,6 @@ export default function Profile() {
 
       <View style={styles.section}>
         <EmailField email={email} onSave={handleEmailSave} />
-      </View>
-
-      <View style={styles.section}>
-        <PreferencesPanel
-          defaultModel={defaultModel}
-          onModelChange={handleModelChange}
-        />
       </View>
 
       <View style={styles.section}>

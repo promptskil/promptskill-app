@@ -1,5 +1,6 @@
 // GenerateButton (2.3) — Phase 12, Step 12.2
 // Three disabled states: no model, no topic, loading/retry.
+// Active color: black.
 
 import { Pressable, Text, StyleSheet, ActivityIndicator } from "react-native";
 
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
   button: {
     padding: 14,
     borderRadius: 8,
-    backgroundColor: "#007AFF",
+    backgroundColor: "#000",
     alignItems: "center",
   },
   disabled: {
