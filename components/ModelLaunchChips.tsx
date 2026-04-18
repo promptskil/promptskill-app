@@ -50,7 +50,7 @@ export default function ModelLaunchChips({
 
   async function handleChipPress(model: Model) {
     await Clipboard.setStringAsync(promptText);
-    setToast(`Copied — opening ${MODEL_LABELS[model]}...`);
+    setToast(`Copied \u2014 opening ${MODEL_LABELS[model]}...`);
 
     // Slight delay so user sees the toast before context-switching
     setTimeout(() => {
