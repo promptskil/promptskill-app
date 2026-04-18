@@ -5,7 +5,7 @@
 // Back gesture: ENABLED
 
 import { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import PromptDisplay from "../../components/PromptDisplay";
 import SendButton from "../../components/SendButton";
@@ -68,6 +68,9 @@ export default function Result() {
     <View style={styles.container}>
       <View style={styles.header}>
         <HistoryNavButton onPress={handleHistoryNav} />
+        <Pressable onPress={() => router.push("/(app)/profile")}>
+          <Text style={styles.navLink}>Profile</Text>
+        </Pressable>
       </View>
 
       <PromptDisplay prompt={generatedPrompt} loading={false} error={null} />
@@ -99,7 +102,13 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "flex-end",
+    alignItems: "center",
+    gap: 16,
     marginBottom: 16,
+  },
+  navLink: {
+    fontSize: 14,
+    color: "#007AFF",
   },
   actions: {
     gap: 16,

@@ -1,17 +1,16 @@
 // Screen 2 — Main — Phase 12, Step 12.3
-// ModelSelector + TopicInput + GenerateButton → POST /generate → Result
+// ModelSelector + TopicInput + GenerateButton -> POST /generate -> Result
 // defaultModel read from AsyncStorage on mount (default 'claude')
 // Back gesture: DISABLED
 
 import { useState, useEffect } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import ModelSelector from "../../components/ModelSelector";
+import ModelInfoCard from "../../components/ModelInfoCard";
 import TopicInput from "../../components/TopicInput";
 import GenerateButton from "../../components/GenerateButton";
-import HistoryNavButton from "../../components/HistoryNavButton";
 import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
-import { NavigationStateModule } from "../../services/navigation";
 import { getDefaultModel, setDefaultModel } from "../../storage/storage";
 import type { Model } from "../../types";
 
@@ -21,6 +20,7 @@ export default function Main() {
   const [topic, setTopic] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [topicFocused, setTopicFocused] = useState(false);
 
   useEffect(() => {
     getDefaultModel().then((model) => {
@@ -77,21 +77,14 @@ export default function Main() {
     }
   }
 
-  function handleHistoryNav() {
-    NavigationStateModule.setEntryFromMain();
-    router.push("/(app)/history");
-  }
-
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      keyboardShouldPersistTaps="handled"
+    >
       <View style={styles.header}>
         <Text style={styles.title}>PromptSkill AI</Text>
-        <View style={styles.navRow}>
-          <HistoryNavButton onPress={handleHistoryNav} />
-          <Pressable onPress={() => router.push("/(app)/profile")}>
-            <Text style={styles.navLink}>Profile</Text>
-          </Pressable>
-        </View>
       </View>
 
       <View style={styles.form}>
@@ -101,11 +94,15 @@ export default function Main() {
           onSelect={handleModelSelect}
         />
 
+        {!topicFocused && <ModelInfoCard model={selectedModel} />}
+
         <Text style={styles.label}>Enter a topic</Text>
         <TopicInput
           topic={topic}
           onChangeText={setTopic}
           editable={!loading}
+          onFocus={() => setTopicFocused(true)}
+          onBlur={() => setTopicFocused(false)}
         />
 
         {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -116,16 +113,19 @@ export default function Main() {
           loading={loading}
         />
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#fff",
+  },
+  content: {
     padding: 24,
     paddingTop: 60,
-    backgroundColor: "#fff",
+    paddingBottom: 40,
   },
   header: {
     flexDirection: "row",
@@ -136,15 +136,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-  },
-  navRow: {
-    flexDirection: "row",
-    gap: 16,
-    alignItems: "center",
-  },
-  navLink: {
-    fontSize: 14,
-    color: "#007AFF",
   },
   form: {
     gap: 16,

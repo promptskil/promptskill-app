@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1776510286686" clover="3.2.0">
+  <project timestamp="1776510286687" name="All files">
+    <metrics statements="138" coveredstatements="129" conditionals="79" coveredconditionals="68" methods="53" coveredmethods="52" elements="270" coveredelements="249" complexity="0" loc="138" ncloc="138" packages="4" files="20" classes="20"/>
+    <package name="components">
+      <metrics statements="96" coveredstatements="87" conditionals="65" coveredconditionals="55" methods="35" coveredmethods="34"/>
+      <file name="EmailField.tsx" path="C:\Users\jerem\aiprompt\promptskill-app\components\EmailField.tsx">
+        <metrics statements="21" coveredstatements="12" conditionals="6" coveredconditionals="3" methods="4" coveredmethods="3"/>
+        <line num="15" count="6" type="stmt"/>
+        <line num="16" count="6" type="stmt"/>
+        <line num="17" count="6" type="stmt"/>
+        <line num="18" count="6" type="stmt"/>
+        <line num="21" count="0" type="stmt"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="27" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="30" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
+        <line num="38" count="1" type="stmt"/>
+        <line num="39" count="1" type="stmt"/>
+        <line num="40" count="1" type="stmt"/>
+        <line num="43" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="44" count="4" type="stmt"/>
+        <line num="48" count="2" type="stmt"/>
+        <line num="55" count="2" type="stmt"/>
+        <line num="71" count="1" type="stmt"/>
+      </file>
+      <file name="EmailInput.tsx" path="C:\Users\jerem\aiprompt\promptskill-app\components\EmailInput.tsx">
+        <metrics statements="2" coveredstatements="2" conditionals="3" coveredconditionals="3" methods="1" coveredmethods="1"/>
+        <line num="17" count="4" type="stmt"/>
+        <line num="32" count="1" type="stmt"/>
+      </file>
+      <file name="GenerateButton.tsx" path="C:\Users\jerem\aiprompt\promptskill-app\components\GenerateButton.tsx">
+        <metrics statements="2" coveredstatements="2" conditionals="7" coveredconditionals="6" methods="1" coveredmethods="1"/>
+        <line num="17" count="2" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+      </file>
+      <file name="HistoryNavButton.tsx" path="C:\Users\jerem\aiprompt\promptskill-app\components\HistoryNavButton.tsx">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+      </file>
+      <file name="LogoutButton.tsx" path="C:\Users\jerem\aiprompt\promptskill-app\components\LogoutButton.tsx">
+        <metrics statements="9" coveredstatements="9" conditionals="2" coveredconditionals="2" methods="4" coveredmethods="4"/>
+        <line num="13" count="6" type="stmt"/>
+        <line num="15" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="16" count="2" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="23" count="1" type="stmt"/>
+        <line num="30" count="1" type="stmt"/>
+        <line num="38" count="4" type="stmt"/>
+        <line num="39" count="2" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
+      </file>
+      <file name="ModelSelector.tsx" path="C:\Users\jerem\aiprompt\promptskill-app\components\ModelSelector.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="4" coveredconditionals="4" methods="3" coveredmethods="3"/>
+        <line num="17" count="4" type="stmt"/>
+        <line num="20" count="16" type="stmt"/>
+        <line num="26" count="2" type="stmt"/>
+        <line num="42" count="2" type="stmt"/>
+      </file>
+      <file name="NewPromptButton.tsx" path="C:\Users\jerem\aiprompt\promptskill-app\components\NewPromptButton.tsx">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+      </file>
+      <file name="PasswordInput.tsx" path="C:\Users\jerem\aiprompt\promptskill-app\components\PasswordInput.tsx">
+        <metrics statements="2" coveredstatements="2" conditionals="4" coveredconditionals="3" methods="1" coveredmethods="1"/>
+        <line num="19" count="2" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+      </file>
+      <file name="PreferencesPanel.tsx" path="C:\Users\jerem\aiprompt\promptskill-app\components\PreferencesPanel.tsx">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="18" count="2" type="stmt"/>
+        <line num="26" count="1" type="stmt"/>
+      </file>
+      <file name="PromptDisplay.tsx" path="C:\Users\jerem\aiprompt\promptskill-app\components\PromptDisplay.tsx">
+        <metrics statements="24" coveredstatements="24" conditionals="15" coveredconditionals="15" methods="4" coveredmethods="4"/>
+        <line num="25" count="6" type="stmt"/>
+        <line num="26" count="6" type="stmt"/>
+        <line num="28" count="6" type="stmt"/>
+        <line num="29" count="4" type="cond" truecount="5" falsecount="0"/>
+        <line num="30" count="3" type="stmt"/>
+        <line num="31" count="3" type="stmt"/>
+        <line num="32" count="3" type="stmt"/>
+        <line num="35" count="1" type="stmt"/>
+        <line num="36" count="1" type="stmt"/>
+        <line num="37" count="1" type="stmt"/>
+        <line num="39" count="1" type="stmt"/>
+        <line num="40" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="41" count="5" type="stmt"/>
+        <line num="42" count="5" type="stmt"/>
+        <line num="44" count="1" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
+        <line num="49" count="1" type="stmt"/>
+        <line num="52" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="53" count="1" type="stmt"/>
+        <line num="61" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="62" count="1" type="stmt"/>
+        <line num="69" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="71" count="3" type="stmt"/>
+        <line num="81" count="1" type="stmt"/>
+      </file>
+      <file name="PromptList.tsx" path="C:\Users\jerem\aiprompt\promptskill-app\components\PromptList.tsx">
+        <metrics statements="5" coveredstatements="5" conditionals="2" coveredconditionals="1" methods="3" coveredmethods="3"/>
+        <line num="37" count="2" type="stmt"/>
+        <line num="39" count="2" type="stmt"/>
+        <line num="42" count="2" type="stmt"/>
+        <line num="44" count="1" type="stmt"/>
+        <line num="66" count="1" type="stmt"/>
+      </file>
+      <file name="PromptListItem.tsx" path="C:\Users\jerem\aiprompt\promptskill-app\components\PromptListItem.tsx">
+        <metrics statements="7" coveredstatements="7" conditionals="6" coveredconditionals="5" methods="3" coveredmethods="3"/>
+        <line num="34" count="5" type="stmt"/>
+        <line num="35" count="5" type="stmt"/>
+        <line num="38" count="5" type="cond" truecount="3" falsecount="1"/>
+        <line num="40" count="5" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
+        <line num="60" count="1" type="stmt"/>
+        <line num="67" count="1" type="stmt"/>
+      </file>
+      <file name="ResetButton.tsx" path="C:\Users\jerem\aiprompt\promptskill-app\components\ResetButton.tsx">
+        <metrics statements="2" coveredstatements="2" conditionals="7" coveredconditionals="6" methods="1" coveredmethods="1"/>
+        <line num="18" count="2" type="stmt"/>
+        <line num="35" count="1" type="stmt"/>
+      </file>
+      <file name="SendButton.tsx" path="C:\Users\jerem\aiprompt\promptskill-app\components\SendButton.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="17" count="2" type="stmt"/>
+        <line num="24" count="1" type="stmt"/>
+      </file>
+      <file name="ThumbsFeedback.tsx" path="C:\Users\jerem\aiprompt\promptskill-app\components\ThumbsFeedback.tsx">
+        <metrics statements="7" coveredstatements="7" conditionals="6" coveredconditionals="5" methods="4" coveredmethods="4"/>
+        <line num="19" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="20" count="1" type="stmt"/>
+        <line num="22" count="2" type="stmt"/>
+        <line num="26" count="3" type="stmt"/>
+        <line num="30" count="2" type="stmt"/>
+        <line num="36" count="1" type="stmt"/>
+        <line num="44" count="1" type="stmt"/>
+      </file>
+      <file name="TopicInput.tsx" path="C:\Users\jerem\aiprompt\promptskill-app\components\TopicInput.tsx">
+        <metrics statements="2" coveredstatements="2" conditionals="3" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="17" count="2" type="stmt"/>
+        <line num="31" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="constants">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="models.ts" path="C:\Users\jerem\aiprompt\promptskill-app\constants\models.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="services">
+      <metrics statements="25" coveredstatements="25" conditionals="10" coveredconditionals="9" methods="9" coveredmethods="9"/>
+      <file name="api.ts" path="C:\Users\jerem\aiprompt\promptskill-app\services\api.ts">
+        <metrics statements="18" coveredstatements="18" conditionals="10" coveredconditionals="9" methods="4" coveredmethods="4"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="15" count="2" type="stmt"/>
+        <line num="16" count="2" type="stmt"/>
+        <line num="23" count="3" type="stmt"/>
+        <line num="24" count="3" type="stmt"/>
+        <line num="25" count="3" type="stmt"/>
+        <line num="34" count="6" type="stmt"/>
+        <line num="36" count="6" type="stmt"/>
+        <line num="41" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="42" count="2" type="stmt"/>
+        <line num="45" count="6" type="stmt"/>
+        <line num="52" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="53" count="1" type="stmt"/>
+        <line num="54" count="1" type="stmt"/>
+        <line num="57" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="58" count="2" type="stmt"/>
+        <line num="59" count="2" type="stmt"/>
+        <line num="62" count="3" type="stmt"/>
+      </file>
+      <file name="navigation.ts" path="C:\Users\jerem\aiprompt\promptskill-app\services\navigation.ts">
+        <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="5"/>
+        <line num="17" count="1" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="25" count="3" type="stmt"/>
+        <line num="33" count="3" type="stmt"/>
+        <line num="40" count="3" type="stmt"/>
+        <line num="44" count="3" type="stmt"/>
+        <line num="49" count="8" type="stmt"/>
+      </file>
+    </package>
+    <package name="storage">
+      <metrics statements="15" coveredstatements="15" conditionals="4" coveredconditionals="4" methods="9" coveredmethods="9"/>
+      <file name="storage.ts" path="C:\Users\jerem\aiprompt\promptskill-app\storage\storage.ts">
+        <metrics statements="15" coveredstatements="15" conditionals="4" coveredconditionals="4" methods="9" coveredmethods="9"/>
+        <line num="12" count="2" type="stmt"/>
+        <line num="21" count="3" type="stmt"/>
+        <line num="25" count="9" type="stmt"/>
+        <line num="29" count="3" type="stmt"/>
+        <line num="35" count="2" type="stmt"/>
+        <line num="39" count="3" type="stmt"/>
+        <line num="40" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="46" count="4" type="stmt"/>
+        <line num="50" count="5" type="stmt"/>
+        <line num="51" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="52" count="2" type="stmt"/>
+        <line num="57" count="2" type="stmt"/>
+        <line num="63" count="1" type="stmt"/>
+        <line num="64" count="1" type="stmt"/>
+        <line num="65" count="1" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>

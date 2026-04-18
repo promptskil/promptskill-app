@@ -7,12 +7,16 @@ interface TopicInputProps {
   topic: string;
   onChangeText: (text: string) => void;
   editable?: boolean;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
 export default function TopicInput({
   topic,
   onChangeText,
   editable = true,
+  onFocus,
+  onBlur,
 }: TopicInputProps) {
   return (
     <TextInput
@@ -24,6 +28,8 @@ export default function TopicInput({
       multiline
       editable={editable}
       textAlignVertical="top"
+      onFocus={onFocus}
+      onBlur={onBlur}
     />
   );
 }
