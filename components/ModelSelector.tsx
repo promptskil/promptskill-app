@@ -1,5 +1,6 @@
 // ModelSelector (2.1) — Phase 12, Step 12.2
 // Renders chips from MODELS array. Only valid models rendered (not free text).
+// Selected chip: black background.
 
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { MODELS, MODEL_LABELS } from "../constants/models";
@@ -54,8 +55,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   chipSelected: {
-    backgroundColor: "#007AFF",
-    borderColor: "#007AFF",
+    backgroundColor: "#000",
+    borderColor: "#000",
   },
   chipText: {
     fontSize: 14,
