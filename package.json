@@ -11,8 +11,10 @@
     "lint": "npx tsc --noEmit"
   },
   "dependencies": {
+    "@react-navigation/native": "^7.1.6",
     "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~54.0.33",
+    "expo-constants": "~17.0.8",
     "expo-router": "~6.0.23",
     "expo-secure-store": "~15.0.8",
     "expo-status-bar": "~3.0.9",
