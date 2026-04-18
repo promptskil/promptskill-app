@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.promptskil.app"
+      "bundleIdentifier": "com.airpromptskill.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"

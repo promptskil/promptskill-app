@@ -1,9 +1,11 @@
-import { Text, View } from "react-native";
+// Root index — loading screen while session gate decides
+// _layout.tsx handles all routing logic via useFocusEffect
+import { ActivityIndicator, View } from "react-native";
 
-export default function Home() {
+export default function Loading() {
   return (
-    <View>
-      <Text>PromptSkill</Text>
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <ActivityIndicator size="large" />
     </View>
   );
 }
