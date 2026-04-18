@@ -1,19 +1,23 @@
-// Screen 3 — Result — Phase 12, Step 12.5
-// Displays generated prompt. SendButton only rendered when promptId exists (atomicity).
+// Screen 3 — Result — Phase 12, Step 12.5 + Launchpad
+// Displays generated prompt with inline edit, regenerate, cancel, and model launch chips.
+// PromptDisplay: tap to edit, cancel reverts, regenerate calls API with same model/topic.
+// ModelLaunchChips: copies current prompt text to clipboard + opens model web chat.
 // ThumbsFeedback: deselect = client-only, no API call.
 // HistoryNavButton: captureResultSnapshot() before navigate.
 // Back gesture: ENABLED
 
 import { useState } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import PromptDisplay from "../../components/PromptDisplay";
+import ModelLaunchChips from "../../components/ModelLaunchChips";
 import SendButton from "../../components/SendButton";
 import ThumbsFeedback from "../../components/ThumbsFeedback";
 import NewPromptButton from "../../components/NewPromptButton";
 import HistoryNavButton from "../../components/HistoryNavButton";
-import { apiCall } from "../../services/api";
+import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
 import { NavigationStateModule } from "../../services/navigation";
+import type { Model } from "../../types";
 
 export default function Result() {
   const params = useLocalSearchParams<{
@@ -24,30 +28,93 @@ export default function Result() {
   }>();
   const router = useRouter();
 
-  const promptId = params.promptId ?? null;
-  const generatedPrompt = params.generatedPrompt ?? "";
-  const selectedModel = params.selectedModel ?? "";
+  const [promptId, setPromptId] = useState(params.promptId ?? null);
+  const [currentPrompt, setCurrentPrompt] = useState(
+    params.generatedPrompt ?? ""
+  );
+  const selectedModel = (params.selectedModel ?? "claude") as Model;
   const topic = params.topic ?? "";
+
+  // Edit state
+  const [editing, setEditing] = useState(false);
+  const [editedText, setEditedText] = useState("");
+
+  // Regenerate state
+  const [regenerating, setRegenerating] = useState(false);
+  const [error, setError] = useState("");
 
   const [feedbackVote, setFeedbackVote] = useState<"up" | "down" | null>(null);
 
+  // --- Edit handlers ---
+  function handleEditRequest() {
+    setEditedText(currentPrompt);
+    setEditing(true);
+  }
+
+  function handleCancel() {
+    setEditing(false);
+    setEditedText("");
+  }
+
+  function handleSaveEdit() {
+    setCurrentPrompt(editedText);
+    setEditing(false);
+    setEditedText("");
+  }
+
+  // --- Regenerate ---
+  async function handleRegenerate() {
+    setEditing(false);
+    setEditedText("");
+    setError("");
+    setRegenerating(true);
+    setFeedbackVote(null);
+
+    try {
+      const data = await apiCall<{ prompt_id: string; prompt: string }>(
+        "POST",
+        "/generate",
+        { model: selectedModel, topic }
+      );
+      setPromptId(data.prompt_id);
+      setCurrentPrompt(data.prompt);
+    } catch (err) {
+      if (err instanceof SessionExpiredError) {
+        router.replace("/(auth)/login");
+        return;
+      }
+      if (err instanceof ApiError) {
+        if (err.status === 429) {
+          setError("Too many requests. Try again later.");
+        } else if (err.status === 504) {
+          setError("Generation timed out. Please try again.");
+        } else {
+          setError("Something went wrong. Please try again.");
+        }
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } finally {
+      setRegenerating(false);
+    }
+  }
+
+  // --- Feedback ---
   function handleVote(vote: "up" | "down") {
     setFeedbackVote(vote);
     if (promptId) {
       apiCall("PATCH", "/user/feedback", {
         prompt_id: promptId,
         vote,
-      }).catch(() => {
-        // Non-blocking — feedback is optional
-      });
+      }).catch(() => {});
     }
   }
 
   function handleDeselect() {
-    // Client-only: no API call, DB retains prior vote
     setFeedbackVote(null);
   }
 
+  // --- Navigation ---
   function handleNewPrompt() {
     NavigationStateModule.clear();
     router.replace("/(app)/");
@@ -55,7 +122,7 @@ export default function Result() {
 
   function handleHistoryNav() {
     NavigationStateModule.captureResultSnapshot({
-      generatedPrompt,
+      generatedPrompt: currentPrompt,
       promptId: promptId ?? "",
       feedbackVote,
       selectedModel,
@@ -65,7 +132,12 @@ export default function Result() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      keyboardShouldPersistTaps="handled"
+    >
+      {/* Header */}
       <View style={styles.header}>
         <HistoryNavButton onPress={handleHistoryNav} />
         <Pressable onPress={() => router.push("/(app)/profile")}>
@@ -73,31 +145,69 @@ export default function Result() {
         </Pressable>
       </View>
 
-      <PromptDisplay prompt={generatedPrompt} loading={false} error={null} />
+      {/* Prompt display / editor */}
+      <PromptDisplay
+        prompt={currentPrompt}
+        loading={regenerating}
+        error={error || null}
+        editing={editing}
+        editedText={editedText}
+        onEditRequest={handleEditRequest}
+        onEditChange={setEditedText}
+      />
 
-      <View style={styles.actions}>
-        {generatedPrompt && promptId && (
-          <SendButton generatedPrompt={generatedPrompt} />
-        )}
+      {/* Edit mode buttons */}
+      {editing && (
+        <View style={styles.editActions}>
+          <Pressable style={styles.cancelBtn} onPress={handleCancel}>
+            <Text style={styles.cancelText}>Cancel</Text>
+          </Pressable>
+          <Pressable style={styles.saveBtn} onPress={handleSaveEdit}>
+            <Text style={styles.saveText}>Save</Text>
+          </Pressable>
+          <Pressable style={styles.regenBtn} onPress={handleRegenerate}>
+            <Text style={styles.regenText}>Regenerate</Text>
+          </Pressable>
+        </View>
+      )}
 
-        <ThumbsFeedback
-          vote={feedbackVote}
-          onVote={handleVote}
-          onDeselect={handleDeselect}
+      {/* Model launch chips — visible when not editing */}
+      {!editing && !regenerating && currentPrompt.length > 0 && (
+        <ModelLaunchChips
+          generatedBy={selectedModel}
+          promptText={currentPrompt}
         />
+      )}
 
-        <NewPromptButton onPress={handleNewPrompt} />
-      </View>
-    </View>
+      {/* Action row */}
+      {!editing && (
+        <View style={styles.actions}>
+          {currentPrompt && promptId && (
+            <SendButton generatedPrompt={currentPrompt} />
+          )}
+
+          <ThumbsFeedback
+            vote={feedbackVote}
+            onVote={handleVote}
+            onDeselect={handleDeselect}
+          />
+
+          <NewPromptButton onPress={handleNewPrompt} />
+        </View>
+      )}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#fff",
+  },
+  content: {
     padding: 24,
     paddingTop: 60,
-    backgroundColor: "#fff",
+    paddingBottom: 40,
   },
   header: {
     flexDirection: "row",
@@ -109,6 +219,47 @@ const styles = StyleSheet.create({
   navLink: {
     fontSize: 14,
     color: "#007AFF",
+  },
+  editActions: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 12,
+    marginTop: 12,
+  },
+  cancelBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    backgroundColor: "#fff",
+  },
+  cancelText: {
+    fontSize: 14,
+    color: "#666",
+    fontWeight: "500",
+  },
+  saveBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: "#34C759",
+  },
+  saveText: {
+    fontSize: 14,
+    color: "#fff",
+    fontWeight: "600",
+  },
+  regenBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: "#007AFF",
+  },
+  regenText: {
+    fontSize: 14,
+    color: "#fff",
+    fontWeight: "600",
   },
   actions: {
     gap: 16,

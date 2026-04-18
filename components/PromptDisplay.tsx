@@ -1,29 +1,42 @@
-// PromptDisplay (3.1) — Phase 12, Step 12.4
+// PromptDisplay (3.1) — Phase 12, Step 12.4 + Launchpad edit mode
 // Shows generating spinner, typewriter effect at 10ms/char, or error.
-// Text selectable.
+// Tap prompt text → calls onEditRequest so parent can enter edit mode.
+// When editing=true, renders TextInput with editedText.
+// Parent owns edit state and cancel/regenerate actions.
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
+  TextInput,
   StyleSheet,
   ActivityIndicator,
   ScrollView,
+  Pressable,
 } from "react-native";
 
 interface PromptDisplayProps {
   prompt: string;
   loading: boolean;
   error: string | null;
+  editing?: boolean;
+  editedText?: string;
+  onEditRequest?: () => void;
+  onEditChange?: (text: string) => void;
 }
 
 export default function PromptDisplay({
   prompt,
   loading,
   error,
+  editing = false,
+  editedText = "",
+  onEditRequest,
+  onEditChange,
 }: PromptDisplayProps) {
   const [displayedText, setDisplayedText] = useState("");
   const [animating, setAnimating] = useState(false);
+  const inputRef = useRef<TextInput>(null);
 
   useEffect(() => {
     if (!prompt || loading || error) {
@@ -49,6 +62,12 @@ export default function PromptDisplay({
     return () => clearInterval(interval);
   }, [prompt, loading, error]);
 
+  useEffect(() => {
+    if (editing && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [editing]);
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -68,12 +87,33 @@ export default function PromptDisplay({
 
   if (!prompt) return null;
 
+  if (editing) {
+    return (
+      <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
+        <TextInput
+          ref={inputRef}
+          style={[styles.prompt, styles.editInput]}
+          value={editedText}
+          onChangeText={onEditChange}
+          multiline
+          autoFocus
+          textAlignVertical="top"
+        />
+      </ScrollView>
+    );
+  }
+
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.prompt} selectable>
-        {displayedText}
-        {animating ? "▌" : ""}
-      </Text>
+      <Pressable onPress={onEditRequest}>
+        <Text style={styles.prompt} selectable>
+          {displayedText}
+          {animating ? "\u258C" : ""}
+        </Text>
+        {!animating && (
+          <Text style={styles.editHint}>Tap to edit</Text>
+        )}
+      </Pressable>
     </ScrollView>
   );
 }
@@ -89,6 +129,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     color: "#333",
+  },
+  editInput: {
+    minHeight: 120,
+    padding: 0,
+  },
+  editHint: {
+    fontSize: 12,
+    color: "#999",
+    marginTop: 8,
+    textAlign: "right",
   },
   loadingContainer: {
     flex: 1,
