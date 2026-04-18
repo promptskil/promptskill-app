@@ -1,7 +1,7 @@
 // Screen 3 — Result — Phase 12, Step 12.5 + Launchpad
-// Displays generated prompt with inline edit, regenerate, cancel, and model launch chips.
-// PromptDisplay: tap to edit, cancel reverts, regenerate calls API with same model/topic.
-// ModelLaunchChips: copies current prompt text to clipboard + opens model web chat.
+// Displays generated prompt with inline edit, regenerate, cancel.
+// CopyPromptButton: Claude-style copy with thumbs-up confirmation.
+// ModelLaunchChips: opens model web chat (separate from copy).
 // ThumbsFeedback: deselect = client-only, no API call.
 // HistoryNavButton: captureResultSnapshot() before navigate.
 // Back gesture: ENABLED
@@ -10,6 +10,7 @@ import { useState } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import PromptDisplay from "../../components/PromptDisplay";
+import CopyPromptButton from "../../components/CopyPromptButton";
 import ModelLaunchChips from "../../components/ModelLaunchChips";
 import SendButton from "../../components/SendButton";
 import ThumbsFeedback from "../../components/ThumbsFeedback";
@@ -171,12 +172,12 @@ export default function Result() {
         </View>
       )}
 
-      {/* Model launch chips — visible when not editing */}
+      {/* Copy button + Model chips — visible when not editing */}
       {!editing && !regenerating && currentPrompt.length > 0 && (
-        <ModelLaunchChips
-          generatedBy={selectedModel}
-          promptText={currentPrompt}
-        />
+        <>
+          <CopyPromptButton promptText={currentPrompt} />
+          <ModelLaunchChips generatedBy={selectedModel} />
+        </>
       )}
 
       {/* Action row */}
