@@ -57,12 +57,6 @@ export default function Result() {
     setEditedText("");
   }
 
-  function handleSaveAndExit() {
-    setCurrentPrompt(editedText);
-    setEditing(false);
-    setEditedText("");
-  }
-
   // --- Regenerate ---
   async function handleRegenerate() {
     setEditing(false);
