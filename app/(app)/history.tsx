@@ -4,8 +4,9 @@
 // Back gesture: ENABLED
 
 import { useState, useEffect, useCallback } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import PromptList from "../../components/PromptList";
 import { apiCall, SessionExpiredError } from "../../services/api";
 import { NavigationStateModule } from "../../services/navigation";
@@ -108,7 +109,12 @@ export default function History() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>History</Text>
+      <View style={styles.headerRow}>
+        <Pressable onPress={() => router.back()} style={styles.backBtn}>
+          <Ionicons name="arrow-back" size={24} color="#007AFF" />
+        </Pressable>
+        <Text style={styles.header}>History</Text>
+      </View>
       <PromptList
         historyItems={historyItems}
         total={total}
@@ -126,11 +132,19 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     backgroundColor: "#fff",
   },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 24,
+    marginBottom: 16,
+    gap: 12,
+  },
+  backBtn: {
+    padding: 4,
+  },
   header: {
     fontSize: 22,
     fontWeight: "700",
-    paddingHorizontal: 24,
-    marginBottom: 16,
   },
   loading: {
     fontSize: 16,
