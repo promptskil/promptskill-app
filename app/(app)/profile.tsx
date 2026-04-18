@@ -5,8 +5,9 @@
 // Back gesture: ENABLED
 
 import { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import EmailField from "../../components/EmailField";
 import PreferencesPanel from "../../components/PreferencesPanel";
 import LogoutButton from "../../components/LogoutButton";
@@ -93,7 +94,12 @@ export default function Profile() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Profile</Text>
+      <View style={styles.headerRow}>
+        <Pressable onPress={() => router.back()} style={styles.backBtn}>
+          <Ionicons name="arrow-back" size={24} color="#007AFF" />
+        </Pressable>
+        <Text style={styles.header}>Profile</Text>
+      </View>
 
       <View style={styles.section}>
         <EmailField email={email} onSave={handleEmailSave} />
@@ -120,10 +126,18 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     backgroundColor: "#fff",
   },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 32,
+    gap: 12,
+  },
+  backBtn: {
+    padding: 4,
+  },
   header: {
     fontSize: 22,
     fontWeight: "700",
-    marginBottom: 32,
   },
   section: {
     marginBottom: 24,
