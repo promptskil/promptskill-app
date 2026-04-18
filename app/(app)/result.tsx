@@ -9,6 +9,7 @@
 import { useState } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import PromptDisplay from "../../components/PromptDisplay";
 import CopyPromptButton from "../../components/CopyPromptButton";
 import ModelLaunchChips from "../../components/ModelLaunchChips";
@@ -52,12 +53,6 @@ export default function Result() {
   }
 
   function handleCancel() {
-    setEditing(false);
-    setEditedText("");
-  }
-
-  function handleSaveEdit() {
-    setCurrentPrompt(editedText);
     setEditing(false);
     setEditedText("");
   }
@@ -156,17 +151,14 @@ export default function Result() {
         onEditChange={setEditedText}
       />
 
-      {/* Edit mode buttons */}
+      {/* Edit mode buttons — Cancel + Regenerate arrow */}
       {editing && (
         <View style={styles.editActions}>
           <Pressable style={styles.cancelBtn} onPress={handleCancel}>
             <Text style={styles.cancelText}>Cancel</Text>
           </Pressable>
-          <Pressable style={styles.saveBtn} onPress={handleSaveEdit}>
-            <Text style={styles.saveText}>Save</Text>
-          </Pressable>
           <Pressable style={styles.regenBtn} onPress={handleRegenerate}>
-            <Text style={styles.regenText}>Regenerate</Text>
+            <Ionicons name="refresh" size={20} color="#fff" />
           </Pressable>
         </View>
       )}
@@ -222,6 +214,7 @@ const styles = StyleSheet.create({
   editActions: {
     flexDirection: "row",
     justifyContent: "center",
+    alignItems: "center",
     gap: 12,
     marginTop: 12,
   },
@@ -238,27 +231,10 @@ const styles = StyleSheet.create({
     color: "#666",
     fontWeight: "500",
   },
-  saveBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    backgroundColor: "#34C759",
-  },
-  saveText: {
-    fontSize: 14,
-    color: "#fff",
-    fontWeight: "600",
-  },
   regenBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    padding: 10,
     borderRadius: 8,
     backgroundColor: "#000",
-  },
-  regenText: {
-    fontSize: 14,
-    color: "#fff",
-    fontWeight: "600",
   },
   feedbackRow: {
     flexDirection: "row",

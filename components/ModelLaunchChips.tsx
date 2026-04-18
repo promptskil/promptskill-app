@@ -1,6 +1,6 @@
 // ModelLaunchChips — Model website link chips.
 // Tap a chip → opens model's web chat. No clipboard — that's CopyPromptButton's job.
-// The chip matching the generating model gets primary style; others are outline.
+// The chip matching the generating model gets primary (black) style; others are outline.
 // Feeds from: constants/modelLinks.ts, constants/models.ts
 // Feeds into: result.tsx
 
@@ -70,8 +70,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   chipPrimary: {
-    backgroundColor: "#007AFF",
-    borderColor: "#007AFF",
+    backgroundColor: "#000",
+    borderColor: "#000",
   },
   chipText: {
     fontSize: 14,
