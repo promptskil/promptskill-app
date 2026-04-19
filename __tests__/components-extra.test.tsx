@@ -184,7 +184,7 @@ describe("PromptList", () => {
   it("renders items", () => {
     const items = [
       {
-        id: "1",
+        prompt_id: "1",
         model: "claude",
         topic: "Topic 1",
         prompt_text: "Prompt 1",

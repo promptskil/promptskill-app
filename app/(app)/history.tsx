@@ -1,5 +1,5 @@
 // Screen 4 — History — Phase 13, Step 13.2
-// GET /history?page=N, pagination, soft delete, back nav with snapshot.
+// GET /history?limit=20&offset=N, pagination, soft delete, back nav with snapshot.
 // Entry from Result → back restores snapshot. Entry from Main → back to Main.
 // Back gesture: ENABLED
 
@@ -9,10 +9,8 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import PromptList from "../../components/PromptList";
 import { apiCall, SessionExpiredError } from "../../services/api";
-import { NavigationStateModule } from "../../services/navigation";
-
 interface PromptRecord {
-  id: string;
+  prompt_id: string;
   model: string;
   topic: string;
   prompt_text: string;
@@ -21,9 +19,9 @@ interface PromptRecord {
 }
 
 interface HistoryResponse {
-  prompts: PromptRecord[];
+  items: PromptRecord[];
   total: number;
-  page: number;
+  offset: number;
 }
 
 export default function History() {
@@ -38,12 +36,12 @@ export default function History() {
       try {
         const data = await apiCall<HistoryResponse>(
           "GET",
-          `/history?page=${pageNum}`
+          `/history?limit=20&offset=${pageNum * 20}`
         );
         if (pageNum === 0) {
-          setHistoryItems(data.prompts);
+          setHistoryItems(data.items);
         } else {
-          setHistoryItems((prev) => [...prev, ...data.prompts]);
+          setHistoryItems((prev) => [...prev, ...data.items]);
         }
         setTotal(data.total);
         setPage(pageNum);
@@ -76,6 +74,7 @@ export default function History() {
     feedback_vote: "up" | "down" | null;
   }) {
     // Load existing record into Result — no regeneration
+    // record.id carries the prompt_id value (mapped at PromptList level)
     router.push({
       pathname: "/(app)/result",
       params: {
@@ -90,7 +89,7 @@ export default function History() {
   async function handleItemDelete(id: string) {
     try {
       await apiCall("PATCH", `/prompts/${id}/delete`);
-      setHistoryItems((prev) => prev.filter((item) => item.id !== id));
+      setHistoryItems((prev) => prev.filter((item) => item.prompt_id !== id));
       setTotal((prev) => prev - 1);
     } catch (err) {
       if (err instanceof SessionExpiredError) {
