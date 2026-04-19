@@ -3,6 +3,7 @@
 // Tap prompt text → calls onEditRequest so parent can enter edit mode.
 // When editing=true, renders TextInput with editedText.
 // Parent owns edit state and cancel/regenerate actions.
+// Edit affordance lives in the action row — no inline hint here.
 
 import { useState, useEffect, useRef } from "react";
 import {
@@ -110,7 +111,6 @@ export default function PromptDisplay({
           {displayedText}
           {animating ? "\u258C" : ""}
         </Text>
-        {/* edit affordance lives in the action row */}
       </Pressable>
     </ScrollView>
   );
@@ -131,12 +131,6 @@ const styles = StyleSheet.create({
   editInput: {
     minHeight: 120,
     padding: 0,
-  },
-  editHint: {
-    fontSize: 12,
-    color: "#999",
-    marginTop: 8,
-    textAlign: "right",
   },
   loadingContainer: {
     flex: 1,
