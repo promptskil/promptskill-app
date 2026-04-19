@@ -14,6 +14,7 @@ import {
   ScrollView,
   Pressable,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 interface PromptDisplayProps {
   prompt: string;
@@ -111,7 +112,9 @@ export default function PromptDisplay({
           {animating ? "\u258C" : ""}
         </Text>
         {!animating && (
-          <Text style={styles.editHint}>Tap to edit</Text>
+          <View style={styles.editHintRow}>
+            <Ionicons name="create-outline" size={14} color="#bbb" />
+          </View>
         )}
       </Pressable>
     </ScrollView>
@@ -134,11 +137,9 @@ const styles = StyleSheet.create({
     minHeight: 120,
     padding: 0,
   },
-  editHint: {
-    fontSize: 12,
-    color: "#999",
+  editHintRow: {
+    alignItems: "flex-end",
     marginTop: 8,
-    textAlign: "right",
   },
   loadingContainer: {
     flex: 1,
