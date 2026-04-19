@@ -3,14 +3,14 @@
 // Guarded clipboard import: graceful fallback if native module unavailable.
 
 import { useState, useCallback } from "react";
-import { Pressable, StyleSheet } from "react-native";
+import { Pressable, StyleSheet, Clipboard as RNClipboard } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-let Clipboard: { setStringAsync: (text: string) => Promise<boolean> } | null = null;
+let ExpoClipboard: { setStringAsync: (text: string) => Promise<boolean> } | null = null;
 try {
-  Clipboard = require("expo-clipboard");
+  ExpoClipboard = require("expo-clipboard");
 } catch {
-  // Native module not available
+  // Native module not available — will fall back to RN Clipboard
 }
 
 interface CopyPromptButtonProps {
@@ -21,13 +21,16 @@ export default function CopyPromptButton({ promptText }: CopyPromptButtonProps) 
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async () => {
-    if (!Clipboard) return;
     try {
-      await Clipboard.setStringAsync(promptText);
+      if (ExpoClipboard) {
+        await ExpoClipboard.setStringAsync(promptText);
+      } else {
+        RNClipboard.setString(promptText);
+      }
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Native module failed — don't show success
+      // Clipboard failed — don't show success
     }
   }, [promptText]);
 
