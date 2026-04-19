@@ -28,6 +28,7 @@ export default function ThumbsFeedback({
   return (
     <View style={styles.container}>
       <Pressable
+        testID="thumb-up"
         style={[styles.thumb, vote === "up" && styles.thumbActive]}
         onPress={() => handlePress("up")}
       >
@@ -38,6 +39,7 @@ export default function ThumbsFeedback({
         />
       </Pressable>
       <Pressable
+        testID="thumb-down"
         style={[styles.thumb, vote === "down" && styles.thumbActive]}
         onPress={() => handlePress("down")}
       >
