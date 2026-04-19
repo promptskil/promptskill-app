@@ -2,6 +2,7 @@
 // Thumbs up/down toggle, small inline style.
 // Deselect (same tap) = client-only, no API call.
 // DB retains prior vote on deselect.
+// Active state: filled icon, black — matches copy button active style.
 
 import { View, Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -29,24 +30,24 @@ export default function ThumbsFeedback({
     <View style={styles.container}>
       <Pressable
         testID="thumb-up"
-        style={[styles.thumb, vote === "up" && styles.thumbActive]}
+        style={styles.thumb}
         onPress={() => handlePress("up")}
       >
         <Ionicons
           name={vote === "up" ? "thumbs-up" : "thumbs-up-outline"}
           size={16}
-          color={vote === "up" ? "#4F46E5" : "#999"}
+          color={vote === "up" ? "#000" : "#999"}
         />
       </Pressable>
       <Pressable
         testID="thumb-down"
-        style={[styles.thumb, vote === "down" && styles.thumbActive]}
+        style={styles.thumb}
         onPress={() => handlePress("down")}
       >
         <Ionicons
           name={vote === "down" ? "thumbs-down" : "thumbs-down-outline"}
           size={16}
-          color={vote === "down" ? "#4F46E5" : "#999"}
+          color={vote === "down" ? "#000" : "#999"}
         />
       </Pressable>
     </View>
@@ -62,8 +63,5 @@ const styles = StyleSheet.create({
   thumb: {
     padding: 6,
     borderRadius: 6,
-  },
-  thumbActive: {
-    backgroundColor: "#EEF2FF",
   },
 });

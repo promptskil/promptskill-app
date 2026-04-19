@@ -3,6 +3,7 @@
 // Tap prompt text → calls onEditRequest so parent can enter edit mode.
 // When editing=true, renders TextInput with editedText.
 // Parent owns edit state and cancel/regenerate actions.
+// Edit affordance lives in the action row — no inline hint here.
 
 import { useState, useEffect, useRef } from "react";
 import {
@@ -14,7 +15,6 @@ import {
   ScrollView,
   Pressable,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 
 interface PromptDisplayProps {
   prompt: string;
@@ -111,11 +111,6 @@ export default function PromptDisplay({
           {displayedText}
           {animating ? "\u258C" : ""}
         </Text>
-        {!animating && (
-          <View style={styles.editHintRow}>
-            <Ionicons name="create-outline" size={14} color="#bbb" />
-          </View>
-        )}
       </Pressable>
     </ScrollView>
   );
@@ -136,10 +131,6 @@ const styles = StyleSheet.create({
   editInput: {
     minHeight: 120,
     padding: 0,
-  },
-  editHintRow: {
-    alignItems: "flex-end",
-    marginTop: 8,
   },
   loadingContainer: {
     flex: 1,
