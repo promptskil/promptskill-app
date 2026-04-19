@@ -29,7 +29,8 @@ export class ApiError extends Error {
 export async function apiCall<T>(
   method: string,
   endpoint: string,
-  body?: Record<string, unknown>
+  body?: Record<string, unknown>,
+  signal?: AbortSignal
 ): Promise<T> {
   const token = await getToken();
 
@@ -46,6 +47,7 @@ export async function apiCall<T>(
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
+    signal,
   });
 
   // 401 — session expired

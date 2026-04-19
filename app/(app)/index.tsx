@@ -3,14 +3,13 @@
 // Input floats up with keyboard via KeyboardAvoidingView.
 // Back gesture: DISABLED
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
   Pressable,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
@@ -30,6 +29,7 @@ export default function Main() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [topicFocused, setTopicFocused] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     getDefaultModel().then((model) => {
@@ -45,14 +45,23 @@ export default function Main() {
     setDefaultModel(model);
   }
 
+  function handleCancel() {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setLoading(false);
+  }
+
   async function handleGenerate() {
     setError("");
     setLoading(true);
+    const controller = new AbortController();
+    abortRef.current = controller;
     try {
       const data = await apiCall<{ prompt_id: string; prompt: string }>(
         "POST",
         "/generate",
-        { model: selectedModel, topic }
+        { model: selectedModel, topic },
+        controller.signal
       );
       router.push({
         pathname: "/(app)/result",
@@ -64,6 +73,10 @@ export default function Main() {
         },
       });
     } catch (err) {
+      // User cancelled — swallow silently
+      if (err instanceof Error && err.name === "AbortError") {
+        return;
+      }
       if (err instanceof SessionExpiredError) {
         router.replace("/(auth)/login");
         return;
@@ -82,6 +95,7 @@ export default function Main() {
         setError("Something went wrong. Please try again.");
       }
     } finally {
+      abortRef.current = null;
       setLoading(false);
     }
   }
@@ -121,17 +135,19 @@ export default function Main() {
             onFocus={() => setTopicFocused(true)}
             onBlur={() => setTopicFocused(false)}
           />
-          <Pressable
-            style={[styles.sendBtn, !canGenerate && styles.sendBtnDisabled]}
-            onPress={handleGenerate}
-            disabled={!canGenerate}
-          >
-            {loading ? (
-              <ActivityIndicator size="small" color="#fff" />
-            ) : (
+          {loading ? (
+            <Pressable style={styles.sendBtn} onPress={handleCancel}>
+              <Ionicons name="stop" size={14} color="#fff" />
+            </Pressable>
+          ) : (
+            <Pressable
+              style={[styles.sendBtn, !canGenerate && styles.sendBtnDisabled]}
+              onPress={handleGenerate}
+              disabled={!canGenerate}
+            >
               <Ionicons name="arrow-up" size={18} color="#fff" />
-            )}
-          </Pressable>
+            </Pressable>
+          )}
         </View>
       </View>
     </KeyboardAvoidingView>
