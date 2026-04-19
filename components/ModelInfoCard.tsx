@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   },
   tagline: {
     fontSize: 14,
-    color: "#007AFF",
+    color: "#4F46E5",
     fontWeight: "600",
     marginBottom: 12,
   },
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   },
   bullet: {
     fontSize: 15,
-    color: "#007AFF",
+    color: "#4F46E5",
     marginRight: 8,
     lineHeight: 21,
   },

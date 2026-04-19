@@ -71,7 +71,7 @@ export default function PromptDisplay({
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color="#4F46E5" />
         <Text style={styles.loadingText}>Generating...</Text>
       </View>
     );
