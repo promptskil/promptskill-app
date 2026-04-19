@@ -4,7 +4,7 @@
 // Feeds from: constants/modelLinks.ts, constants/models.ts
 // Feeds into: result.tsx
 
-import { View, Text, Pressable, StyleSheet, Linking } from "react-native";
+import { View, Text, Pressable, StyleSheet, Linking, Platform } from "react-native";
 import { MODELS, MODEL_LABELS } from "../constants/models";
 import { MODEL_LINKS } from "../constants/modelLinks";
 import type { Model } from "../types";
@@ -17,7 +17,15 @@ export default function ModelLaunchChips({
   generatedBy,
 }: ModelLaunchChipsProps) {
   function handleChipPress(model: Model) {
-    Linking.openURL(MODEL_LINKS[model]);
+    const url = MODEL_LINKS[model];
+    // iOS: force Safari via x-safari-https:// to bypass universal link
+    // interception — without this, installed apps (ChatGPT, Gemini, Grok)
+    // claim the domain and open their app instead of the web chat.
+    if (Platform.OS === "ios") {
+      Linking.openURL(url.replace("https://", "x-safari-https://"));
+    } else {
+      Linking.openURL(url);
+    }
   }
 
   return (
