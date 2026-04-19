@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   },
   changeLink: {
     fontSize: 14,
-    color: "#007AFF",
+    color: "#4F46E5",
   },
   editContainer: {
     gap: 8,
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   confirmButton: {
     padding: 10,
     borderRadius: 8,
-    backgroundColor: "#007AFF",
+    backgroundColor: "#4F46E5",
   },
   confirmText: {
     fontSize: 16,

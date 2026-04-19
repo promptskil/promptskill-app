@@ -83,7 +83,7 @@ export default function Profile() {
     <View style={styles.container}>
       <View style={styles.headerRow}>
         <Pressable onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={24} color="#007AFF" />
+          <Ionicons name="arrow-back" size={24} color="#4F46E5" />
         </Pressable>
         <Text style={styles.header}>Profile</Text>
       </View>

@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   button: {
     padding: 14,
     borderRadius: 8,
-    backgroundColor: "#007AFF",
+    backgroundColor: "#4F46E5",
     alignItems: "center",
   },
   buttonDisabled: {
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   },
   link: {
     fontSize: 14,
-    color: "#007AFF",
+    color: "#4F46E5",
     textAlign: "center",
   },
   signupLink: {

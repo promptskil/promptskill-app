@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   primaryButton: {
     padding: 14,
     borderRadius: 8,
-    backgroundColor: "#007AFF",
+    backgroundColor: "#4F46E5",
     alignItems: "center",
   },
   primaryButtonText: {
@@ -75,6 +75,6 @@ const styles = StyleSheet.create({
   },
   skipButtonText: {
     fontSize: 16,
-    color: "#007AFF",
+    color: "#4F46E5",
   },
 });
