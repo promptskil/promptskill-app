@@ -4,12 +4,12 @@
 // Back gesture: DISABLED
 
 import { useState, useEffect } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, ScrollView, StyleSheet, Pressable, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import ModelSelector from "../../components/ModelSelector";
 import ModelInfoCard from "../../components/ModelInfoCard";
 import TopicInput from "../../components/TopicInput";
-import GenerateButton from "../../components/GenerateButton";
 import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
 import { getDefaultModel, setDefaultModel } from "../../storage/storage";
 import type { Model } from "../../types";
@@ -96,22 +96,34 @@ export default function Main() {
 
         {!topicFocused && <ModelInfoCard model={selectedModel} />}
 
+        <View style={styles.inputWrapper}>
+          <TopicInput
+            topic={topic}
+            onChangeText={setTopic}
+            editable={!loading}
+            onFocus={() => setTopicFocused(true)}
+            onBlur={() => setTopicFocused(false)}
+          />
+          <Pressable
+            style={styles.sendBtn}
+            onPress={handleGenerate}
+            disabled={!canGenerate}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Ionicons
+                name="arrow-up"
+                size={18}
+                color={canGenerate ? "#fff" : "#ccc"}
+              />
+            )}
+          </Pressable>
+        </View>
+
         <Text style={styles.label}>Enter a topic</Text>
-        <TopicInput
-          topic={topic}
-          onChangeText={setTopic}
-          editable={!loading}
-          onFocus={() => setTopicFocused(true)}
-          onBlur={() => setTopicFocused(false)}
-        />
 
         {error ? <Text style={styles.error}>{error}</Text> : null}
-
-        <GenerateButton
-          onPress={handleGenerate}
-          disabled={!canGenerate}
-          loading={loading}
-        />
       </View>
     </ScrollView>
   );
@@ -144,6 +156,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "#333",
+  },
+  inputWrapper: {
+    position: "relative",
+  },
+  sendBtn: {
+    position: "absolute",
+    right: 10,
+    bottom: 10,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#000",
+    alignItems: "center",
+    justifyContent: "center",
   },
   error: {
     color: "#d00",
