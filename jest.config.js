@@ -4,6 +4,10 @@ module.exports = {
   transformIgnorePatterns: [
     "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*)"
   ],
+  moduleNameMapper: {
+    "^@expo/vector-icons$": "<rootDir>/__mocks__/@expo/vector-icons.ts",
+    "^@expo/vector-icons/(.*)$": "<rootDir>/__mocks__/@expo/vector-icons.ts",
+  },
   collectCoverageFrom: [
     "storage/**/*.ts",
     "services/**/*.ts",
