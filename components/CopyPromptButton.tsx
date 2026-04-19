@@ -21,11 +21,14 @@ export default function CopyPromptButton({ promptText }: CopyPromptButtonProps) 
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async () => {
-    if (Clipboard) {
+    if (!Clipboard) return;
+    try {
       await Clipboard.setStringAsync(promptText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Native module failed — don't show success
     }
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   }, [promptText]);
 
   return (
