@@ -37,9 +37,9 @@ export default function CopyPromptButton({ promptText }: CopyPromptButtonProps) 
   return (
     <Pressable style={styles.button} onPress={handleCopy}>
       {copied ? (
-        <Ionicons name="thumbs-up" size={16} color="#34C759" />
+        <Ionicons name="copy" size={16} color="#000" />
       ) : (
-        <Ionicons name="copy-outline" size={16} color="#333" />
+        <Ionicons name="copy-outline" size={16} color="#999" />
       )}
     </Pressable>
   );
