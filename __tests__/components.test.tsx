@@ -45,10 +45,10 @@ describe("ThumbsFeedback", () => {
   it("calls onVote when tapping different thumb", () => {
     const onVote = jest.fn();
     const onDeselect = jest.fn();
-    const { getByText } = render(
+    const { getByTestId } = render(
       <ThumbsFeedback vote={null} onVote={onVote} onDeselect={onDeselect} />
     );
-    fireEvent.press(getByText("👍"));
+    fireEvent.press(getByTestId("thumb-up"));
     expect(onVote).toHaveBeenCalledWith("up");
     expect(onDeselect).not.toHaveBeenCalled();
   });
@@ -56,10 +56,10 @@ describe("ThumbsFeedback", () => {
   it("calls onDeselect when tapping same thumb (no API call)", () => {
     const onVote = jest.fn();
     const onDeselect = jest.fn();
-    const { getByText } = render(
+    const { getByTestId } = render(
       <ThumbsFeedback vote="up" onVote={onVote} onDeselect={onDeselect} />
     );
-    fireEvent.press(getByText("👍"));
+    fireEvent.press(getByTestId("thumb-up"));
     expect(onDeselect).toHaveBeenCalled();
     expect(onVote).not.toHaveBeenCalled();
   });
@@ -67,10 +67,10 @@ describe("ThumbsFeedback", () => {
   it("calls onVote when switching thumb direction", () => {
     const onVote = jest.fn();
     const onDeselect = jest.fn();
-    const { getByText } = render(
+    const { getByTestId } = render(
       <ThumbsFeedback vote="up" onVote={onVote} onDeselect={onDeselect} />
     );
-    fireEvent.press(getByText("👎"));
+    fireEvent.press(getByTestId("thumb-down"));
     expect(onVote).toHaveBeenCalledWith("down");
   });
 });
