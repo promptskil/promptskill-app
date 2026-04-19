@@ -1,10 +1,19 @@
 // Screen 2 — Main — Phase 12, Step 12.3
-// ModelSelector + TopicInput + GenerateButton -> POST /generate -> Result
-// defaultModel read from AsyncStorage on mount (default 'claude')
+// ModelSelector top, TopicInput pinned to bottom (Claude-style).
+// Input floats up with keyboard via KeyboardAvoidingView.
 // Back gesture: DISABLED
 
 import { useState, useEffect } from "react";
-import { View, Text, ScrollView, StyleSheet, Pressable, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Pressable,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import ModelSelector from "../../components/ModelSelector";
@@ -78,16 +87,20 @@ export default function Main() {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
-      keyboardShouldPersistTaps="handled"
+    <KeyboardAvoidingView
+      style={styles.root}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <View style={styles.header}>
-        <Text style={styles.title}>PromptSkill AI</Text>
-      </View>
+      {/* Top — scrollable model selection */}
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.header}>
+          <Text style={styles.title}>PromptSkill AI</Text>
+        </View>
 
-      <View style={styles.form}>
         <Text style={styles.label}>Select a model</Text>
         <ModelSelector
           selectedModel={selectedModel}
@@ -95,7 +108,11 @@ export default function Main() {
         />
 
         {!topicFocused && <ModelInfoCard model={selectedModel} />}
+      </ScrollView>
 
+      {/* Bottom — pinned input */}
+      <View style={styles.bottom}>
+        {error ? <Text style={styles.error}>{error}</Text> : null}
         <View style={styles.inputWrapper}>
           <TopicInput
             topic={topic}
@@ -105,57 +122,57 @@ export default function Main() {
             onBlur={() => setTopicFocused(false)}
           />
           <Pressable
-            style={styles.sendBtn}
+            style={[styles.sendBtn, !canGenerate && styles.sendBtnDisabled]}
             onPress={handleGenerate}
             disabled={!canGenerate}
           >
             {loading ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <Ionicons
-                name="arrow-up"
-                size={18}
-                color={canGenerate ? "#fff" : "#ccc"}
-              />
+              <Ionicons name="arrow-up" size={18} color="#fff" />
             )}
           </Pressable>
         </View>
-
-        <Text style={styles.label}>Enter a topic</Text>
-
-        {error ? <Text style={styles.error}>{error}</Text> : null}
       </View>
-    </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  root: {
     flex: 1,
     backgroundColor: "#fff",
   },
-  content: {
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
     padding: 24,
     paddingTop: 60,
-    paddingBottom: 40,
+    paddingBottom: 16,
+    gap: 16,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 32,
+    marginBottom: 8,
   },
   title: {
     fontSize: 22,
     fontWeight: "700",
   },
-  form: {
-    gap: 16,
-  },
   label: {
     fontSize: 16,
     fontWeight: "600",
     color: "#333",
+  },
+  bottom: {
+    paddingHorizontal: 16,
+    paddingBottom: 32,
+    paddingTop: 8,
+    backgroundColor: "#fff",
+    gap: 8,
   },
   inputWrapper: {
     position: "relative",
@@ -170,6 +187,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#000",
     alignItems: "center",
     justifyContent: "center",
+  },
+  sendBtnDisabled: {
+    backgroundColor: "#ccc",
   },
   error: {
     color: "#d00",
