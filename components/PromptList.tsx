@@ -5,7 +5,7 @@ import { FlatList, Text, StyleSheet, View } from "react-native";
 import PromptListItem from "./PromptListItem";
 
 interface PromptRecord {
-  id: string;
+  prompt_id: string;
   model: string;
   topic: string;
   prompt_text: string;
@@ -39,10 +39,10 @@ export default function PromptList({
   return (
     <FlatList
       data={historyItems}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => item.prompt_id}
       renderItem={({ item }) => (
         <PromptListItem
-          id={item.id}
+          id={item.prompt_id}
           model={item.model}
           topic={item.topic}
           prompt_text={item.prompt_text}
