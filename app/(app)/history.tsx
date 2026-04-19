@@ -8,8 +8,7 @@ import { View, Text, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import PromptList from "../../components/PromptList";
-import { apiCall, SessionExpiredError } from "../../services/api";
-import { NavigationStateModule } from "../../services/navigation";
+import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
 
 interface PromptRecord {
   id: string;
@@ -32,9 +31,11 @@ export default function History() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const fetchHistory = useCallback(
     async (pageNum: number) => {
+      setError("");
       try {
         const data = await apiCall<HistoryResponse>(
           "GET",
@@ -50,7 +51,9 @@ export default function History() {
       } catch (err) {
         if (err instanceof SessionExpiredError) {
           router.replace("/(auth)/login");
+          return;
         }
+        setError("Could not load history. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -111,10 +114,18 @@ export default function History() {
     <View style={styles.container}>
       <View style={styles.headerRow}>
         <Pressable onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={24} color="#007AFF" />
+          <Ionicons name="arrow-back" size={24} color="#333" />
         </Pressable>
         <Text style={styles.header}>History</Text>
       </View>
+      {error ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+          <Pressable style={styles.retryBtn} onPress={() => fetchHistory(0)}>
+            <Text style={styles.retryText}>Retry</Text>
+          </Pressable>
+        </View>
+      ) : null}
       <PromptList
         historyItems={historyItems}
         total={total}
@@ -151,5 +162,26 @@ const styles = StyleSheet.create({
     color: "#999",
     textAlign: "center",
     marginTop: 32,
+  },
+  errorContainer: {
+    padding: 24,
+    alignItems: "center",
+    gap: 12,
+  },
+  errorText: {
+    fontSize: 14,
+    color: "#cc0000",
+    textAlign: "center",
+  },
+  retryBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: "#000",
+  },
+  retryText: {
+    fontSize: 14,
+    color: "#fff",
+    fontWeight: "600",
   },
 });
