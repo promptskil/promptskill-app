@@ -136,7 +136,7 @@ export default function Result() {
       <View style={styles.header}>
         <HistoryNavButton onPress={handleHistoryNav} />
         <Pressable onPress={() => router.push("/(app)/profile")}>
-          <Text style={styles.navLink}>Profile</Text>
+          <Ionicons name="person-circle-outline" size={28} color="#333" />
         </Pressable>
       </View>
 
@@ -206,10 +206,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 16,
     marginBottom: 16,
-  },
-  navLink: {
-    fontSize: 14,
-    color: "#007AFF",
   },
   editActions: {
     flexDirection: "row",
