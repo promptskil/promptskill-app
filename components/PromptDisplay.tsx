@@ -110,9 +110,7 @@ export default function PromptDisplay({
           {displayedText}
           {animating ? "\u258C" : ""}
         </Text>
-        {!animating && (
-          <Text style={styles.editHint}>Tap to edit</Text>
-        )}
+        {/* edit affordance lives in the action row */}
       </Pressable>
     </ScrollView>
   );
