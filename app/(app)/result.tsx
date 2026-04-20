@@ -57,6 +57,12 @@ export default function Result() {
     setEditedText("");
   }
 
+  function handleSave() {
+    setCurrentPrompt(editedText);
+    setEditing(false);
+    setEditedText("");
+  }
+
   // --- Regenerate ---
   async function handleRegenerate() {
     setEditing(false);
@@ -151,11 +157,14 @@ export default function Result() {
         onEditChange={setEditedText}
       />
 
-      {/* Edit mode buttons — Cancel + Regenerate arrow */}
+      {/* Edit mode buttons — Cancel + Save + Regenerate arrow */}
       {editing && (
         <View style={styles.editActions}>
           <Pressable style={styles.cancelBtn} onPress={handleCancel}>
             <Text style={styles.cancelText}>Cancel</Text>
+          </Pressable>
+          <Pressable style={styles.saveBtn} onPress={handleSave}>
+            <Text style={styles.saveText}>Save</Text>
           </Pressable>
           <Pressable style={styles.regenBtn} onPress={handleRegenerate}>
             <Ionicons name="refresh" size={20} color="#fff" />
@@ -228,6 +237,17 @@ const styles = StyleSheet.create({
   cancelText: {
     fontSize: 14,
     color: "#666",
+    fontWeight: "500",
+  },
+  saveBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: "#000",
+  },
+  saveText: {
+    fontSize: 14,
+    color: "#fff",
     fontWeight: "500",
   },
   regenBtn: {
