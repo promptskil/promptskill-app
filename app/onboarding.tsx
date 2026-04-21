@@ -27,9 +27,6 @@ export default function Onboarding() {
           <Text style={styles.primaryButtonText}>Get started</Text>
         </Pressable>
 
-        <Pressable style={styles.skipButton} onPress={handleComplete}>
-          <Text style={styles.skipButtonText}>Skip</Text>
-        </Pressable>
       </View>
     </View>
   );
@@ -69,12 +66,5 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
   },
-  skipButton: {
-    padding: 14,
-    alignItems: "center",
-  },
-  skipButtonText: {
-    fontSize: 16,
-    color: "#4F46E5",
-  },
+
 });
