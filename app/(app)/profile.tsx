@@ -7,11 +7,19 @@ import { useState, useEffect } from "react";
 import { View, Text, Pressable, StyleSheet, ActionSheetIOS, Share } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import * as Clipboard from "expo-clipboard";
 import EmailField from "../../components/EmailField";
 import LogoutButton from "../../components/LogoutButton";
 import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
 import { clearToken } from "../../storage/storage";
+
+// Guarded clipboard import — native module not guaranteed across build contexts.
+// Matches pattern established in CopyPromptButton.tsx.
+let ExpoClipboard: { setStringAsync: (text: string) => Promise<boolean> } | null = null;
+try {
+  ExpoClipboard = require("expo-clipboard");
+} catch {
+  // Native module unavailable — Copy falls back to Share.share()
+}
 
 export default function Profile() {
   const router = useRouter();
@@ -72,7 +80,11 @@ export default function Profile() {
       },
       (buttonIndex) => {
         if (buttonIndex === 1) {
-          Clipboard.setStringAsync(SUPPORT_EMAIL);
+          if (ExpoClipboard) {
+            ExpoClipboard.setStringAsync(SUPPORT_EMAIL);
+          } else {
+            Share.share({ message: SUPPORT_EMAIL });
+          }
         } else if (buttonIndex === 2) {
           Share.share({ message: SUPPORT_EMAIL });
         }
