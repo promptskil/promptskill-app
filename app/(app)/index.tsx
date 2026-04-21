@@ -112,7 +112,7 @@ export default function Main() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Text style={styles.title}>PromptSkill AI</Text>
+          <Text style={styles.title}>Clero</Text>
         </View>
 
         <Text style={styles.label}>Select a model</Text>
