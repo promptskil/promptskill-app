@@ -16,7 +16,7 @@ export default function Onboarding() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Clero</Text>
+      <Text style={styles.title}>Welcome to Vaine</Text>
       <Text style={styles.subtitle}>
         Generate high-quality prompts for any AI model. Pick a model, enter a
         topic, and get a crafted prompt in seconds.
