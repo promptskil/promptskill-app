@@ -4,9 +4,10 @@
 // Back gesture: ENABLED
 
 import { useState, useEffect } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet, ActionSheetIOS, Share } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import * as Clipboard from "expo-clipboard";
 import EmailField from "../../components/EmailField";
 import LogoutButton from "../../components/LogoutButton";
 import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
@@ -61,6 +62,24 @@ export default function Profile() {
     }
   }
 
+  const SUPPORT_EMAIL = "support@cosight-ai.com";
+
+  function handleSupportEmailPress() {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: ["Cancel", "Copy", "Share"],
+        cancelButtonIndex: 0,
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 1) {
+          Clipboard.setStringAsync(SUPPORT_EMAIL);
+        } else if (buttonIndex === 2) {
+          Share.share({ message: SUPPORT_EMAIL });
+        }
+      }
+    );
+  }
+
   async function handleLogout() {
     try {
       await apiCall("POST", "/auth/logout");
@@ -95,6 +114,13 @@ export default function Profile() {
       <View style={styles.section}>
         <LogoutButton onLogout={handleLogout} />
       </View>
+
+      <View style={styles.supportSection}>
+        <Text style={styles.supportLabel}>Contact support</Text>
+        <Pressable onPress={handleSupportEmailPress}>
+          <Text style={styles.supportEmail}>{SUPPORT_EMAIL}</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -127,5 +153,22 @@ const styles = StyleSheet.create({
     color: "#999",
     textAlign: "center",
     marginTop: 32,
+  },
+  supportSection: {
+    marginTop: "auto",
+    paddingTop: 24,
+    borderTopWidth: 1,
+    borderTopColor: "#f0f0f0",
+  },
+  supportLabel: {
+    fontSize: 12,
+    color: "#999",
+    marginBottom: 4,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  supportEmail: {
+    fontSize: 14,
+    color: "#4F46E5",
   },
 });
