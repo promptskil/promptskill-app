@@ -17,9 +17,13 @@ export default function Onboarding() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to Vaine</Text>
+      <Text style={styles.hook}>
+        AI misses what you mean. Until now.
+      </Text>
       <Text style={styles.subtitle}>
-        Generate high-quality prompts for any AI model. Pick a model, enter a
-        topic, and get a crafted prompt in seconds.
+        You already know what you want. But when you ask, it comes back
+        close. Not right. So you try again. And again. And never quite
+        get there.
       </Text>
 
       <View style={styles.actions}>
@@ -45,12 +49,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 16,
   },
+  hook: {
+    fontSize: 20,
+    fontWeight: "700",
+    textAlign: "center",
+    color: "#111",
+    marginBottom: 16,
+  },
   subtitle: {
     fontSize: 16,
     color: "#666",
     textAlign: "center",
     lineHeight: 24,
-    marginBottom: 48,
+    marginBottom: 40,
   },
   actions: {
     gap: 12,

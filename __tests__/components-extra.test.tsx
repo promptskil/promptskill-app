@@ -60,7 +60,7 @@ describe("TopicInput", () => {
     const { getByPlaceholderText } = render(
       <TopicInput topic="" onChangeText={onChangeText} />
     );
-    const input = getByPlaceholderText("Start with a topic. Define your goal.");
+    const input = getByPlaceholderText("Start with what you want. Describe the result you want. Get what you had in mind.");
     fireEvent.changeText(input, "AI trends");
     expect(onChangeText).toHaveBeenCalledWith("AI trends");
   });
@@ -69,7 +69,7 @@ describe("TopicInput", () => {
     const { getByPlaceholderText } = render(
       <TopicInput topic="" onChangeText={jest.fn()} />
     );
-    const input = getByPlaceholderText("Start with a topic. Define your goal.");
+    const input = getByPlaceholderText("Start with what you want. Describe the result you want. Get what you had in mind.");
     expect(input.props.maxLength).toBe(500);
   });
 });
