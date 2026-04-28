@@ -23,7 +23,7 @@ export default function TopicInput({
       style={[styles.input, !editable && styles.disabled]}
       value={topic}
       onChangeText={onChangeText}
-      placeholder="Start with a topic. Define your goal."
+      placeholder="Start with what you want. Describe the result you want. Get what you had in mind."
       maxLength={500}
       multiline
       editable={editable}
