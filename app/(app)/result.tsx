@@ -3,7 +3,6 @@
 // CopyPromptButton + ThumbsFeedback: aligned linearly, small.
 // ModelLaunchChips: opens model web chat (separate from copy).
 // ThumbsFeedback: deselect = client-only, no API call.
-// HistoryNavButton: captureResultSnapshot() before navigate.
 // Back gesture: ENABLED
 
 import { useState } from "react";

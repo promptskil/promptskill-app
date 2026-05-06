@@ -1,5 +1,5 @@
 // NewPromptButton (3.5) — Phase 12, Step 12.4
-// Clears ResultModule state, calls NavigationStateModule.clear(), navigates to Main.
+// Clears ResultModule state, navigates to Main.
 
 import { Pressable, Text, StyleSheet } from "react-native";
 

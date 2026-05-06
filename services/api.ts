@@ -8,7 +8,9 @@
 import Constants from "expo-constants";
 import { getToken, clearToken } from "../storage/storage";
 
-export const API_BASE_URL = "https://web-production-3a6e3.up.railway.app";
+export const API_BASE_URL =
+  (Constants.expoConfig?.extra?.apiBaseUrl as string | undefined) ??
+  "https://web-production-3a6e3.up.railway.app";
 
 export class SessionExpiredError extends Error {
   constructor() {
