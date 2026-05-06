@@ -127,7 +127,7 @@ export default function Result() {
       {/* Thread — topic left */}
       {topic.length > 0 && (
         <View style={styles.topicBubble}>
-          <Text style={styles.topicBubbleText}>{topic}</Text>
+          <Text style={styles.topicBubbleText} selectable>{topic}</Text>
         </View>
       )}
 
