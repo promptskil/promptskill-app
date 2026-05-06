@@ -42,6 +42,10 @@ export default function Main() {
     router.push("/(app)/history");
   }
 
+  function handleProfileNav() {
+    router.push("/(app)/profile");
+  }
+
   const canGenerate =
     selectedModel.length > 0 && topic.length > 0 && !loading;
 
@@ -118,7 +122,12 @@ export default function Main() {
       >
         <View style={styles.header}>
           <Text style={styles.title}>Vaine</Text>
-          <HistoryNavButton onPress={handleHistoryNav} />
+          <View style={styles.headerRight}>
+            <HistoryNavButton onPress={handleHistoryNav} />
+            <Pressable onPress={handleProfileNav}>
+              <Ionicons name="person-circle-outline" size={28} color="#333" />
+            </Pressable>
+          </View>
         </View>
 
         <Text style={styles.label}>Select a model</Text>
@@ -179,6 +188,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 8,
+  },
+  headerRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
   },
   title: {
     fontSize: 22,

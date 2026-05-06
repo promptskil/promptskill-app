@@ -4,6 +4,7 @@
 // ModelLaunchChips: opens model web chat (separate from copy).
 // ThumbsFeedback: deselect = client-only, no API call.
 // Back gesture: ENABLED
+// Profile nav: removed — Screen 2 (Main) only
 
 import { useState } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
@@ -123,13 +124,6 @@ export default function Result() {
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
     >
-      {/* Header */}
-      <View style={styles.header}>
-        <Pressable onPress={() => router.push("/(app)/profile")}>
-          <Ionicons name="person-circle-outline" size={28} color="#333" />
-        </Pressable>
-      </View>
-
       {/* Prompt display / editor */}
       <PromptDisplay
         prompt={currentPrompt}
@@ -195,13 +189,6 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingTop: 60,
     paddingBottom: 40,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    gap: 16,
-    marginBottom: 16,
   },
   editActions: {
     flexDirection: "row",
