@@ -123,6 +123,7 @@ export default function Result() {
       style={styles.container}
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
+      automaticallyAdjustKeyboardInsets
     >
       {/* Thread — topic left */}
       {topic.length > 0 && (
