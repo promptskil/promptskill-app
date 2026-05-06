@@ -3,8 +3,8 @@
 // CopyPromptButton + ThumbsFeedback: aligned linearly, small.
 // ModelLaunchChips: opens model web chat (separate from copy).
 // ThumbsFeedback: deselect = client-only, no API call.
-// HistoryNavButton: captureResultSnapshot() before navigate.
 // Back gesture: ENABLED
+// Profile nav: removed — Screen 2 (Main) only
 
 import { useState } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
@@ -15,9 +15,7 @@ import CopyPromptButton from "../../components/CopyPromptButton";
 import ModelLaunchChips from "../../components/ModelLaunchChips";
 import ThumbsFeedback from "../../components/ThumbsFeedback";
 import NewPromptButton from "../../components/NewPromptButton";
-import HistoryNavButton from "../../components/HistoryNavButton";
 import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
-import { NavigationStateModule } from "../../services/navigation";
 import type { Model } from "../../types";
 
 export default function Result() {
@@ -117,19 +115,7 @@ export default function Result() {
 
   // --- Navigation ---
   function handleNewPrompt() {
-    NavigationStateModule.clear();
     router.replace("/(app)/");
-  }
-
-  function handleHistoryNav() {
-    NavigationStateModule.captureResultSnapshot({
-      generatedPrompt: currentPrompt,
-      promptId: promptId ?? "",
-      feedbackVote,
-      selectedModel,
-      topic,
-    });
-    router.push("/(app)/history");
   }
 
   return (
@@ -138,13 +124,12 @@ export default function Result() {
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
     >
-      {/* Header */}
-      <View style={styles.header}>
-        <HistoryNavButton onPress={handleHistoryNav} />
-        <Pressable onPress={() => router.push("/(app)/profile")}>
-          <Ionicons name="person-circle-outline" size={28} color="#333" />
-        </Pressable>
-      </View>
+      {/* Thread — topic left */}
+      {topic.length > 0 && (
+        <View style={styles.topicBubble}>
+          <Text style={styles.topicBubbleText}>{topic}</Text>
+        </View>
+      )}
 
       {/* Prompt display / editor */}
       <PromptDisplay
@@ -212,12 +197,20 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 40,
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    gap: 16,
-    marginBottom: 16,
+  topicBubble: {
+    alignSelf: "flex-start",
+    backgroundColor: "#f0f0f0",
+    borderRadius: 18,
+    borderBottomLeftRadius: 4,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginBottom: 12,
+    maxWidth: "75%",
+  },
+  topicBubbleText: {
+    fontSize: 15,
+    color: "#333",
+    lineHeight: 22,
   },
   editActions: {
     flexDirection: "row",

@@ -12,10 +12,19 @@
       }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "autoIncrement": true
     },
     "production": {
       "autoIncrement": true
+    },
+    "staging": {
+      "extends": "production",
+      "distribution": "internal",
+      "autoIncrement": true,
+      "env": {
+        "APP_VARIANT": "staging"
+      }
     }
   }
 }

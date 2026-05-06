@@ -16,6 +16,7 @@ import {
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import ModelSelector from "../../components/ModelSelector";
+import HistoryNavButton from "../../components/HistoryNavButton";
 import ModelInfoCard from "../../components/ModelInfoCard";
 import TopicInput from "../../components/TopicInput";
 import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
@@ -36,6 +37,14 @@ export default function Main() {
       setSelectedModel(model as Model);
     });
   }, []);
+
+  function handleHistoryNav() {
+    router.push("/(app)/history");
+  }
+
+  function handleProfileNav() {
+    router.push("/(app)/profile");
+  }
 
   const canGenerate =
     selectedModel.length > 0 && topic.length > 0 && !loading;
@@ -113,15 +122,19 @@ export default function Main() {
       >
         <View style={styles.header}>
           <Text style={styles.title}>Vaine</Text>
+          <View style={styles.headerRight}>
+            <HistoryNavButton onPress={handleHistoryNav} />
+            <Pressable onPress={handleProfileNav}>
+              <Ionicons name="person-circle-outline" size={28} color="#333" />
+            </Pressable>
+          </View>
         </View>
 
-        <Text style={styles.label}>Select a model</Text>
         <ModelSelector
           selectedModel={selectedModel}
           onSelect={handleModelSelect}
         />
 
-        {!topicFocused && <ModelInfoCard model={selectedModel} />}
       </ScrollView>
 
       {/* Bottom — pinned input */}
@@ -174,14 +187,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 8,
   },
+  headerRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
   title: {
     fontSize: 22,
     fontWeight: "700",
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
   },
   bottom: {
     paddingHorizontal: 16,
