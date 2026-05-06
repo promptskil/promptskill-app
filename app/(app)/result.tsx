@@ -124,6 +124,13 @@ export default function Result() {
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
     >
+      {/* Thread — topic left */}
+      {topic.length > 0 && (
+        <View style={styles.topicBubble}>
+          <Text style={styles.topicBubbleText}>{topic}</Text>
+        </View>
+      )}
+
       {/* Prompt display / editor */}
       <PromptDisplay
         prompt={currentPrompt}
@@ -189,6 +196,21 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingTop: 60,
     paddingBottom: 40,
+  },
+  topicBubble: {
+    alignSelf: "flex-start",
+    backgroundColor: "#f0f0f0",
+    borderRadius: 18,
+    borderBottomLeftRadius: 4,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginBottom: 12,
+    maxWidth: "75%",
+  },
+  topicBubbleText: {
+    fontSize: 15,
+    color: "#333",
+    lineHeight: 22,
   },
   editActions: {
     flexDirection: "row",
