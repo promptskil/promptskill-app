@@ -15,9 +15,7 @@ import CopyPromptButton from "../../components/CopyPromptButton";
 import ModelLaunchChips from "../../components/ModelLaunchChips";
 import ThumbsFeedback from "../../components/ThumbsFeedback";
 import NewPromptButton from "../../components/NewPromptButton";
-import HistoryNavButton from "../../components/HistoryNavButton";
 import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
-import { NavigationStateModule } from "../../services/navigation";
 import type { Model } from "../../types";
 
 export default function Result() {
@@ -117,19 +115,7 @@ export default function Result() {
 
   // --- Navigation ---
   function handleNewPrompt() {
-    NavigationStateModule.clear();
     router.replace("/(app)/");
-  }
-
-  function handleHistoryNav() {
-    NavigationStateModule.captureResultSnapshot({
-      generatedPrompt: currentPrompt,
-      promptId: promptId ?? "",
-      feedbackVote,
-      selectedModel,
-      topic,
-    });
-    router.push("/(app)/history");
   }
 
   return (
@@ -140,7 +126,6 @@ export default function Result() {
     >
       {/* Header */}
       <View style={styles.header}>
-        <HistoryNavButton onPress={handleHistoryNav} />
         <Pressable onPress={() => router.push("/(app)/profile")}>
           <Ionicons name="person-circle-outline" size={28} color="#333" />
         </Pressable>
