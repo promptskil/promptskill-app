@@ -136,7 +136,6 @@ export default function Main() {
           onSelect={handleModelSelect}
         />
 
-        {!topicFocused && <ModelInfoCard model={selectedModel} />}
       </ScrollView>
 
       {/* Bottom — pinned input */}
