@@ -119,6 +119,10 @@ export default function Result() {
   }
 
   return (
+    <View style={styles.screen}>
+      <Pressable style={styles.backBtn} onPress={() => router.back()}>
+        <Ionicons name="chevron-back" size={24} color="#333" />
+      </Pressable>
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.content}
@@ -185,13 +189,24 @@ export default function Result() {
         </View>
       )}
     </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  backBtn: {
+    position: "absolute",
+    top: 16,
+    left: 16,
+    zIndex: 10,
+    padding: 8,
+  },
+  container: {
+    flex: 1,
   },
   content: {
     padding: 24,
