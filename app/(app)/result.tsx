@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 24,
-    paddingTop: 60,
+    paddingTop: 90,
     paddingBottom: 40,
   },
   topicBubble: {
