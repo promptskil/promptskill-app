@@ -1,5 +1,5 @@
 // TopicInput (2.2) — Phase 12, Step 12.2
-// Max 500 characters, unstructured free text.
+// Max 1000 characters, unstructured free text.
 
 import { TextInput, StyleSheet } from "react-native";
 
@@ -24,7 +24,7 @@ export default function TopicInput({
       value={topic}
       onChangeText={onChangeText}
       placeholder="Start with what you want. Describe the result you want. Get what you had in mind."
-      maxLength={500}
+      maxLength={1000}
       multiline
       editable={editable}
       textAlignVertical="top"
