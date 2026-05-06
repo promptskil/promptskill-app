@@ -1,6 +1,7 @@
 // Screen 2 — Main — Phase 12, Step 12.3
 // ModelSelector top, TopicInput pinned to bottom (Claude-style).
 // Input floats up with keyboard via KeyboardAvoidingView.
+// Result renders inline between ModelSelector and input — no navigation to Screen 3.
 // Back gesture: DISABLED
 
 import { useState, useEffect, useRef } from "react";
@@ -19,6 +20,10 @@ import ModelSelector from "../../components/ModelSelector";
 import HistoryNavButton from "../../components/HistoryNavButton";
 import ModelInfoCard from "../../components/ModelInfoCard";
 import TopicInput from "../../components/TopicInput";
+import PromptDisplay from "../../components/PromptDisplay";
+import CopyPromptButton from "../../components/CopyPromptButton";
+import ThumbsFeedback from "../../components/ThumbsFeedback";
+import ModelLaunchChips from "../../components/ModelLaunchChips";
 import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
 import { getDefaultModel, setDefaultModel } from "../../storage/storage";
 import type { Model } from "../../types";
@@ -31,6 +36,14 @@ export default function Main() {
   const [error, setError] = useState("");
   const [topicFocused, setTopicFocused] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+
+  // Inline result state
+  const [generatedPrompt, setGeneratedPrompt] = useState("");
+  const [promptId, setPromptId] = useState<string | null>(null);
+  const [feedbackVote, setFeedbackVote] = useState<"up" | "down" | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [editedText, setEditedText] = useState("");
+  const [regenerating, setRegenerating] = useState(false);
 
   useEffect(() => {
     getDefaultModel().then((model) => {
@@ -63,6 +76,11 @@ export default function Main() {
   async function handleGenerate() {
     setError("");
     setLoading(true);
+    setGeneratedPrompt("");
+    setPromptId(null);
+    setFeedbackVote(null);
+    setEditing(false);
+    setEditedText("");
     const controller = new AbortController();
     abortRef.current = controller;
     try {
@@ -72,15 +90,8 @@ export default function Main() {
         { model: selectedModel, topic },
         controller.signal
       );
-      router.push({
-        pathname: "/(app)/result",
-        params: {
-          promptId: data.prompt_id,
-          generatedPrompt: data.prompt,
-          selectedModel,
-          topic,
-        },
-      });
+      setPromptId(data.prompt_id);
+      setGeneratedPrompt(data.prompt);
     } catch (err) {
       // User cancelled — swallow silently
       if (err instanceof Error && err.name === "AbortError") {
@@ -109,12 +120,57 @@ export default function Main() {
     }
   }
 
+  async function handleRegenerate() {
+    setEditing(false);
+    setEditedText("");
+    setError("");
+    setRegenerating(true);
+    setFeedbackVote(null);
+    try {
+      const data = await apiCall<{ prompt_id: string; prompt: string }>(
+        "POST",
+        "/generate",
+        { model: selectedModel, topic }
+      );
+      setPromptId(data.prompt_id);
+      setGeneratedPrompt(data.prompt);
+    } catch (err) {
+      if (err instanceof SessionExpiredError) {
+        router.replace("/(auth)/login");
+        return;
+      }
+      if (err instanceof ApiError) {
+        if (err.status === 429) {
+          setError("Too many requests. Try again later.");
+        } else if (err.status === 504) {
+          setError("Generation timed out. Please try again.");
+        } else {
+          setError("Something went wrong. Please try again.");
+        }
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } finally {
+      setRegenerating(false);
+    }
+  }
+
+  function handleVote(vote: "up" | "down") {
+    setFeedbackVote(vote);
+    if (promptId) {
+      apiCall("PATCH", "/user/feedback", {
+        prompt_id: promptId,
+        vote,
+      }).catch(() => {});
+    }
+  }
+
   return (
     <KeyboardAvoidingView
       style={styles.root}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      {/* Top — scrollable model selection */}
+      {/* Top — scrollable model selection + inline result */}
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -130,17 +186,90 @@ export default function Main() {
           </View>
         </View>
 
-        <Text style={styles.label}>Select a model</Text>
         <ModelSelector
           selectedModel={selectedModel}
           onSelect={handleModelSelect}
         />
 
+        {/* Inline result — Screen 3 content rendered here after generation */}
+        {generatedPrompt.length > 0 && (
+          <>
+            {/* Thread — topic left */}
+            {topic.length > 0 && (
+              <View style={styles.topicBubble}>
+                <Text style={styles.topicBubbleText}>{topic}</Text>
+              </View>
+            )}
+
+            {/* Generated prompt */}
+            <PromptDisplay
+              prompt={generatedPrompt}
+              loading={regenerating}
+              error={error || null}
+              editing={editing}
+              editedText={editedText}
+              onEditRequest={() => {
+                setEditedText(generatedPrompt);
+                setEditing(true);
+              }}
+              onEditChange={setEditedText}
+            />
+
+            {/* Edit mode buttons — Cancel + Save + Regenerate */}
+            {editing && (
+              <View style={styles.editActions}>
+                <Pressable
+                  style={styles.cancelBtn}
+                  onPress={() => { setEditing(false); setEditedText(""); }}
+                >
+                  <Text style={styles.cancelText}>Cancel</Text>
+                </Pressable>
+                <Pressable
+                  style={styles.saveBtn}
+                  onPress={() => {
+                    setGeneratedPrompt(editedText);
+                    setEditing(false);
+                    setEditedText("");
+                  }}
+                >
+                  <Text style={styles.saveText}>Save</Text>
+                </Pressable>
+                <Pressable style={styles.regenBtn} onPress={handleRegenerate}>
+                  <Ionicons name="refresh" size={20} color="#fff" />
+                </Pressable>
+              </View>
+            )}
+
+            {/* Copy + Edit + Thumbs */}
+            {!editing && !regenerating && (
+              <View style={styles.feedbackRow}>
+                <CopyPromptButton promptText={generatedPrompt} />
+                <Pressable
+                  style={styles.iconBtn}
+                  onPress={() => { setEditedText(generatedPrompt); setEditing(true); }}
+                >
+                  <Ionicons name="create-outline" size={16} color="#999" />
+                </Pressable>
+                <ThumbsFeedback
+                  vote={feedbackVote}
+                  onVote={handleVote}
+                  onDeselect={() => setFeedbackVote(null)}
+                />
+              </View>
+            )}
+
+            {/* Model launch chips */}
+            {!editing && !regenerating && (
+              <ModelLaunchChips generatedBy={selectedModel} />
+            )}
+          </>
+        )}
+
       </ScrollView>
 
       {/* Bottom — pinned input */}
       <View style={styles.bottom}>
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+        {error && !generatedPrompt ? <Text style={styles.error}>{error}</Text> : null}
         <View style={styles.inputWrapper}>
           <TopicInput
             topic={topic}
@@ -197,10 +326,66 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "700",
   },
-  label: {
-    fontSize: 16,
-    fontWeight: "600",
+  topicBubble: {
+    alignSelf: "flex-start",
+    backgroundColor: "#f0f0f0",
+    borderRadius: 18,
+    borderBottomLeftRadius: 4,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    maxWidth: "75%",
+  },
+  topicBubbleText: {
+    fontSize: 15,
     color: "#333",
+    lineHeight: 22,
+  },
+  editActions: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 12,
+  },
+  cancelBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    backgroundColor: "#fff",
+  },
+  cancelText: {
+    fontSize: 14,
+    color: "#666",
+    fontWeight: "500",
+  },
+  saveBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: "#000",
+  },
+  saveText: {
+    fontSize: 14,
+    color: "#fff",
+    fontWeight: "500",
+  },
+  regenBtn: {
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: "#000",
+  },
+  feedbackRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    marginTop: 12,
+  },
+  iconBtn: {
+    padding: 6,
+    borderRadius: 6,
   },
   bottom: {
     paddingHorizontal: 16,
