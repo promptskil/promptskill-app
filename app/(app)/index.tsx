@@ -1,7 +1,7 @@
 // Screen 2 — Main — Phase 12, Step 12.3
 // ModelSelector top, TopicInput pinned to bottom (Claude-style).
 // Input floats up with keyboard via KeyboardAvoidingView.
-// Result renders inline between ModelSelector and input — no navigation to Screen 3.
+// Result renders inline — accumulates per generate, no navigation to Screen 3.
 // Back gesture: DISABLED
 
 import { useState, useEffect, useRef } from "react";
@@ -28,6 +28,15 @@ import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
 import { getDefaultModel, setDefaultModel } from "../../storage/storage";
 import type { Model } from "../../types";
 
+interface ResultItem {
+  id: string;
+  promptId: string | null;
+  topic: string;
+  model: Model;
+  prompt: string;
+  feedbackVote: "up" | "down" | null;
+}
+
 export default function Main() {
   const router = useRouter();
   const [selectedModel, setSelectedModel] = useState<Model>("claude");
@@ -37,13 +46,11 @@ export default function Main() {
   const [topicFocused, setTopicFocused] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
-  // Inline result state
-  const [generatedPrompt, setGeneratedPrompt] = useState("");
-  const [promptId, setPromptId] = useState<string | null>(null);
-  const [feedbackVote, setFeedbackVote] = useState<"up" | "down" | null>(null);
-  const [editing, setEditing] = useState(false);
+  // Accumulated results
+  const [results, setResults] = useState<ResultItem[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editedText, setEditedText] = useState("");
-  const [regenerating, setRegenerating] = useState(false);
+  const [regeneratingId, setRegeneratingId] = useState<string | null>(null);
 
   useEffect(() => {
     getDefaultModel().then((model) => {
@@ -76,10 +83,7 @@ export default function Main() {
   async function handleGenerate() {
     setError("");
     setLoading(true);
-    setGeneratedPrompt("");
-    setPromptId(null);
-    setFeedbackVote(null);
-    setEditing(false);
+    setEditingId(null);
     setEditedText("");
     const controller = new AbortController();
     abortRef.current = controller;
@@ -90,8 +94,14 @@ export default function Main() {
         { model: selectedModel, topic },
         controller.signal
       );
-      setPromptId(data.prompt_id);
-      setGeneratedPrompt(data.prompt);
+      setResults(prev => [...prev, {
+        id: Date.now().toString(),
+        promptId: data.prompt_id,
+        topic,
+        model: selectedModel,
+        prompt: data.prompt,
+        feedbackVote: null,
+      }]);
     } catch (err) {
       // User cancelled — swallow silently
       if (err instanceof Error && err.name === "AbortError") {
@@ -120,20 +130,21 @@ export default function Main() {
     }
   }
 
-  async function handleRegenerate() {
-    setEditing(false);
+  async function handleRegenerate(item: ResultItem) {
+    setEditingId(null);
     setEditedText("");
-    setError("");
-    setRegenerating(true);
-    setFeedbackVote(null);
+    setRegeneratingId(item.id);
     try {
       const data = await apiCall<{ prompt_id: string; prompt: string }>(
         "POST",
         "/generate",
-        { model: selectedModel, topic }
+        { model: item.model, topic: item.topic }
       );
-      setPromptId(data.prompt_id);
-      setGeneratedPrompt(data.prompt);
+      setResults(prev => prev.map(r =>
+        r.id === item.id
+          ? { ...r, promptId: data.prompt_id, prompt: data.prompt, feedbackVote: null }
+          : r
+      ));
     } catch (err) {
       if (err instanceof SessionExpiredError) {
         router.replace("/(auth)/login");
@@ -151,18 +162,34 @@ export default function Main() {
         setError("Something went wrong. Please try again.");
       }
     } finally {
-      setRegenerating(false);
+      setRegeneratingId(null);
     }
   }
 
-  function handleVote(vote: "up" | "down") {
-    setFeedbackVote(vote);
-    if (promptId) {
+  function handleVote(item: ResultItem, vote: "up" | "down") {
+    setResults(prev => prev.map(r =>
+      r.id === item.id ? { ...r, feedbackVote: vote } : r
+    ));
+    if (item.promptId) {
       apiCall("PATCH", "/user/feedback", {
-        prompt_id: promptId,
+        prompt_id: item.promptId,
         vote,
       }).catch(() => {});
     }
+  }
+
+  function handleDeselect(id: string) {
+    setResults(prev => prev.map(r =>
+      r.id === id ? { ...r, feedbackVote: null } : r
+    ));
+  }
+
+  function handleEditSave(id: string) {
+    setResults(prev => prev.map(r =>
+      r.id === id ? { ...r, prompt: editedText } : r
+    ));
+    setEditingId(null);
+    setEditedText("");
   }
 
   return (
@@ -170,7 +197,7 @@ export default function Main() {
       style={styles.root}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      {/* Top — scrollable model selection + inline result */}
+      {/* Top — scrollable model selection + accumulated results */}
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -191,85 +218,88 @@ export default function Main() {
           onSelect={handleModelSelect}
         />
 
-        {/* Inline result — Screen 3 content rendered here after generation */}
-        {generatedPrompt.length > 0 && (
-          <>
-            {/* Thread — topic left */}
-            {topic.length > 0 && (
-              <View style={styles.topicBubble}>
-                <Text style={styles.topicBubbleText}>{topic}</Text>
-              </View>
-            )}
+        {/* Accumulated results */}
+        {results.map(item => {
+          const isEditing = editingId === item.id;
+          const isRegenerating = regeneratingId === item.id;
+          return (
+            <View key={item.id} style={styles.resultBlock}>
+              {/* Topic bubble left */}
+              {item.topic.length > 0 && (
+                <View style={styles.topicBubble}>
+                  <Text style={styles.topicBubbleText}>{item.topic}</Text>
+                </View>
+              )}
 
-            {/* Generated prompt */}
-            <PromptDisplay
-              prompt={generatedPrompt}
-              loading={regenerating}
-              error={error || null}
-              editing={editing}
-              editedText={editedText}
-              onEditRequest={() => {
-                setEditedText(generatedPrompt);
-                setEditing(true);
-              }}
-              onEditChange={setEditedText}
-            />
+              {/* Generated prompt */}
+              <PromptDisplay
+                prompt={item.prompt}
+                loading={isRegenerating}
+                error={null}
+                editing={isEditing}
+                editedText={isEditing ? editedText : ""}
+                onEditRequest={() => {
+                  setEditedText(item.prompt);
+                  setEditingId(item.id);
+                }}
+                onEditChange={setEditedText}
+              />
 
-            {/* Edit mode buttons — Cancel + Save + Regenerate */}
-            {editing && (
-              <View style={styles.editActions}>
-                <Pressable
-                  style={styles.cancelBtn}
-                  onPress={() => { setEditing(false); setEditedText(""); }}
-                >
-                  <Text style={styles.cancelText}>Cancel</Text>
-                </Pressable>
-                <Pressable
-                  style={styles.saveBtn}
-                  onPress={() => {
-                    setGeneratedPrompt(editedText);
-                    setEditing(false);
-                    setEditedText("");
-                  }}
-                >
-                  <Text style={styles.saveText}>Save</Text>
-                </Pressable>
-                <Pressable style={styles.regenBtn} onPress={handleRegenerate}>
-                  <Ionicons name="refresh" size={20} color="#fff" />
-                </Pressable>
-              </View>
-            )}
+              {/* Edit mode buttons */}
+              {isEditing && (
+                <View style={styles.editActions}>
+                  <Pressable
+                    style={styles.cancelBtn}
+                    onPress={() => { setEditingId(null); setEditedText(""); }}
+                  >
+                    <Text style={styles.cancelText}>Cancel</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.saveBtn}
+                    onPress={() => handleEditSave(item.id)}
+                  >
+                    <Text style={styles.saveText}>Save</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.regenBtn}
+                    onPress={() => handleRegenerate(item)}
+                  >
+                    <Ionicons name="refresh" size={20} color="#fff" />
+                  </Pressable>
+                </View>
+              )}
 
-            {/* Copy + Edit + Thumbs */}
-            {!editing && !regenerating && (
-              <View style={styles.feedbackRow}>
-                <CopyPromptButton promptText={generatedPrompt} />
-                <Pressable
-                  style={styles.iconBtn}
-                  onPress={() => { setEditedText(generatedPrompt); setEditing(true); }}
-                >
-                  <Ionicons name="create-outline" size={16} color="#999" />
-                </Pressable>
-                <ThumbsFeedback
-                  vote={feedbackVote}
-                  onVote={handleVote}
-                  onDeselect={() => setFeedbackVote(null)}
-                />
-              </View>
-            )}
+              {/* Copy + Edit + Thumbs */}
+              {!isEditing && !isRegenerating && (
+                <View style={styles.feedbackRow}>
+                  <CopyPromptButton promptText={item.prompt} />
+                  <Pressable
+                    style={styles.iconBtn}
+                    onPress={() => { setEditedText(item.prompt); setEditingId(item.id); }}
+                  >
+                    <Ionicons name="create-outline" size={16} color="#999" />
+                  </Pressable>
+                  <ThumbsFeedback
+                    vote={item.feedbackVote}
+                    onVote={(vote) => handleVote(item, vote)}
+                    onDeselect={() => handleDeselect(item.id)}
+                  />
+                </View>
+              )}
 
-            {/* Model launch chips */}
-            {!editing && !regenerating && (
-              <ModelLaunchChips generatedBy={selectedModel} />
-            )}
-          </>
-        )}
+              {/* Model launch chips */}
+              {!isEditing && !isRegenerating && (
+                <ModelLaunchChips generatedBy={item.model} />
+              )}
+            </View>
+          );
+        })}
 
       </ScrollView>
 
       {/* Bottom — pinned input */}
       <View style={styles.bottom}>
-        {error && !generatedPrompt ? <Text style={styles.error}>{error}</Text> : null}
+        {error ? <Text style={styles.error}>{error}</Text> : null}
         <View style={styles.inputWrapper}>
           <TopicInput
             topic={topic}
@@ -325,6 +355,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
+  },
+  resultBlock: {
+    gap: 8,
   },
   topicBubble: {
     alignSelf: "flex-start",
