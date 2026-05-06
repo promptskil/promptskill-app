@@ -2,6 +2,7 @@
 // GET /user on mount. Email update via PATCH /user/email.
 // Logout: 8-step sequence — token cleared, onboarding preserved, navigate Login.
 // Back gesture: ENABLED
+// Back arrow: router.replace to Main — entry from Main only
 
 import { useState, useEffect } from "react";
 import { View, Text, Pressable, StyleSheet, ActionSheetIOS, Share } from "react-native";
@@ -113,7 +114,7 @@ export default function Profile() {
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
-        <Pressable onPress={() => router.back()} style={styles.backBtn}>
+        <Pressable onPress={() => router.replace("/(app)/")} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={24} color="#333" />
         </Pressable>
         <Text style={styles.header}>Profile</Text>
