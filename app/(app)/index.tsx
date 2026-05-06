@@ -130,7 +130,6 @@ export default function Main() {
           </View>
         </View>
 
-        <Text style={styles.label}>Select a model</Text>
         <ModelSelector
           selectedModel={selectedModel}
           onSelect={handleModelSelect}
@@ -196,11 +195,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
   },
   bottom: {
     paddingHorizontal: 16,
