@@ -178,7 +178,7 @@ describe("PromptList", () => {
         onItemDelete={jest.fn()}
       />
     );
-    expect(getByText("No prompts yet")).toBeTruthy();
+    expect(getByText("No histories yet")).toBeTruthy();
   });
 
   it("renders items", () => {
