@@ -17,13 +17,8 @@ export default function Onboarding() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to Vaine</Text>
-      <Text style={styles.hook}>
-        AI misses what you mean. Until now.
-      </Text>
       <Text style={styles.subtitle}>
-        You already know what you want. But when you ask, it comes back
-        close. Not right. So you try again. And again. And never quite
-        get there.
+        Type what you mean. Vaine structures it. ChatGPT, Claude, Gemini, and Grok execute it. Get what you meant.{"\n\n"}Stop retrying. Start getting what you meant.
       </Text>
 
       <View style={styles.actions}>
@@ -47,13 +42,6 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "700",
     textAlign: "center",
-    marginBottom: 16,
-  },
-  hook: {
-    fontSize: 20,
-    fontWeight: "700",
-    textAlign: "center",
-    color: "#111",
     marginBottom: 16,
   },
   subtitle: {

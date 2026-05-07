@@ -70,7 +70,7 @@ describe("TopicInput", () => {
       <TopicInput topic="" onChangeText={jest.fn()} />
     );
     const input = getByPlaceholderText("Start with what you want. Describe the result you want. Get what you had in mind.");
-    expect(input.props.maxLength).toBe(500);
+    expect(input.props.maxLength).toBe(1000);
   });
 });
 
@@ -178,7 +178,7 @@ describe("PromptList", () => {
         onItemDelete={jest.fn()}
       />
     );
-    expect(getByText("No prompts yet")).toBeTruthy();
+    expect(getByText("No histories yet")).toBeTruthy();
   });
 
   it("renders items", () => {

@@ -10,7 +10,7 @@ interface NewPromptButtonProps {
 export default function NewPromptButton({ onPress }: NewPromptButtonProps) {
   return (
     <Pressable style={styles.button} onPress={onPress}>
-      <Text style={styles.text}>New Prompt</Text>
+      <Text style={styles.text}>New</Text>
     </Pressable>
   );
 }
