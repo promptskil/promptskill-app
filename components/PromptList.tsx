@@ -56,7 +56,7 @@ export default function PromptList({
       onEndReachedThreshold={0.5}
       ListEmptyComponent={
         <View style={styles.empty}>
-          <Text style={styles.emptyText}>No prompts yet</Text>
+          <Text style={styles.emptyText}>No histories yet</Text>
         </View>
       }
     />

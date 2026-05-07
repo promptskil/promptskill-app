@@ -1,6 +1,6 @@
 // InlineResultItem — inline result card on Screen 2 (Main)
-// Mirrors result.tsx: topicBubble + PromptDisplay + editActions.
-// Self-contained edit state — no impact on Main screen logic.
+// Mirrors result.tsx: PromptDisplay + editActions + feedbackRow (Copy + Thumbs).
+// Self-contained edit and feedback state — no impact on Main screen logic.
 // Regen calls /generate for this item's model + topic only.
 
 import { useState } from "react";
@@ -8,6 +8,8 @@ import { View, Text, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import PromptDisplay from "./PromptDisplay";
+import CopyPromptButton from "./CopyPromptButton";
+import ThumbsFeedback from "./ThumbsFeedback";
 import { apiCall, ApiError, SessionExpiredError } from "../services/api";
 import type { Model } from "../types";
 
@@ -21,15 +23,17 @@ interface InlineResultItemProps {
 export default function InlineResultItem({
   topic,
   model,
-  promptId,
+  promptId: initialPromptId,
   initialPrompt,
 }: InlineResultItemProps) {
   const router = useRouter();
+  const [promptId, setPromptId] = useState(initialPromptId);
   const [currentPrompt, setCurrentPrompt] = useState(initialPrompt);
   const [editing, setEditing] = useState(false);
   const [editedText, setEditedText] = useState("");
   const [regenerating, setRegenerating] = useState(false);
   const [regenError, setRegenError] = useState("");
+  const [feedbackVote, setFeedbackVote] = useState<"up" | "down" | null>(null);
 
   function handleEditRequest() {
     setEditedText(currentPrompt);
@@ -52,6 +56,7 @@ export default function InlineResultItem({
     setEditedText("");
     setRegenError("");
     setRegenerating(true);
+    setFeedbackVote(null);
 
     try {
       const data = await apiCall<{ prompt_id: string; prompt: string }>(
@@ -59,6 +64,7 @@ export default function InlineResultItem({
         "/generate",
         { model, topic }
       );
+      setPromptId(data.prompt_id);
       setCurrentPrompt(data.prompt);
     } catch (err) {
       if (err instanceof SessionExpiredError) {
@@ -81,21 +87,28 @@ export default function InlineResultItem({
     }
   }
 
-  return (
-    <View>
-      {topic.length > 0 && (
-        <View style={styles.topicBubble}>
-          <Text style={styles.topicBubbleText} selectable>{topic}</Text>
-        </View>
-      )}
+  function handleVote(vote: "up" | "down") {
+    setFeedbackVote(vote);
+    if (promptId) {
+      apiCall("PATCH", "/user/feedback", {
+        prompt_id: promptId,
+        vote,
+      }).catch(() => {});
+    }
+  }
 
+  function handleDeselect() {
+    setFeedbackVote(null);
+  }
+
+  return (
+    <View style={styles.container}>
       <PromptDisplay
         prompt={currentPrompt}
         loading={regenerating}
         error={regenError || null}
         editing={editing}
         editedText={editedText}
-        onEditRequest={handleEditRequest}
         onEditChange={setEditedText}
       />
 
@@ -112,25 +125,27 @@ export default function InlineResultItem({
           </Pressable>
         </View>
       )}
+
+      {!editing && !regenerating && currentPrompt.length > 0 && (
+        <View style={styles.feedbackRow}>
+          <CopyPromptButton promptText={currentPrompt} />
+          <Pressable style={styles.iconBtn} onPress={handleEditRequest}>
+            <Ionicons name="create-outline" size={16} color="#999" />
+          </Pressable>
+          <ThumbsFeedback
+            vote={feedbackVote}
+            onVote={handleVote}
+            onDeselect={handleDeselect}
+          />
+        </View>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  topicBubble: {
-    alignSelf: "flex-start",
-    backgroundColor: "#f0f0f0",
-    borderRadius: 18,
-    borderBottomLeftRadius: 4,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    marginBottom: 12,
-    maxWidth: "75%",
-  },
-  topicBubbleText: {
-    fontSize: 15,
-    color: "#333",
-    lineHeight: 22,
+  container: {
+    flexShrink: 0,
   },
   editActions: {
     flexDirection: "row",
@@ -167,5 +182,16 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     backgroundColor: "#000",
+  },
+  feedbackRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    marginTop: 12,
+  },
+  iconBtn: {
+    padding: 6,
+    borderRadius: 6,
   },
 });
