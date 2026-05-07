@@ -109,7 +109,6 @@ export default function InlineResultItem({
         error={regenError || null}
         editing={editing}
         editedText={editedText}
-        onEditRequest={handleEditRequest}
         onEditChange={setEditedText}
       />
 
@@ -130,6 +129,9 @@ export default function InlineResultItem({
       {!editing && !regenerating && currentPrompt.length > 0 && (
         <View style={styles.feedbackRow}>
           <CopyPromptButton promptText={currentPrompt} />
+          <Pressable style={styles.iconBtn} onPress={handleEditRequest}>
+            <Ionicons name="create-outline" size={16} color="#999" />
+          </Pressable>
           <ThumbsFeedback
             vote={feedbackVote}
             onVote={handleVote}
@@ -187,5 +189,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
     marginTop: 12,
+  },
+  iconBtn: {
+    padding: 6,
+    borderRadius: 6,
   },
 });
