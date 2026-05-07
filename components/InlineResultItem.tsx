@@ -102,7 +102,7 @@ export default function InlineResultItem({
   }
 
   return (
-    <View>
+    <View style={styles.container}>
       <PromptDisplay
         prompt={currentPrompt}
         loading={regenerating}
@@ -142,6 +142,9 @@ export default function InlineResultItem({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flexShrink: 0,
+  },
   editActions: {
     flexDirection: "row",
     justifyContent: "center",
