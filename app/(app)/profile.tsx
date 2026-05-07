@@ -2,16 +2,10 @@
 // GET /user on mount. Email update via PATCH /user/email.
 // Logout: 8-step sequence — token cleared, onboarding preserved, navigate Login.
 // Back gesture: ENABLED
-<<<<<<< HEAD
 // Back arrow: router.replace to Main — entry from Main only
 
 import { useState, useEffect } from "react";
 import { View, Text, Pressable, StyleSheet, ActionSheetIOS, Share } from "react-native";
-=======
-
-import { useState, useEffect } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
->>>>>>> main
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import EmailField from "../../components/EmailField";
@@ -19,7 +13,6 @@ import LogoutButton from "../../components/LogoutButton";
 import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
 import { clearToken } from "../../storage/storage";
 
-<<<<<<< HEAD
 // Guarded clipboard import — native module not guaranteed across build contexts.
 // Matches pattern established in CopyPromptButton.tsx.
 let ExpoClipboard: { setStringAsync: (text: string) => Promise<boolean> } | null = null;
@@ -29,8 +22,6 @@ try {
   // Native module unavailable — Copy falls back to Share.share()
 }
 
-=======
->>>>>>> main
 export default function Profile() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -80,7 +71,6 @@ export default function Profile() {
     }
   }
 
-<<<<<<< HEAD
   const SUPPORT_EMAIL = "support@cosight-ai.com";
 
   function handleSupportEmailPress() {
@@ -103,8 +93,6 @@ export default function Profile() {
     );
   }
 
-=======
->>>>>>> main
   async function handleLogout() {
     try {
       await apiCall("POST", "/auth/logout");
@@ -126,11 +114,7 @@ export default function Profile() {
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
-<<<<<<< HEAD
         <Pressable onPress={() => router.replace("/(app)/")} style={styles.backBtn}>
-=======
-        <Pressable onPress={() => router.back()} style={styles.backBtn}>
->>>>>>> main
           <Ionicons name="arrow-back" size={24} color="#333" />
         </Pressable>
         <Text style={styles.header}>Profile</Text>
@@ -143,7 +127,6 @@ export default function Profile() {
       <View style={styles.section}>
         <LogoutButton onLogout={handleLogout} />
       </View>
-<<<<<<< HEAD
 
       <View style={styles.supportSection}>
         <Text style={styles.supportLabel}>Contact support</Text>
@@ -151,8 +134,6 @@ export default function Profile() {
           <Text style={styles.supportEmail}>{SUPPORT_EMAIL}</Text>
         </Pressable>
       </View>
-=======
->>>>>>> main
     </View>
   );
 }
@@ -186,7 +167,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 32,
   },
-<<<<<<< HEAD
   supportSection: {
     marginTop: "auto",
     paddingTop: 24,
@@ -204,6 +184,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#4F46E5",
   },
-=======
->>>>>>> main
 });

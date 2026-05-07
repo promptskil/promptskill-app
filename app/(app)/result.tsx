@@ -3,13 +3,8 @@
 // CopyPromptButton + ThumbsFeedback: aligned linearly, small.
 // ModelLaunchChips: opens model web chat (separate from copy).
 // ThumbsFeedback: deselect = client-only, no API call.
-<<<<<<< HEAD
 // Back gesture: ENABLED
 // Profile nav: removed — Screen 2 (Main) only
-=======
-// HistoryNavButton: captureResultSnapshot() before navigate.
-// Back gesture: ENABLED
->>>>>>> main
 
 import { useState } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
@@ -20,13 +15,7 @@ import CopyPromptButton from "../../components/CopyPromptButton";
 import ModelLaunchChips from "../../components/ModelLaunchChips";
 import ThumbsFeedback from "../../components/ThumbsFeedback";
 import NewPromptButton from "../../components/NewPromptButton";
-<<<<<<< HEAD
 import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
-=======
-import HistoryNavButton from "../../components/HistoryNavButton";
-import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
-import { NavigationStateModule } from "../../services/navigation";
->>>>>>> main
 import type { Model } from "../../types";
 
 export default function Result() {
@@ -126,7 +115,6 @@ export default function Result() {
 
   // --- Navigation ---
   function handleNewPrompt() {
-<<<<<<< HEAD
     router.replace("/(app)/");
   }
 
@@ -148,36 +136,6 @@ export default function Result() {
           <Text style={styles.topicBubbleText} selectable>{topic}</Text>
         </View>
       )}
-=======
-    NavigationStateModule.clear();
-    router.replace("/(app)/");
-  }
-
-  function handleHistoryNav() {
-    NavigationStateModule.captureResultSnapshot({
-      generatedPrompt: currentPrompt,
-      promptId: promptId ?? "",
-      feedbackVote,
-      selectedModel,
-      topic,
-    });
-    router.push("/(app)/history");
-  }
-
-  return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
-      keyboardShouldPersistTaps="handled"
-    >
-      {/* Header */}
-      <View style={styles.header}>
-        <HistoryNavButton onPress={handleHistoryNav} />
-        <Pressable onPress={() => router.push("/(app)/profile")}>
-          <Ionicons name="person-circle-outline" size={28} color="#333" />
-        </Pressable>
-      </View>
->>>>>>> main
 
       {/* Prompt display / editor */}
       <PromptDisplay
@@ -231,19 +189,14 @@ export default function Result() {
           <NewPromptButton onPress={handleNewPrompt} />
         </View>
       )}
-<<<<<<< HEAD
       </ScrollView>
     </View>
-=======
-    </ScrollView>
->>>>>>> main
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-<<<<<<< HEAD
     paddingTop: 60,
     backgroundColor: "#fff",
   },
@@ -274,21 +227,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#333",
     lineHeight: 22,
-=======
-    backgroundColor: "#fff",
-  },
-  content: {
-    padding: 24,
-    paddingTop: 60,
-    paddingBottom: 40,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    gap: 16,
-    marginBottom: 16,
->>>>>>> main
   },
   editActions: {
     flexDirection: "row",

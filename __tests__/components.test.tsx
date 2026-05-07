@@ -99,11 +99,7 @@ describe("NewPromptButton", () => {
   it("fires onPress", () => {
     const onPress = jest.fn();
     const { getByText } = render(<NewPromptButton onPress={onPress} />);
-<<<<<<< HEAD
     fireEvent.press(getByText("New"));
-=======
-    fireEvent.press(getByText("New Prompt"));
->>>>>>> main
     expect(onPress).toHaveBeenCalled();
   });
 });

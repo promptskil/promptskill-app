@@ -1,9 +1,5 @@
 // NewPromptButton (3.5) — Phase 12, Step 12.4
-<<<<<<< HEAD
 // Clears ResultModule state, navigates to Main.
-=======
-// Clears ResultModule state, calls NavigationStateModule.clear(), navigates to Main.
->>>>>>> main
 
 import { Pressable, Text, StyleSheet } from "react-native";
 
@@ -14,11 +10,7 @@ interface NewPromptButtonProps {
 export default function NewPromptButton({ onPress }: NewPromptButtonProps) {
   return (
     <Pressable style={styles.button} onPress={onPress}>
-<<<<<<< HEAD
       <Text style={styles.text}>New</Text>
-=======
-      <Text style={styles.text}>New Prompt</Text>
->>>>>>> main
     </Pressable>
   );
 }

@@ -18,12 +18,7 @@ export default function Onboarding() {
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to Vaine</Text>
       <Text style={styles.subtitle}>
-<<<<<<< HEAD
         Type what you mean. Vaine structures it. ChatGPT, Claude, Gemini, and Grok execute it. Get what you meant.{"\n\n"}Stop retrying. Start getting what you meant.
-=======
-        Generate high-quality prompts for any AI model. Pick a model, enter a
-        topic, and get a crafted prompt in seconds.
->>>>>>> main
       </Text>
 
       <View style={styles.actions}>
@@ -31,12 +26,6 @@ export default function Onboarding() {
           <Text style={styles.primaryButtonText}>Get started</Text>
         </Pressable>
 
-<<<<<<< HEAD
-=======
-        <Pressable style={styles.skipButton} onPress={handleComplete}>
-          <Text style={styles.skipButtonText}>Skip</Text>
-        </Pressable>
->>>>>>> main
       </View>
     </View>
   );
@@ -60,11 +49,7 @@ const styles = StyleSheet.create({
     color: "#666",
     textAlign: "center",
     lineHeight: 24,
-<<<<<<< HEAD
     marginBottom: 40,
-=======
-    marginBottom: 48,
->>>>>>> main
   },
   actions: {
     gap: 12,
@@ -80,16 +65,5 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
   },
-<<<<<<< HEAD
 
-=======
-  skipButton: {
-    padding: 14,
-    alignItems: "center",
-  },
-  skipButtonText: {
-    fontSize: 16,
-    color: "#4F46E5",
-  },
->>>>>>> main
 });
