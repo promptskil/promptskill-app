@@ -159,8 +159,8 @@ export default function Main() {
 
       </ScrollView>
 
-      {/* Bottom — pinned input */}
-      <View style={styles.bottom}>
+      {/* Bottom — pinned input, hidden when results are showing */}
+      {results.length === 0 && <View style={styles.bottom}>
         {error ? <Text style={styles.error}>{error}</Text> : null}
         <View style={styles.inputWrapper}>
           <TopicInput
@@ -184,7 +184,7 @@ export default function Main() {
             </Pressable>
           )}
         </View>
-      </View>
+      </View>}
     </KeyboardAvoidingView>
   );
 }
