@@ -12,7 +12,6 @@ import {
   TextInput,
   StyleSheet,
   ActivityIndicator,
-  ScrollView,
   Pressable,
 } from "react-native";
 
@@ -90,7 +89,7 @@ export default function PromptDisplay({
 
   if (editing) {
     return (
-      <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
+      <View style={styles.container}>
         <TextInput
           ref={inputRef}
           style={[styles.prompt, styles.editInput]}
@@ -100,25 +99,24 @@ export default function PromptDisplay({
           autoFocus
           textAlignVertical="top"
         />
-      </ScrollView>
+      </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <Pressable onPress={onEditRequest}>
         <Text style={styles.prompt} selectable>
           {displayedText}
           {animating ? "\u258C" : ""}
         </Text>
       </Pressable>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 16,
     backgroundColor: "#f8f9fa",
     borderRadius: 8,
