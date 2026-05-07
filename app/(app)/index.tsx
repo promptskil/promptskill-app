@@ -20,7 +20,7 @@ import ModelSelector from "../../components/ModelSelector";
 import HistoryNavButton from "../../components/HistoryNavButton";
 import ModelInfoCard from "../../components/ModelInfoCard";
 import TopicInput from "../../components/TopicInput";
-import PromptDisplay from "../../components/PromptDisplay";
+import InlineResultItem from "../../components/InlineResultItem";
 import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
 import { getDefaultModel, setDefaultModel } from "../../storage/storage";
 import type { Model } from "../../types";
@@ -29,6 +29,7 @@ interface ResultItem {
   id: string;
   promptId: string | null;
   model: Model;
+  topic: string;
   prompt: string;
 }
 
@@ -88,6 +89,7 @@ export default function Main() {
         id: Date.now().toString(),
         promptId: data.prompt_id,
         model: selectedModel,
+        topic: topic,
         prompt: data.prompt,
       }]);
     } catch (err) {
@@ -144,13 +146,14 @@ export default function Main() {
           onSelect={handleModelSelect}
         />
 
-        {/* Accumulated results — prompt only */}
+        {/* Accumulated results — topic bubble + prompt + edit actions */}
         {results.map(item => (
-          <PromptDisplay
+          <InlineResultItem
             key={item.id}
-            prompt={item.prompt}
-            loading={false}
-            error={null}
+            topic={item.topic}
+            model={item.model}
+            promptId={item.promptId}
+            initialPrompt={item.prompt}
           />
         ))}
 
