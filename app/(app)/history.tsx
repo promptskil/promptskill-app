@@ -1,6 +1,11 @@
 // Screen 4 — History — Phase 13, Step 13.2
+<<<<<<< HEAD
 // GET /history?limit=20&offset=N, pagination, soft delete.
 // Entry from Main → back to Main.
+=======
+// GET /history?limit=20&offset=N, pagination, soft delete, back nav with snapshot.
+// Entry from Result → back restores snapshot. Entry from Main → back to Main.
+>>>>>>> main
 // Back gesture: ENABLED
 
 import { useState, useEffect, useCallback } from "react";
@@ -109,7 +114,11 @@ export default function History() {
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
+<<<<<<< HEAD
         <Pressable onPress={() => router.replace("/(app)/")} style={styles.backBtn}>
+=======
+        <Pressable onPress={() => router.back()} style={styles.backBtn}>
+>>>>>>> main
           <Ionicons name="arrow-back" size={24} color="#333" />
         </Pressable>
         <Text style={styles.header}>History</Text>

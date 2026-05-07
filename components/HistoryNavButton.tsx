@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 // NAV.1 — HistoryNavButton — Screen 2 (Main) only
+=======
+// NAV.1 — HistoryNavButton — Phase 12, Step 12.2
+// Shared component. Calls NavigationStateModule before navigating.
+>>>>>>> main
 
 import { Pressable, Text, StyleSheet } from "react-native";
 

@@ -11,12 +11,18 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
+<<<<<<< HEAD
 import { useRouter } from "expo-router";
+=======
+>>>>>>> main
 import EmailInput from "../../components/EmailInput";
 import { apiCall, ApiError } from "../../services/api";
 
 export default function ForgotPassword() {
+<<<<<<< HEAD
   const router = useRouter();
+=======
+>>>>>>> main
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -49,10 +55,13 @@ export default function ForgotPassword() {
 
   return (
     <View style={styles.container}>
+<<<<<<< HEAD
       <Pressable style={styles.backButton} onPress={() => router.back()}>
         <Text style={styles.backArrow}>←</Text>
       </Pressable>
 
+=======
+>>>>>>> main
       <Text style={styles.header}>Forgot password?</Text>
 
       <View style={styles.form}>
@@ -89,6 +98,7 @@ export default function ForgotPassword() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+<<<<<<< HEAD
     padding: 24,
     backgroundColor: "#fff",
   },
@@ -101,6 +111,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: "#333",
   },
+=======
+    justifyContent: "center",
+    padding: 24,
+    backgroundColor: "#fff",
+  },
+>>>>>>> main
   header: {
     fontSize: 28,
     fontWeight: "700",

@@ -12,6 +12,7 @@
       }
     },
     "preview": {
+<<<<<<< HEAD
       "distribution": "internal",
       "autoIncrement": true
     },
@@ -25,6 +26,12 @@
       "env": {
         "APP_VARIANT": "staging"
       }
+=======
+      "distribution": "internal"
+    },
+    "production": {
+      "autoIncrement": true
+>>>>>>> main
     }
   }
 }
