@@ -37,12 +37,9 @@ export default function ModelLaunchChips({
           return (
             <Pressable
               key={model}
-              style={[styles.chip, isPrimary && styles.chipPrimary]}
               onPress={() => handleChipPress(model)}
             >
-              <Text
-                style={[styles.chipText, isPrimary && styles.chipTextPrimary]}
-              >
+              <Text style={styles.chipText}>
                 {MODEL_LABELS[model]}
               </Text>
             </Pressable>
@@ -69,24 +66,8 @@ const styles = StyleSheet.create({
     gap: 8,
     justifyContent: "center",
   },
-  chip: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    backgroundColor: "#fff",
-  },
-  chipPrimary: {
-    backgroundColor: "#000",
-    borderColor: "#000",
-  },
   chipText: {
     fontSize: 14,
     color: "#333",
-  },
-  chipTextPrimary: {
-    color: "#fff",
-    fontWeight: "600",
   },
 });
