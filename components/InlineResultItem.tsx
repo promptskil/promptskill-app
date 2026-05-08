@@ -10,6 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import PromptDisplay from "./PromptDisplay";
 import CopyPromptButton from "./CopyPromptButton";
 import ThumbsFeedback from "./ThumbsFeedback";
+import ModelLaunchChips from "./ModelLaunchChips";
 import { apiCall, ApiError, SessionExpiredError } from "../services/api";
 import type { Model } from "../types";
 
@@ -138,6 +139,10 @@ export default function InlineResultItem({
             onDeselect={handleDeselect}
           />
         </View>
+      )}
+
+      {!editing && !regenerating && currentPrompt.length > 0 && (
+        <ModelLaunchChips generatedBy={model} />
       )}
     </View>
   );
