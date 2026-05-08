@@ -37,6 +37,7 @@ export default function ModelLaunchChips({
           return (
             <Pressable
               key={model}
+              style={styles.chip}
               onPress={() => handleChipPress(model)}
             >
               <Text style={styles.chipText}>
@@ -65,6 +66,12 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: 8,
     justifyContent: "center",
+  },
+  chip: {
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    backgroundColor: "#f5f5f5",
   },
   chipText: {
     fontSize: 14,
