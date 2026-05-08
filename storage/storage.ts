@@ -8,6 +8,7 @@
 
 import * as SecureStore from "expo-secure-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Platform } from "react-native";
 
 const KEYS = {
   SESSION_TOKEN: "promptskill_session_token",
@@ -18,14 +19,25 @@ const KEYS = {
 // ── SecureStore — session token ──────────────────────────────────────
 
 export async function setToken(token: string): Promise<void> {
+  if (Platform.OS === "web") {
+    localStorage.setItem(KEYS.SESSION_TOKEN, token);
+    return;
+  }
   await SecureStore.setItemAsync(KEYS.SESSION_TOKEN, token);
 }
 
 export async function getToken(): Promise<string | null> {
+  if (Platform.OS === "web") {
+    return localStorage.getItem(KEYS.SESSION_TOKEN);
+  }
   return SecureStore.getItemAsync(KEYS.SESSION_TOKEN);
 }
 
 export async function clearToken(): Promise<void> {
+  if (Platform.OS === "web") {
+    localStorage.removeItem(KEYS.SESSION_TOKEN);
+    return;
+  }
   await SecureStore.deleteItemAsync(KEYS.SESSION_TOKEN);
 }
 
