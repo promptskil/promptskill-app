@@ -29,3 +29,6 @@ jobs:
 
       - name: Test
         run: npm test -- --watchAll=false
+
+      - name: Web export check
+        run: npx expo export --platform web
