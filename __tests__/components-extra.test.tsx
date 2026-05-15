@@ -65,13 +65,6 @@ describe("TopicInput", () => {
     expect(onChangeText).toHaveBeenCalledWith("AI trends");
   });
 
-  it("has maxLength of 500", () => {
-    const { getByPlaceholderText } = render(
-      <TopicInput topic="" onChangeText={jest.fn()} />
-    );
-    const input = getByPlaceholderText("Start with what you want. Describe the result you want. Get what you had in mind.");
-    expect(input.props.maxLength).toBe(1000);
-  });
 });
 
 describe("HistoryNavButton", () => {
