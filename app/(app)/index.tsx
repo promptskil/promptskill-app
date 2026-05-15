@@ -92,6 +92,7 @@ export default function Main() {
         topic: topic,
         prompt: data.prompt,
       }]);
+      setTopic("");
     } catch (err) {
       // User cancelled — swallow silently
       if (err instanceof Error && err.name === "AbortError") {
