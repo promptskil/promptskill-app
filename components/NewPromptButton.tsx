@@ -1,7 +1,8 @@
-// NewPromptButton (3.5) — Phase 12, Step 12.4
+// NewPromptButton (3.6) — Phase 12, Step 12.4
 // Clears ResultModule state, navigates to Main.
+// View wraps chip styles (reliable cross-platform shrink). Pressable handles tap only.
 
-import { Pressable, Text, StyleSheet } from "react-native";
+import { View, Pressable, Text, StyleSheet } from "react-native";
 
 interface NewPromptButtonProps {
   onPress: () => void;
@@ -9,20 +10,23 @@ interface NewPromptButtonProps {
 
 export default function NewPromptButton({ onPress }: NewPromptButtonProps) {
   return (
-    <Pressable style={styles.button} onPress={onPress}>
-      <Text style={styles.text}>New</Text>
-    </Pressable>
+    <View style={styles.chip}>
+      <Pressable onPress={onPress}>
+        <Text style={styles.text}>New</Text>
+      </Pressable>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  button: {
+  chip: {
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "#ccc",
     backgroundColor: "#fff",
+    alignSelf: "flex-start",
   },
   text: {
     fontSize: 14,
