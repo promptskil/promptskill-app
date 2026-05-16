@@ -110,6 +110,7 @@ export default function InlineResultItem({
         error={regenError || null}
         editing={editing}
         editedText={editedText}
+        model={model}
         onEditChange={setEditedText}
       />
 

@@ -1,9 +1,10 @@
-// PromptDisplay (4.0) — Phase 12, Step 12.4 + Launchpad edit mode
+// PromptDisplay (4.1) — Phase 12, Step 12.4 + Launchpad edit mode
 // Shows generating spinner, typewriter effect at 10ms/char, or error.
 // During typewriter animation: plain Text. On completion: Markdown renderer.
 // Tap prompt text → calls onEditRequest so parent can enter edit mode.
 // When editing=true, renders TextInput with editedText.
 // Parent owns edit state and cancel/regenerate actions.
+// Optional model prop → renders model chip in top-right of card.
 
 import { useState, useEffect, useRef } from "react";
 import {
@@ -15,6 +16,8 @@ import {
   Pressable,
 } from "react-native";
 import Markdown from "react-native-markdown-display";
+import { MODEL_LABELS } from "../constants/models";
+import type { Model } from "../types";
 
 interface PromptDisplayProps {
   prompt: string;
@@ -22,6 +25,7 @@ interface PromptDisplayProps {
   error: string | null;
   editing?: boolean;
   editedText?: string;
+  model?: Model;
   onEditRequest?: () => void;
   onEditChange?: (text: string) => void;
 }
@@ -32,6 +36,7 @@ export default function PromptDisplay({
   error,
   editing = false,
   editedText = "",
+  model,
   onEditRequest,
   onEditChange,
 }: PromptDisplayProps) {
@@ -91,6 +96,15 @@ export default function PromptDisplay({
   if (editing) {
     return (
       <View style={styles.container}>
+        {model && (
+          <View style={styles.modelRow}>
+            <View style={styles.modelChip}>
+              <Text style={styles.modelChipText}>
+                {MODEL_LABELS[model] ?? model}
+              </Text>
+            </View>
+          </View>
+        )}
         <TextInput
           ref={inputRef}
           style={[styles.plainText, styles.editInput]}
@@ -106,6 +120,15 @@ export default function PromptDisplay({
 
   return (
     <View style={styles.container}>
+      {model && (
+        <View style={styles.modelRow}>
+          <View style={styles.modelChip}>
+            <Text style={styles.modelChipText}>
+              {MODEL_LABELS[model] ?? model}
+            </Text>
+          </View>
+        </View>
+      )}
       <Pressable onPress={onEditRequest}>
         {displayedText === prompt && !animating ? (
           <Markdown style={markdownStyles}>{prompt}</Markdown>
@@ -129,6 +152,23 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f9fa",
     borderRadius: 8,
     padding: 16,
+  },
+  modelRow: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginBottom: 8,
+  },
+  modelChip: {
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    backgroundColor: "#fff",
+  },
+  modelChipText: {
+    fontSize: 12,
+    color: "#333",
   },
   plainText: {
     fontSize: 16,
