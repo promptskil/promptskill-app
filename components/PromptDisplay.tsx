@@ -162,8 +162,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 12,
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#ccc",
     backgroundColor: "#fff",
   },
   modelChipText: {
