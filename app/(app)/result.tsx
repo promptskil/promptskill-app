@@ -278,5 +278,6 @@ const styles = StyleSheet.create({
   actions: {
     gap: 16,
     marginTop: 24,
+    alignItems: 'center',
   },
 });
