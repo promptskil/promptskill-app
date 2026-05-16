@@ -1,9 +1,9 @@
-// PromptDisplay (3.1) — Phase 12, Step 12.4 + Launchpad edit mode
+// PromptDisplay (4.0) — Phase 12, Step 12.4 + Launchpad edit mode
 // Shows generating spinner, typewriter effect at 10ms/char, or error.
+// During typewriter animation: plain Text. On completion: Markdown renderer.
 // Tap prompt text → calls onEditRequest so parent can enter edit mode.
 // When editing=true, renders TextInput with editedText.
 // Parent owns edit state and cancel/regenerate actions.
-// Edit affordance lives in the action row — no inline hint here.
 
 import { useState, useEffect, useRef } from "react";
 import {
@@ -14,6 +14,7 @@ import {
   ActivityIndicator,
   Pressable,
 } from "react-native";
+import Markdown from "react-native-markdown-display";
 
 interface PromptDisplayProps {
   prompt: string;
@@ -92,7 +93,7 @@ export default function PromptDisplay({
       <View style={styles.container}>
         <TextInput
           ref={inputRef}
-          style={[styles.prompt, styles.editInput]}
+          style={[styles.plainText, styles.editInput]}
           value={editedText}
           onChangeText={onEditChange}
           multiline
@@ -106,10 +107,14 @@ export default function PromptDisplay({
   return (
     <View style={styles.container}>
       <Pressable onPress={onEditRequest}>
-        <Text style={styles.prompt} selectable>
-          {displayedText}
-          {animating ? "\u258C" : ""}
-        </Text>
+        {displayedText === prompt && !animating ? (
+          <Markdown style={markdownStyles}>{prompt}</Markdown>
+        ) : (
+          <Text style={styles.plainText} selectable>
+            {displayedText}
+            {animating ? "▌" : ""}
+          </Text>
+        )}
       </Pressable>
     </View>
   );
@@ -117,14 +122,18 @@ export default function PromptDisplay({
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    width: "100%",
+    maxWidth: 680,
+    alignSelf: "center",
+    paddingHorizontal: 16,
     backgroundColor: "#f8f9fa",
     borderRadius: 8,
+    padding: 16,
   },
-  prompt: {
+  plainText: {
     fontSize: 16,
-    lineHeight: 24,
-    color: "#333",
+    lineHeight: 26,
+    color: "#111",
   },
   editInput: {
     minHeight: 120,
@@ -152,3 +161,45 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
+
+const markdownStyles = {
+  body: {
+    fontSize: 16,
+    lineHeight: 26,
+    color: "#111",
+  },
+  heading1: {
+    fontWeight: "500" as const,
+    marginBottom: 8,
+    marginTop: 16,
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  heading2: {
+    fontWeight: "500" as const,
+    marginBottom: 8,
+    marginTop: 16,
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  paragraph: {
+    marginBottom: 16,
+  },
+  code_inline: {
+    fontFamily: "monospace",
+    backgroundColor: "#f5f5f5",
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    borderRadius: 4,
+    fontSize: 14,
+  },
+  bullet_list: {
+    paddingLeft: 20,
+    marginBottom: 16,
+  },
+  list_item: {
+    fontSize: 16,
+    lineHeight: 26,
+    color: "#111",
+  },
+};
