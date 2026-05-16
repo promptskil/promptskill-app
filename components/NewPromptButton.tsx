@@ -17,14 +17,16 @@ export default function NewPromptButton({ onPress }: NewPromptButtonProps) {
 
 const styles = StyleSheet.create({
   button: {
-    padding: 14,
-    borderRadius: 8,
-    backgroundColor: "#f5f5f5",
-    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    backgroundColor: "#fff",
+    alignSelf: "center",
   },
   text: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#333",
-    fontWeight: "600",
   },
 });
