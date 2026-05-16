@@ -144,6 +144,7 @@ export default function Result() {
         error={error || null}
         editing={editing}
         editedText={editedText}
+        model={selectedModel}
         onEditRequest={handleEditRequest}
         onEditChange={setEditedText}
       />
