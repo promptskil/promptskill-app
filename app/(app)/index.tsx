@@ -228,6 +228,9 @@ const styles = StyleSheet.create({
   },
   inputWrapper: {
     position: "relative",
+    width: "100%",
+    maxWidth: 680,
+    alignSelf: "center",
   },
   sendBtn: {
     position: "absolute",
