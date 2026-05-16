@@ -276,8 +276,6 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   actions: {
-    flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
     marginTop: 24,
   },
