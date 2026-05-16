@@ -276,8 +276,9 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   actions: {
-    gap: 16,
-    marginTop: 24,
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 24,
   },
 });
