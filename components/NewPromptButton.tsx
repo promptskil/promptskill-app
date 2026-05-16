@@ -12,7 +12,7 @@ export default function NewPromptButton({ onPress }: NewPromptButtonProps) {
   return (
     <View style={styles.chip}>
       <Pressable onPress={onPress}>
-        <Text style={styles.text}>New</Text>
+        <Text style={styles.text}>Home</Text>
       </Pressable>
     </View>
   );
@@ -24,12 +24,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#ccc",
-    backgroundColor: "#fff",
-    alignSelf: "flex-start",
+    borderColor: "#000",
+    backgroundColor: "#000",
+    alignSelf: "center",
   },
   text: {
     fontSize: 14,
-    color: "#333",
+    color: "#fff",
+    fontWeight: "600",
   },
 });
