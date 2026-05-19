@@ -71,7 +71,7 @@ export default function RootLayout() {
   // before router.replace() fires. index.tsx shows a loading
   // spinner as the initial route while session gate resolves.
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack screenOptions={{ headerShown: false, title: "Vaine" }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="(auth)" />
       <Stack.Screen name="(app)" />
