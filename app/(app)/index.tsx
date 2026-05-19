@@ -136,6 +136,11 @@ export default function Main() {
           <Text style={styles.title}>Vaine</Text>
           <View style={styles.headerRight}>
             <HistoryNavButton onPress={handleHistoryNav} />
+            {Platform.OS === "web" && (
+              <Pressable onPress={() => router.push("/(app)/business/")}>
+                <Ionicons name="business-outline" size={26} color="#333" />
+              </Pressable>
+            )}
             <Pressable onPress={handleProfileNav}>
               <Ionicons name="person-circle-outline" size={28} color="#333" />
             </Pressable>

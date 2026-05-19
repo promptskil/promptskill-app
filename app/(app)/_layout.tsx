@@ -23,6 +23,22 @@ export default function AppLayout() {
         name="profile"
         options={{ gestureEnabled: true }}
       />
+      <Stack.Screen
+        name="business/index"
+        options={{ gestureEnabled: true }}
+      />
+      <Stack.Screen
+        name="business/create"
+        options={{ gestureEnabled: true }}
+      />
+      <Stack.Screen
+        name="business/invite"
+        options={{ gestureEnabled: true }}
+      />
+      <Stack.Screen
+        name="business/history"
+        options={{ gestureEnabled: true }}
+      />
     </Stack>
   );
 }
