@@ -21,9 +21,9 @@ export default function RootLayout() {
         const token = await getToken();
         const onboarding = await getOnboardingComplete();
 
-        // State 1: Token absent + onboarding absent/false -> Account creation
+        // State 1: Token absent + onboarding absent/false -> Login
         if (!token && (onboarding === null || onboarding === false)) {
-          router.replace("/(auth)/");
+          router.replace("/(auth)/login");
           return;
         }
 
