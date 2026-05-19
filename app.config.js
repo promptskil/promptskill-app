@@ -32,7 +32,12 @@ module.exports = {
       },
     },
     web: {
-      favicon: "./assets/favicon.png",
+      favicon: "./assets/web-favicon.png",
+      bundler: "metro",
+      output: "static",
+      name: "Vaine",
+      shortName: "Vaine",
+      description: "Type what you mean. Vaine structures it.",
     },
     plugins: ["expo-router", "expo-secure-store"],
     experiments: {
