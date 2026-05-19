@@ -134,7 +134,7 @@ export default function BusinessHistory() {
         <Text style={styles.header}>Org History</Text>
       </View>
 
-      <Text style={styles.totalText}>{total} prompt{total !== 1 ? "s" : ""}</Text>
+      <Text style={styles.totalText}>{total} result{total !== 1 ? "s" : ""}</Text>
 
       {/* Empty state */}
       {items.length === 0 && !loading && (
