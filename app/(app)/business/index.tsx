@@ -64,6 +64,10 @@ export default function BusinessDashboard() {
         router.replace("/(app)/business/create");
         return;
       }
+      if (err instanceof ApiError && err.status === 429) {
+        setError("Too many requests. Please wait a moment and try again.");
+        return;
+      }
       setError("Failed to load organization.");
     } finally {
       setLoading(false);
