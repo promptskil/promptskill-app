@@ -11,7 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import EmailField from "../../components/EmailField";
 import LogoutButton from "../../components/LogoutButton";
 import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
-import { clearToken } from "../../storage/storage";
+import { clearToken, clearBusinessContext } from "../../storage/storage";
 
 // Guarded clipboard import — native module not guaranteed across build contexts.
 // Matches pattern established in CopyPromptButton.tsx.
@@ -71,7 +71,7 @@ export default function Profile() {
     }
   }
 
-  const SUPPORT_EMAIL = "support@cosight-ai.com";
+  const SUPPORT_EMAIL = "support@vaineai.com";
 
   function handleSupportEmailPress() {
     ActionSheetIOS.showActionSheetWithOptions(
@@ -100,6 +100,7 @@ export default function Profile() {
       // Proceed with local cleanup even if server call fails
     }
     await clearToken();
+    await clearBusinessContext();
     router.replace("/(auth)/login");
   }
 
