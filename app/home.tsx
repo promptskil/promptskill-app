@@ -137,7 +137,6 @@ const styles = StyleSheet.create({
     fontWeight: "400",
   },
   features: {
-    alignSelf: "stretch",
     maxWidth: 400,
     alignSelf: "center",
     marginBottom: 40,
