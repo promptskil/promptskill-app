@@ -139,7 +139,7 @@ export default function Home() {
                   <View style={styles.previewArrow}>
                     <Ionicons name="arrow-down-outline" size={16} color="#bbb" />
                   </View>
-                  <Text style={styles.previewLabel}>Generated prompt</Text>
+                  <Text style={styles.previewLabel}>Generated request</Text>
                   <View style={styles.previewOutput}>
                     <Text style={styles.previewOutputText}>
                       You are an expert B2B copywriter. Write a cold outreach
@@ -179,7 +179,7 @@ export default function Home() {
         <View style={[styles.inner, isWide && styles.featureRow]}>
           <View style={[styles.featureText, isWide && styles.featureHalf]}>
             <Text style={styles.featureHeadline}>
-              Generate prompts in seconds
+              Generate requests in seconds
             </Text>
             <Text style={styles.featureBody}>
               Describe what you need in plain language. Vaine structures it into
@@ -197,7 +197,7 @@ export default function Home() {
                 <View style={styles.featureCardArrow}>
                   <Ionicons name="arrow-down-outline" size={14} color="#bbb" />
                 </View>
-                <Text style={styles.featureCardLabel}>Prompt</Text>
+                <Text style={styles.featureCardLabel}>Request</Text>
                 <Text style={styles.featureCardText}>
                   You are a science communicator. Summarize the following
                   research paper for a general audience with no technical
@@ -218,7 +218,7 @@ export default function Home() {
             </Text>
             <Text style={styles.featureBody}>
               The Vaine Chrome extension lives inside ChatGPT, Claude, Gemini,
-              and Grok. Generate the right prompt directly where you work — no
+              and Grok. Generate the right request directly where you work — no
               tab switching, no interruption.
             </Text>
           </View>
@@ -253,24 +253,24 @@ export default function Home() {
           </Text>
           <Text style={[styles.featureBody, styles.featureBodyCentered]}>
             Personal accounts for solo users. Business accounts with org
-            management, member invites, and shared prompt history.
+            management, member invites, and shared request history.
           </Text>
         </View>
         <View style={[styles.userCards, isWide && styles.userCardsRow]}>
           {[
             {
               type: "Founder",
-              desc: "Move faster without losing quality. Generate the right prompt for every task — writing, research, strategy.",
+              desc: "Move faster without losing quality. Generate the right request for every task — writing, research, strategy.",
               icon: "rocket-outline" as const,
             },
             {
               type: "Researcher",
-              desc: "Structure complex questions into precise prompts. Get better outputs from every model, every time.",
+              desc: "Structure complex questions into precise requests. Get better outputs from every model, every time.",
               icon: "search-outline" as const,
             },
             {
               type: "Operator",
-              desc: "Standardize prompts across your team. Consistent inputs produce consistent results at scale.",
+              desc: "Standardize requests across your team. Consistent inputs produce consistent results at scale.",
               icon: "people-outline" as const,
             },
           ].map((card) => (
@@ -286,7 +286,7 @@ export default function Home() {
       {/* ── Login Section ── */}
       <View style={[styles.sectionOuter, styles.loginSection]}>
         <Text style={[styles.featureHeadline, styles.textCenter, styles.loginHeadline]}>
-          Start generating better prompts.
+          Start generating better requests.
         </Text>
         <View style={styles.form}>
           <EmailInput
