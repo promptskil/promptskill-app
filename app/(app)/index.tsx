@@ -22,7 +22,7 @@ import ModelInfoCard from "../../components/ModelInfoCard";
 import TopicInput from "../../components/TopicInput";
 import InlineResultItem from "../../components/InlineResultItem";
 import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
-import { getDefaultModel, setDefaultModel } from "../../storage/storage";
+import { getDefaultModel, setDefaultModel, getBusinessId } from "../../storage/storage";
 import type { Model } from "../../types";
 
 interface ResultItem {
@@ -44,11 +44,13 @@ export default function Main() {
 
   // Accumulated results — prompt display only
   const [results, setResults] = useState<ResultItem[]>([]);
+  const [businessId, setBusinessId] = useState<string | null>(null);
 
   useEffect(() => {
     getDefaultModel().then((model) => {
       setSelectedModel(model as Model);
     });
+    getBusinessId().then(setBusinessId);
   }, []);
 
   function handleHistoryNav() {
@@ -136,7 +138,7 @@ export default function Main() {
           <Text style={styles.title}>Vaine</Text>
           <View style={styles.headerRight}>
             <HistoryNavButton onPress={handleHistoryNav} />
-            {Platform.OS === "web" && (
+            {Platform.OS === "web" && !!businessId && (
               <Pressable onPress={() => router.push("/(app)/business/")}>
                 <Ionicons name="business-outline" size={26} color="#333" />
               </Pressable>

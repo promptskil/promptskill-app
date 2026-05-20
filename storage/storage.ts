@@ -14,6 +14,8 @@ const KEYS = {
   SESSION_TOKEN: "promptskill_session_token",
   DEFAULT_MODEL: "promptskill_default_model",
   ONBOARDING_COMPLETE: "promptskill_onboarding_complete",
+  BUSINESS_ID: "promptskill_business_id",
+  ROLE: "promptskill_role",
 } as const;
 
 // ── SecureStore — session token ──────────────────────────────────────
@@ -69,10 +71,42 @@ export async function clearOnboardingComplete(): Promise<void> {
   await AsyncStorage.removeItem(KEYS.ONBOARDING_COMPLETE);
 }
 
+// ── AsyncStorage — business context ─────────────────────────────────
+
+export async function setBusinessContext(
+  businessId: string | null,
+  role: string | null
+): Promise<void> {
+  if (businessId) {
+    await AsyncStorage.setItem(KEYS.BUSINESS_ID, businessId);
+  } else {
+    await AsyncStorage.removeItem(KEYS.BUSINESS_ID);
+  }
+  if (role) {
+    await AsyncStorage.setItem(KEYS.ROLE, role);
+  } else {
+    await AsyncStorage.removeItem(KEYS.ROLE);
+  }
+}
+
+export async function getBusinessId(): Promise<string | null> {
+  return AsyncStorage.getItem(KEYS.BUSINESS_ID);
+}
+
+export async function getRole(): Promise<string | null> {
+  return AsyncStorage.getItem(KEYS.ROLE);
+}
+
+export async function clearBusinessContext(): Promise<void> {
+  await AsyncStorage.removeItem(KEYS.BUSINESS_ID);
+  await AsyncStorage.removeItem(KEYS.ROLE);
+}
+
 // ── Full wipe — account deletion ─────────────────────────────────────
 
 export async function clearAll(): Promise<void> {
   await clearToken();
   await AsyncStorage.removeItem(KEYS.DEFAULT_MODEL);
   await clearOnboardingComplete();
+  await clearBusinessContext();
 }
