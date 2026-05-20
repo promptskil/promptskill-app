@@ -15,7 +15,7 @@ import { useRouter } from "expo-router";
 import EmailInput from "../../components/EmailInput";
 import PasswordInput from "../../components/PasswordInput";
 import { apiCall, ApiError } from "../../services/api";
-import { setToken } from "../../storage/storage";
+import { setToken, setBusinessContext } from "../../storage/storage";
 
 export default function Login() {
   const router = useRouter();
@@ -30,11 +30,16 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-      const data = await apiCall<{ token: string }>("POST", "/auth/login", {
+      const data = await apiCall<{
+        token: string;
+        business_id: string | null;
+        role: string | null;
+      }>("POST", "/auth/login", {
         email,
         password,
       });
       await setToken(data.token);
+      await setBusinessContext(data.business_id, data.role);
       router.replace("/(app)/");
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
