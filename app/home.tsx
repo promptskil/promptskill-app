@@ -2,6 +2,7 @@
 // Public landing page — shown to unauthenticated web users.
 // Cursor-inspired, light theme. Announcement bar + nav + two-column hero +
 // AI strip + alternating features + login form + footer.
+// Contact modal: "Contact sales" (nav) + "Request a demo" (CTA) → same modal.
 // Back gesture: N/A (web only, root route)
 
 import { useState } from "react";
@@ -13,6 +14,8 @@ import {
   ActivityIndicator,
   ScrollView,
   useWindowDimensions,
+  TextInput,
+  Modal,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -32,6 +35,32 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   const canSubmit = email.length > 0 && password.length > 0 && !loading;
+
+  // Contact modal state
+  const [contactVisible, setContactVisible] = useState(false);
+  const [workEmail, setWorkEmail] = useState("");
+  const [helpTopic, setHelpTopic] = useState<"support" | "partnership" | "">("");
+  const [contactStep, setContactStep] = useState<"form" | "result">("form");
+
+  function openContact() {
+    setWorkEmail("");
+    setHelpTopic("");
+    setContactStep("form");
+    setContactVisible(true);
+  }
+
+  function handleContactContinue() {
+    if (!workEmail || !helpTopic) return;
+    setContactStep("result");
+  }
+
+  function closeContact() {
+    setContactVisible(false);
+    setContactStep("form");
+  }
+
+  const contactEmail =
+    helpTopic === "support" ? "support@vaineai.com" : "partnership@vaineai.com";
 
   async function handleLogin() {
     setError("");
@@ -82,12 +111,17 @@ export default function Home() {
               <Text style={styles.navLink}>Teams</Text>
             </View>
           )}
-          <Pressable
-            style={styles.navSignIn}
-            onPress={() => router.push("/(auth)/login")}
-          >
-            <Text style={styles.navSignInText}>Sign in</Text>
-          </Pressable>
+          <View style={styles.navRight}>
+            <Pressable onPress={openContact}>
+              <Text style={styles.navContactSales}>Contact sales</Text>
+            </Pressable>
+            <Pressable
+              style={styles.navSignIn}
+              onPress={() => router.push("/(auth)/login")}
+            >
+              <Text style={styles.navSignInText}>Sign in</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
 
@@ -113,8 +147,8 @@ export default function Home() {
               >
                 <Text style={styles.ctaPrimaryText}>Get Started →</Text>
               </Pressable>
-              <Pressable style={styles.ctaSecondary}>
-                <Text style={styles.ctaSecondaryText}>Download Extension →</Text>
+              <Pressable style={styles.ctaSecondary} onPress={openContact}>
+                <Text style={styles.ctaSecondaryText}>Request a demo →</Text>
               </Pressable>
             </View>
           </View>
@@ -139,7 +173,7 @@ export default function Home() {
                   <View style={styles.previewArrow}>
                     <Ionicons name="arrow-down-outline" size={16} color="#bbb" />
                   </View>
-                  <Text style={styles.previewLabel}>Generated prompt</Text>
+                  <Text style={styles.previewLabel}>Generated request</Text>
                   <View style={styles.previewOutput}>
                     <Text style={styles.previewOutputText}>
                       You are an expert B2B copywriter. Write a cold outreach
@@ -179,7 +213,7 @@ export default function Home() {
         <View style={[styles.inner, isWide && styles.featureRow]}>
           <View style={[styles.featureText, isWide && styles.featureHalf]}>
             <Text style={styles.featureHeadline}>
-              Generate prompts in seconds
+              Generate requests in seconds
             </Text>
             <Text style={styles.featureBody}>
               Describe what you need in plain language. Vaine structures it into
@@ -197,7 +231,7 @@ export default function Home() {
                 <View style={styles.featureCardArrow}>
                   <Ionicons name="arrow-down-outline" size={14} color="#bbb" />
                 </View>
-                <Text style={styles.featureCardLabel}>Prompt</Text>
+                <Text style={styles.featureCardLabel}>Request</Text>
                 <Text style={styles.featureCardText}>
                   You are a science communicator. Summarize the following
                   research paper for a general audience with no technical
@@ -218,7 +252,7 @@ export default function Home() {
             </Text>
             <Text style={styles.featureBody}>
               The Vaine Chrome extension lives inside ChatGPT, Claude, Gemini,
-              and Grok. Generate the right prompt directly where you work — no
+              and Grok. Generate the right request directly where you work — no
               tab switching, no interruption.
             </Text>
           </View>
@@ -253,24 +287,24 @@ export default function Home() {
           </Text>
           <Text style={[styles.featureBody, styles.featureBodyCentered]}>
             Personal accounts for solo users. Business accounts with org
-            management, member invites, and shared prompt history.
+            management, member invites, and shared request history.
           </Text>
         </View>
         <View style={[styles.userCards, isWide && styles.userCardsRow]}>
           {[
             {
               type: "Founder",
-              desc: "Move faster without losing quality. Generate the right prompt for every task — writing, research, strategy.",
+              desc: "Move faster without losing quality. Generate the right request for every task — writing, research, strategy.",
               icon: "rocket-outline" as const,
             },
             {
               type: "Researcher",
-              desc: "Structure complex questions into precise prompts. Get better outputs from every model, every time.",
+              desc: "Structure complex questions into precise requests. Get better outputs from every model, every time.",
               icon: "search-outline" as const,
             },
             {
               type: "Operator",
-              desc: "Standardize prompts across your team. Consistent inputs produce consistent results at scale.",
+              desc: "Standardize requests across your team. Consistent inputs produce consistent results at scale.",
               icon: "people-outline" as const,
             },
           ].map((card) => (
@@ -286,7 +320,7 @@ export default function Home() {
       {/* ── Login Section ── */}
       <View style={[styles.sectionOuter, styles.loginSection]}>
         <Text style={[styles.featureHeadline, styles.textCenter, styles.loginHeadline]}>
-          Start generating better prompts.
+          Start generating better requests.
         </Text>
         <View style={styles.form}>
           <EmailInput
@@ -322,6 +356,94 @@ export default function Home() {
           </Pressable>
         </View>
       </View>
+
+      {/* ── Contact Modal ── */}
+      <Modal
+        visible={contactVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={closeContact}
+      >
+        <Pressable style={styles.modalOverlay} onPress={closeContact}>
+          <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation()}>
+            {/* Close */}
+            <Pressable style={styles.modalClose} onPress={closeContact}>
+              <Ionicons name="close" size={20} color="#999" />
+            </Pressable>
+
+            {contactStep === "form" ? (
+              <>
+                <Text style={styles.modalTitle}>Contact our sales team</Text>
+
+                <Text style={styles.modalLabel}>Work email *</Text>
+                <TextInput
+                  style={styles.modalInput}
+                  value={workEmail}
+                  onChangeText={setWorkEmail}
+                  placeholder="you@company.com"
+                  placeholderTextColor="#bbb"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+
+                <Text style={styles.modalLabel}>What can we help you with? *</Text>
+                <View style={styles.modalSelector}>
+                  <Pressable
+                    style={[
+                      styles.modalOption,
+                      helpTopic === "support" && styles.modalOptionSelected,
+                    ]}
+                    onPress={() => setHelpTopic("support")}
+                  >
+                    <Text
+                      style={[
+                        styles.modalOptionText,
+                        helpTopic === "support" && styles.modalOptionTextSelected,
+                      ]}
+                    >
+                      Support
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={[
+                      styles.modalOption,
+                      styles.modalOptionBorderTop,
+                      helpTopic === "partnership" && styles.modalOptionSelected,
+                    ]}
+                    onPress={() => setHelpTopic("partnership")}
+                  >
+                    <Text
+                      style={[
+                        styles.modalOptionText,
+                        helpTopic === "partnership" && styles.modalOptionTextSelected,
+                      ]}
+                    >
+                      Partnership
+                    </Text>
+                  </Pressable>
+                </View>
+
+                <Pressable
+                  style={[
+                    styles.modalContinue,
+                    (!workEmail || !helpTopic) && styles.modalContinueDisabled,
+                  ]}
+                  onPress={handleContactContinue}
+                  disabled={!workEmail || !helpTopic}
+                >
+                  <Text style={styles.modalContinueText}>Continue</Text>
+                </Pressable>
+              </>
+            ) : (
+              <>
+                <Text style={styles.modalTitle}>Contact our sales team</Text>
+                <Text style={styles.modalResultLabel}>Reach us at</Text>
+                <Text style={styles.modalResultEmail}>{contactEmail}</Text>
+              </>
+            )}
+          </Pressable>
+        </Pressable>
+      </Modal>
 
       {/* ── Footer ── */}
       <View style={styles.footer}>
@@ -360,6 +482,16 @@ const styles = StyleSheet.create({
   },
 
   // ── Nav ──
+  navRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 20,
+  },
+  navContactSales: {
+    fontSize: 14,
+    color: "#555",
+    fontWeight: "500",
+  },
   navOuter: {
     borderBottomWidth: 1,
     borderBottomColor: "#f0f0f0",
@@ -776,6 +908,107 @@ const styles = StyleSheet.create({
   authDivider: {
     fontSize: 14,
     color: "#ccc",
+  },
+
+  // ── Contact Modal ──
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+  },
+  modalCard: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 32,
+    width: "100%",
+    maxWidth: 440,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 16 },
+    shadowOpacity: 0.12,
+    shadowRadius: 40,
+  },
+  modalClose: {
+    position: "absolute",
+    top: 16,
+    right: 16,
+    padding: 4,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#000",
+    letterSpacing: -0.5,
+    marginBottom: 24,
+  },
+  modalLabel: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 8,
+  },
+  modalInput: {
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    fontSize: 15,
+    color: "#111",
+    marginBottom: 20,
+  },
+  modalSelector: {
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    borderRadius: 8,
+    overflow: "hidden",
+    marginBottom: 24,
+  },
+  modalOption: {
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    backgroundColor: "#fff",
+  },
+  modalOptionBorderTop: {
+    borderTopWidth: 1,
+    borderTopColor: "#e5e7eb",
+  },
+  modalOptionSelected: {
+    backgroundColor: "#f3f4f6",
+  },
+  modalOptionText: {
+    fontSize: 15,
+    color: "#444",
+  },
+  modalOptionTextSelected: {
+    color: "#000",
+    fontWeight: "600",
+  },
+  modalContinue: {
+    backgroundColor: "#000",
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: "center",
+  },
+  modalContinueDisabled: {
+    backgroundColor: "#ccc",
+  },
+  modalContinueText: {
+    fontSize: 15,
+    color: "#fff",
+    fontWeight: "600",
+  },
+  modalResultLabel: {
+    fontSize: 15,
+    color: "#666",
+    marginBottom: 8,
+  },
+  modalResultEmail: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#000",
+    letterSpacing: -0.3,
   },
 
   // ── Footer ──
