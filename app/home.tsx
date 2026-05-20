@@ -131,7 +131,7 @@ export default function Home() {
       </View>
 
       {/* ── Hero ── */}
-      <View style={styles.sectionOuter}>
+      <View style={[styles.sectionOuter, styles.heroSection]}>
         <View style={[styles.inner, isWide && styles.heroRow]}>
           {/* Left */}
           <View style={[styles.heroLeft, isWide && styles.heroLeftWide]}>
@@ -487,7 +487,7 @@ const styles = StyleSheet.create({
   navContactSales: {
     fontSize: 14,
     color: "#555",
-    fontWeight: "500",
+    fontWeight: "400",
   },
   navOuter: {
     borderBottomWidth: 1,
@@ -534,7 +534,10 @@ const styles = StyleSheet.create({
   // ── Section wrappers ──
   sectionOuter: {
     paddingHorizontal: 32,
-    paddingVertical: 96,
+    paddingVertical: 120,
+  },
+  heroSection: {
+    paddingVertical: 160,
   },
   sectionAlt: {
     backgroundColor: "#fafafa",
@@ -563,7 +566,7 @@ const styles = StyleSheet.create({
     color: "#000",
     letterSpacing: -1.5,
     lineHeight: 58,
-    marginBottom: 24,
+    marginBottom: 40,
   },
   heroHeadlineWide: {
     fontSize: 64,
@@ -573,37 +576,35 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: "#555",
     lineHeight: 30,
-    marginBottom: 36,
+    marginBottom: 52,
     fontWeight: "400",
+    maxWidth: 560,
   },
   heroCtas: {
     flexDirection: "row",
-    gap: 12,
+    gap: 16,
     flexWrap: "wrap",
   },
   ctaPrimary: {
     backgroundColor: "#000",
-    paddingVertical: 14,
-    paddingHorizontal: 24,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
     borderRadius: 8,
   },
   ctaPrimaryText: {
     color: "#fff",
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "600",
   },
   ctaSecondary: {
-    borderWidth: 1,
-    borderColor: "#333",
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 8,
     backgroundColor: "transparent",
   },
   ctaSecondaryText: {
-    color: "#333",
+    color: "#666",
     fontSize: 15,
-    fontWeight: "500",
+    fontWeight: "400",
   },
   heroRight: {
     flex: 1,
@@ -646,9 +647,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   previewLabel: {
-    fontSize: 11,
-    color: "#aaa",
-    fontWeight: "600",
+    fontSize: 10,
+    color: "#bbb",
+    fontWeight: "400",
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 4,
@@ -693,8 +694,8 @@ const styles = StyleSheet.create({
   },
   modelPillText: {
     fontSize: 12,
-    color: "#555",
-    fontWeight: "500",
+    color: "#aaa",
+    fontWeight: "400",
   },
 
   // ── AI Strip ──
@@ -702,7 +703,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: "#f0f0f0",
-    paddingVertical: 40,
+    paddingVertical: 56,
     alignItems: "center",
     gap: 14,
   },
@@ -723,7 +724,7 @@ const styles = StyleSheet.create({
   aiPillText: {
     fontSize: 15,
     color: "#333",
-    fontWeight: "500",
+    fontWeight: "400",
   },
   aiCaption: {
     fontSize: 13,
@@ -759,8 +760,9 @@ const styles = StyleSheet.create({
   featureBody: {
     fontSize: 17,
     color: "#666",
-    lineHeight: 30,
+    lineHeight: 32,
     fontWeight: "400",
+    maxWidth: 560,
   },
   featureBodyCentered: {
     textAlign: "center",
@@ -779,17 +781,17 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "#e5e7eb",
-    padding: 20,
+    padding: 24,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 12,
-    gap: 10,
+    gap: 14,
   },
   featureCardLabel: {
-    fontSize: 11,
-    color: "#aaa",
-    fontWeight: "600",
+    fontSize: 10,
+    color: "#bbb",
+    fontWeight: "400",
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
@@ -842,12 +844,12 @@ const styles = StyleSheet.create({
     borderColor: "#e5e7eb",
     borderRadius: 12,
     padding: 24,
-    gap: 10,
+    gap: 14,
     backgroundColor: "#fff",
   },
   userCardType: {
     fontSize: 17,
-    fontWeight: "600",
+    fontWeight: "500",
     color: "#000",
   },
   userCardDesc: {
@@ -1031,7 +1033,7 @@ const styles = StyleSheet.create({
   },
   footerColTitle: {
     fontSize: 13,
-    fontWeight: "700",
+    fontWeight: "600",
     color: "#000",
     marginBottom: 4,
   },
