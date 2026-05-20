@@ -8,6 +8,7 @@
 // correct screen on app launch. 6 states mapped below.
 
 import { useEffect } from "react";
+import { Platform } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { getToken, getOnboardingComplete, clearToken } from "../storage/storage";
 import { apiCall, SessionExpiredError } from "../services/api";
@@ -21,15 +22,15 @@ export default function RootLayout() {
         const token = await getToken();
         const onboarding = await getOnboardingComplete();
 
-        // State 1: Token absent + onboarding absent/false -> Login
+        // State 1: Token absent + onboarding absent/false -> Home (web) / Login (iOS)
         if (!token && (onboarding === null || onboarding === false)) {
-          router.replace("/(auth)/login");
+          router.replace(Platform.OS === "web" ? "/home" : "/(auth)/login");
           return;
         }
 
-        // State 2: Token absent + onboarding true -> Login
+        // State 2: Token absent + onboarding true -> Home (web) / Login (iOS)
         if (!token && onboarding === true) {
-          router.replace("/(auth)/login");
+          router.replace(Platform.OS === "web" ? "/home" : "/(auth)/login");
           return;
         }
 
@@ -73,6 +74,7 @@ export default function RootLayout() {
   return (
     <Stack screenOptions={{ headerShown: false, title: "Vaine" }}>
       <Stack.Screen name="index" />
+      <Stack.Screen name="home" />
       <Stack.Screen name="(auth)" />
       <Stack.Screen name="(app)" />
       <Stack.Screen name="onboarding" />
