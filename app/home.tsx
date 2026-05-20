@@ -16,6 +16,7 @@ import {
   useWindowDimensions,
   TextInput,
   Modal,
+  Image,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -317,46 +318,6 @@ export default function Home() {
         </View>
       </View>
 
-      {/* ── Login Section ── */}
-      <View style={[styles.sectionOuter, styles.loginSection]}>
-        <Text style={[styles.featureHeadline, styles.textCenter, styles.loginHeadline]}>
-          Start generating better requests.
-        </Text>
-        <View style={styles.form}>
-          <EmailInput
-            value={email}
-            onChangeText={setEmail}
-            editable={!loading}
-          />
-          <PasswordInput
-            value={password}
-            onChangeText={setPassword}
-            editable={!loading}
-          />
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
-          <Pressable
-            style={[styles.button, !canSubmit && styles.buttonDisabled]}
-            onPress={handleLogin}
-            disabled={!canSubmit}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.buttonText}>Log in</Text>
-            )}
-          </Pressable>
-        </View>
-        <View style={styles.authLinks}>
-          <Pressable onPress={() => router.push("/(auth)/forgot-password")}>
-            <Text style={styles.authLink}>Forgot password?</Text>
-          </Pressable>
-          <Text style={styles.authDivider}>·</Text>
-          <Pressable onPress={() => router.push("/(auth)/")}>
-            <Text style={styles.authLink}>Create an account</Text>
-          </Pressable>
-        </View>
-      </View>
-
       {/* ── Contact Modal ── */}
       <Modal
         visible={contactVisible}
@@ -446,12 +407,50 @@ export default function Home() {
       </Modal>
 
       {/* ── Footer ── */}
-      <View style={styles.footer}>
-        <Text style={styles.footerCopy}>© 2026 Vaine</Text>
-        <Text style={styles.footerDot}>·</Text>
-        <Text style={styles.footerLink}>Privacy Policy</Text>
-        <Text style={styles.footerDot}>·</Text>
-        <Text style={styles.footerLink}>Terms</Text>
+      <View style={styles.footerOuter}>
+        <View style={[styles.footerTop, isWide && styles.footerTopWide]}>
+          {/* Logo */}
+          <Image
+            source={require("../assets/web-favicon.png")}
+            style={styles.footerLogo}
+            resizeMode="contain"
+          />
+          {/* Columns */}
+          <View style={[styles.footerCols, isWide && styles.footerColsRow]}>
+            {/* Product */}
+            <View style={styles.footerCol}>
+              <Text style={styles.footerColTitle}>Product</Text>
+              <Text style={styles.footerColLink}>iOS App</Text>
+              <Text style={styles.footerColLink}>Enterprise</Text>
+              <Text style={styles.footerColLink}>Individual</Text>
+            </View>
+            {/* Company */}
+            <View style={styles.footerCol}>
+              <Text style={styles.footerColTitle}>Company</Text>
+              <Text style={styles.footerColLink}>About</Text>
+              <Text style={styles.footerColLink}>Careers</Text>
+              <Text style={styles.footerColLink}>Blog</Text>
+            </View>
+            {/* Legal */}
+            <View style={styles.footerCol}>
+              <Text style={styles.footerColTitle}>Legal</Text>
+              <Text style={styles.footerColLink}>Terms of Service</Text>
+              <Text style={styles.footerColLink}>Privacy Policy</Text>
+              <Text style={styles.footerColLink}>Data Use</Text>
+              <Text style={styles.footerColLink}>Security</Text>
+            </View>
+            {/* Connect */}
+            <View style={styles.footerCol}>
+              <Text style={styles.footerColTitle}>Connect</Text>
+              <Text style={styles.footerColLink}>X ↗</Text>
+              <Text style={styles.footerColLink}>LinkedIn ↗</Text>
+            </View>
+          </View>
+        </View>
+        {/* Bottom bar */}
+        <View style={styles.footerBottom}>
+          <Text style={styles.footerBottomText}>© 2026 Vaine, INC.</Text>
+        </View>
       </View>
     </ScrollView>
   );
@@ -1012,24 +1011,52 @@ const styles = StyleSheet.create({
   },
 
   // ── Footer ──
-  footer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 32,
+  footerOuter: {
     borderTopWidth: 1,
     borderTopColor: "#f0f0f0",
-    gap: 10,
   },
-  footerCopy: {
+  footerTop: {
+    paddingHorizontal: 32,
+    paddingVertical: 64,
+    gap: 48,
+  },
+  footerTopWide: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+  },
+  footerLogo: {
+    width: 36,
+    height: 36,
+  },
+  footerCols: {
+    gap: 40,
+  },
+  footerColsRow: {
+    flexDirection: "row",
+    flex: 1,
+    gap: 48,
+  },
+  footerCol: {
+    gap: 12,
+  },
+  footerColTitle: {
     fontSize: 13,
-    color: "#aaa",
+    fontWeight: "700",
+    color: "#000",
+    marginBottom: 4,
   },
-  footerDot: {
+  footerColLink: {
     fontSize: 13,
-    color: "#ddd",
+    color: "#666",
+    lineHeight: 22,
   },
-  footerLink: {
+  footerBottom: {
+    borderTopWidth: 1,
+    borderTopColor: "#f0f0f0",
+    paddingHorizontal: 32,
+    paddingVertical: 24,
+  },
+  footerBottomText: {
     fontSize: 13,
     color: "#aaa",
   },
