@@ -187,13 +187,6 @@ export default function Home() {
                       productivity for new hires...
                     </Text>
                   </View>
-                  <View style={styles.previewModels}>
-                    {["Claude", "ChatGPT", "Gemini", "Grok"].map((m) => (
-                      <View key={m} style={styles.modelPill}>
-                        <Text style={styles.modelPillText}>{m}</Text>
-                      </View>
-                    ))}
-                  </View>
                 </View>
               </View>
             </View>
@@ -506,8 +499,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   navLogo: {
-    width: 110,
-    height: 26,
+    width: 140,
+    height: 34,
   },
   navLinks: {
     flexDirection: "row",
@@ -516,7 +509,7 @@ const styles = StyleSheet.create({
   navLink: {
     fontSize: 15,
     color: "#555",
-    fontWeight: "400",
+    fontWeight: "300",
   },
   navSignIn: {
     borderWidth: 1,
@@ -528,16 +521,16 @@ const styles = StyleSheet.create({
   navSignInText: {
     fontSize: 14,
     color: "#333",
-    fontWeight: "500",
+    fontWeight: "400",
   },
 
   // ── Section wrappers ──
   sectionOuter: {
     paddingHorizontal: 32,
-    paddingVertical: 120,
+    paddingVertical: 160,
   },
   heroSection: {
-    paddingVertical: 160,
+    paddingVertical: 200,
   },
   sectionAlt: {
     backgroundColor: "#fafafa",
@@ -566,7 +559,7 @@ const styles = StyleSheet.create({
     color: "#000",
     letterSpacing: -1.5,
     lineHeight: 58,
-    marginBottom: 40,
+    marginBottom: 64,
   },
   heroHeadlineWide: {
     fontSize: 64,
@@ -576,13 +569,13 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: "#555",
     lineHeight: 30,
-    marginBottom: 52,
-    fontWeight: "400",
+    marginBottom: 72,
+    fontWeight: "300",
     maxWidth: 560,
   },
   heroCtas: {
     flexDirection: "row",
-    gap: 16,
+    gap: 20,
     flexWrap: "wrap",
   },
   ctaPrimary: {
@@ -703,7 +696,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: "#f0f0f0",
-    paddingVertical: 56,
+    paddingVertical: 80,
     alignItems: "center",
     gap: 14,
   },
@@ -729,7 +722,7 @@ const styles = StyleSheet.create({
   aiCaption: {
     fontSize: 13,
     color: "#aaa",
-    fontWeight: "400",
+    fontWeight: "300",
   },
 
   // ── Feature sections ──
@@ -761,7 +754,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: "#666",
     lineHeight: 32,
-    fontWeight: "400",
+    fontWeight: "300",
     maxWidth: 560,
   },
   featureBodyCentered: {
@@ -856,6 +849,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#666",
     lineHeight: 24,
+    fontWeight: "300",
   },
 
   // ── Login Section ──
