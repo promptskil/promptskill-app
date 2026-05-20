@@ -104,7 +104,11 @@ export default function Home() {
       {/* ── Nav ── */}
       <View style={styles.navOuter}>
         <View style={[styles.nav, isWide && styles.navConstrained]}>
-          <Text style={styles.navWordmark}>Vaine</Text>
+          <Image
+            source={require("../assets/logo.png")}
+            style={styles.navLogo}
+            resizeMode="contain"
+          />
           {isWide && (
             <View style={styles.navLinks}>
               <Text style={styles.navLink}>Features</Text>
@@ -408,13 +412,7 @@ export default function Home() {
 
       {/* ── Footer ── */}
       <View style={styles.footerOuter}>
-        <View style={[styles.footerTop, isWide && styles.footerTopWide]}>
-          {/* Logo */}
-          <Image
-            source={require("../assets/web-favicon.png")}
-            style={styles.footerLogo}
-            resizeMode="contain"
-          />
+        <View style={styles.footerTop}>
           {/* Columns */}
           <View style={[styles.footerCols, isWide && styles.footerColsRow]}>
             {/* Product */}
@@ -507,11 +505,9 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: "100%",
   },
-  navWordmark: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#000",
-    letterSpacing: -0.5,
+  navLogo: {
+    width: 110,
+    height: 26,
   },
   navLinks: {
     flexDirection: "row",
@@ -1018,23 +1014,17 @@ const styles = StyleSheet.create({
   footerTop: {
     paddingHorizontal: 32,
     paddingVertical: 64,
-    gap: 48,
-  },
-  footerTopWide: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-  },
-  footerLogo: {
-    width: 36,
-    height: 36,
+    alignItems: "center",
   },
   footerCols: {
     gap: 40,
+    width: "100%",
+    maxWidth: 1100,
   },
   footerColsRow: {
     flexDirection: "row",
-    flex: 1,
-    gap: 48,
+    justifyContent: "center",
+    gap: 64,
   },
   footerCol: {
     gap: 12,
