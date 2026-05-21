@@ -24,6 +24,7 @@ export default function TopicInput({
       value={topic}
       onChangeText={onChangeText}
       placeholder="If you define the problem correctly, you have the solution."
+      placeholderTextColor="#999"
       multiline
       editable={editable}
       textAlignVertical="top"
