@@ -141,9 +141,7 @@ export default function Home() {
               Stay in flow{"\n"}with AI.
             </Text>
             <Text style={styles.heroSub}>
-              Less back and forth. Less rewriting. More getting work done. Use
-              ChatGPT, Claude, Gemini, and Grok together in one place so AI
-              feels faster, clearer, and easier to work with.
+              Less back and forth. Less rewriting. More getting work done.{"\n"}You already know what you want. Vaine helps AI understand you.
             </Text>
             <View style={styles.heroCtas}>
               <Pressable
