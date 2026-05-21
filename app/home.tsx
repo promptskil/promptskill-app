@@ -210,10 +210,10 @@ export default function Home() {
       </View>
 
       {/* ── Home Image ── */}
-      <View style={styles.homeImageWrap}>
+      <View style={[styles.homeImageWrap, isWide && styles.homeImageWrapWide]}>
         <Image
           source={require("../assets/home.png")}
-          style={styles.homeImage}
+          style={[styles.homeImage, isWide && styles.homeImageWide]}
           resizeMode="contain"
         />
       </View>
@@ -791,14 +791,20 @@ const styles = StyleSheet.create({
   // ── Home Image ──
   homeImageWrap: {
     alignItems: "center",
-    paddingVertical: 80,
+    paddingVertical: 60,
     paddingHorizontal: 32,
+  },
+  homeImageWrapWide: {
+    paddingVertical: 80,
   },
   homeImage: {
     width: "100%",
-    maxWidth: 500,
+    maxWidth: 300,
     aspectRatio: 556 / 633,
     alignSelf: "center",
+  },
+  homeImageWide: {
+    maxWidth: 460,
   },
 
   // ── Feature sections ──
