@@ -856,14 +856,14 @@ const styles = StyleSheet.create({
   },
   userCardType: {
     fontSize: 17,
-    fontWeight: "500",
+    fontWeight: "600",
     color: "#000",
   },
   userCardDesc: {
     fontSize: 15,
-    color: "#666",
+    color: "#111",
     lineHeight: 24,
-    fontWeight: "300",
+    fontWeight: "400",
   },
   userCardTags: {
     flexDirection: "row",
@@ -871,15 +871,15 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   userCardTag: {
-    backgroundColor: "#f3f4f6",
+    backgroundColor: "#fef9f0",
     borderRadius: 20,
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
   userCardTagText: {
     fontSize: 12,
-    color: "#888",
-    fontWeight: "300",
+    color: "#92400e",
+    fontWeight: "400",
   },
 
   // ── Login Section ──
