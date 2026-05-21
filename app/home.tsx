@@ -173,36 +173,24 @@ export default function Home() {
             </View>
           </View>
 
-          {/* Right — product preview */}
+          {/* Right — screenshots */}
           {isWide && (
             <View style={styles.heroRight}>
-              <View style={styles.productCard}>
-                <View style={styles.productCardHeader}>
-                  <View style={[styles.dot, { backgroundColor: "#f87171" }]} />
-                  <View style={[styles.dot, { backgroundColor: "#fbbf24" }]} />
-                  <View style={[styles.dot, { backgroundColor: "#34d399" }]} />
-                  <Text style={styles.productCardTitle}>Vaine</Text>
-                </View>
-                <View style={styles.productCardBody}>
-                  <Text style={styles.previewLabel}>Your idea</Text>
-                  <View style={styles.previewInput}>
-                    <Text style={styles.previewInputText}>
-                      Write a cold email for a SaaS product targeting HR teams
-                    </Text>
+              <View style={styles.screenshotGrid}>
+                {[
+                  require("../assets/claude2.png"),
+                  require("../assets/realexample.png"),
+                  require("../assets/chatgpt1.png"),
+                  require("../assets/claude1.png"),
+                ].map((src, i) => (
+                  <View key={i} style={styles.screenshotCard}>
+                    <Image
+                      source={src}
+                      style={styles.screenshotImage}
+                      resizeMode="cover"
+                    />
                   </View>
-                  <View style={styles.previewArrow}>
-                    <Ionicons name="arrow-down-outline" size={16} color="#bbb" />
-                  </View>
-                  <Text style={styles.previewLabel}>Generated request</Text>
-                  <View style={styles.previewOutput}>
-                    <Text style={styles.previewOutputText}>
-                      You are an expert B2B copywriter. Write a cold outreach
-                      email for HR directors at mid-sized companies. The product
-                      automates employee onboarding workflows and reduces time to
-                      productivity for new hires...
-                    </Text>
-                  </View>
-                </View>
+                ))}
               </View>
             </View>
           )}
@@ -700,92 +688,27 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // ── Product Card ──
-  productCard: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.08,
-    shadowRadius: 24,
-    overflow: "hidden",
-  },
-  productCardHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-    gap: 6,
-  },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  productCardTitle: {
-    fontSize: 13,
-    color: "#999",
-    marginLeft: 6,
-    fontWeight: "500",
-  },
-  productCardBody: {
-    padding: 20,
-    gap: 8,
-  },
-  previewLabel: {
-    fontSize: 10,
-    color: "#bbb",
-    fontWeight: "400",
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    marginBottom: 4,
-  },
-  previewInput: {
-    backgroundColor: "#f8f9fa",
-    borderRadius: 8,
-    padding: 12,
-  },
-  previewInputText: {
-    fontSize: 14,
-    color: "#444",
-    lineHeight: 20,
-  },
-  previewArrow: {
-    alignItems: "center",
-    paddingVertical: 4,
-  },
-  previewOutput: {
-    backgroundColor: "#f0fdf4",
-    borderRadius: 8,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#d1fae5",
-  },
-  previewOutputText: {
-    fontSize: 13,
-    color: "#374151",
-    lineHeight: 20,
-  },
-  previewModels: {
+  // ── Screenshot Grid ──
+  screenshotGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 6,
-    marginTop: 4,
+    gap: 12,
+    transform: [{ perspective: 1200 }, { rotateX: "4deg" }, { rotateY: "-10deg" }],
   },
-  modelPill: {
-    backgroundColor: "#f3f4f6",
-    borderRadius: 20,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+  screenshotCard: {
+    width: 240,
+    height: 200,
+    borderRadius: 12,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 20,
+    backgroundColor: "#fff",
   },
-  modelPillText: {
-    fontSize: 12,
-    color: "#aaa",
-    fontWeight: "400",
+  screenshotImage: {
+    width: "100%",
+    height: "100%",
   },
 
   // ── Home Image ──
