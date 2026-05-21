@@ -30,7 +30,7 @@ export default function Home() {
   const { width } = useWindowDimensions();
   const isWide = width >= 900;
 
-  const showSignIn = true; // set to true to restore Sign In button
+  const showSignIn = false; // set to true to restore Sign In button
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
