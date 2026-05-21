@@ -5,7 +5,7 @@
 // Contact modal: "Contact sales" (nav) + "Request a demo" (CTA) → same modal.
 // Back gesture: N/A (web only, root route)
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -18,6 +18,7 @@ import {
   Modal,
   Image,
   Linking,
+  Animated,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -48,6 +49,69 @@ export default function Home() {
 
   // Get Access section state
   const [getAccessVisible, setGetAccessVisible] = useState(false);
+
+  // Animation — hero fade-up
+  const heroAnim    = useRef(new Animated.Value(0)).current;
+  const heroSubAnim = useRef(new Animated.Value(0)).current;
+  const heroCTAAnim = useRef(new Animated.Value(0)).current;
+
+  // Animation — platform marquee
+  const marqueeX = useRef(new Animated.Value(0)).current;
+  const [marqueeWidth, setMarqueeWidth] = useState(0);
+
+  // Animation — feature tabs
+  const [activeTab, setActiveTab] = useState(0);
+  const tabAnim = useRef(new Animated.Value(1)).current;
+
+  // Animation — cycling CTA text
+  const cycleTexts = [
+    "AI does the work for you.",
+    "You already know what you want. Vaine helps AI understand you.",
+    "Less switching. Less rewriting. Less stopping to explain yourself again.",
+  ];
+  const [cycleIndex, setCycleIndex] = useState(0);
+  const cycleAnim = useRef(new Animated.Value(1)).current;
+
+  // Hero fade-up on mount
+  useEffect(() => {
+    Animated.stagger(160, [
+      Animated.timing(heroAnim,    { toValue: 1, duration: 640, useNativeDriver: true }),
+      Animated.timing(heroSubAnim, { toValue: 1, duration: 640, useNativeDriver: true }),
+      Animated.timing(heroCTAAnim, { toValue: 1, duration: 640, useNativeDriver: true }),
+    ]).start();
+  }, []);
+
+  // Marquee — start once width is measured
+  useEffect(() => {
+    if (marqueeWidth === 0) return;
+    marqueeX.setValue(0);
+    Animated.loop(
+      Animated.timing(marqueeX, {
+        toValue: -marqueeWidth,
+        duration: 14000,
+        useNativeDriver: true,
+      })
+    ).start();
+  }, [marqueeWidth]);
+
+  // Tab fade transition
+  function switchTab(i: number) {
+    Animated.timing(tabAnim, { toValue: 0, duration: 160, useNativeDriver: true }).start(() => {
+      setActiveTab(i);
+      Animated.timing(tabAnim, { toValue: 1, duration: 260, useNativeDriver: true }).start();
+    });
+  }
+
+  // Cycling CTA text — every 3.5 s
+  useEffect(() => {
+    const id = setInterval(() => {
+      Animated.timing(cycleAnim, { toValue: 0, duration: 300, useNativeDriver: true }).start(() => {
+        setCycleIndex(prev => (prev + 1) % cycleTexts.length);
+        Animated.timing(cycleAnim, { toValue: 1, duration: 400, useNativeDriver: true }).start();
+      });
+    }, 3500);
+    return () => clearInterval(id);
+  }, []);
 
   function openContact() {
     setWorkEmail("");
@@ -140,106 +204,151 @@ export default function Home() {
         </View>
       </View>
 
+      {/* ── Platform Marquee ── */}
+      <View style={styles.marqueeOuter}>
+        <Animated.View
+          style={[styles.marqueeTrack, { transform: [{ translateX: marqueeX }] }]}
+        >
+          {[0, 1, 2].map(copy => (
+            <View
+              key={copy}
+              style={styles.marqueeSet}
+              onLayout={copy === 0 ? (e) => setMarqueeWidth(e.nativeEvent.layout.width) : undefined}
+            >
+              {["ChatGPT", "Claude", "Gemini", "Grok"].map((name, i) => (
+                <View key={name} style={styles.marqueeItem}>
+                  {i > 0 && <View style={styles.marqueeDot} />}
+                  <Text style={styles.marqueeText}>{name}</Text>
+                </View>
+              ))}
+            </View>
+          ))}
+        </Animated.View>
+      </View>
+
       {/* ── Hero ── */}
       <View style={[styles.sectionOuter, styles.heroSection]}>
         <View style={[styles.inner, isWide && styles.heroRow]}>
           {/* Left */}
           <View style={[styles.heroLeft, isWide && styles.heroLeftWide]}>
-            <Text
-              style={[styles.heroHeadline, isWide && styles.heroHeadlineWide]}
-            >
-              Stay in flow{"\n"}with AI.
-            </Text>
-            <Text style={styles.heroSub}>
-              Less back and forth. Less rewriting. More getting work done.{"\n"}You already know what you want. Vaine helps AI understand you.
-            </Text>
-            <View style={styles.heroCtas}>
-              <Pressable
-                style={styles.ctaPrimary}
-                onPress={openPartnership}
-              >
-                <Text style={styles.ctaPrimaryText}>Get Started →</Text>
-              </Pressable>
-              <Pressable style={styles.ctaSecondary} onPress={openPartnership}>
-                <Text style={styles.ctaSecondaryText}>Request a demo →</Text>
-              </Pressable>
-            </View>
+            <Animated.View style={{
+              opacity: heroAnim,
+              transform: [{ translateY: heroAnim.interpolate({ inputRange: [0,1], outputRange: [24, 0] }) }],
+            }}>
+              <Text style={[styles.heroHeadline, isWide && styles.heroHeadlineWide]}>
+                Stay in flow{"\n"}with AI.
+              </Text>
+            </Animated.View>
+            <Animated.View style={{
+              opacity: heroSubAnim,
+              transform: [{ translateY: heroSubAnim.interpolate({ inputRange: [0,1], outputRange: [20, 0] }) }],
+            }}>
+              <Text style={styles.heroSub}>
+                Less back and forth. Less rewriting. More getting work done.{"\n"}You already know what you want. Vaine helps AI understand you.
+              </Text>
+            </Animated.View>
+            <Animated.View style={{
+              opacity: heroCTAAnim,
+              transform: [{ translateY: heroCTAAnim.interpolate({ inputRange: [0,1], outputRange: [16, 0] }) }],
+            }}>
+              <View style={styles.heroCtas}>
+                <Pressable style={styles.ctaPrimary} onPress={openPartnership}>
+                  <Text style={styles.ctaPrimaryText}>Get Started →</Text>
+                </Pressable>
+                <Pressable style={styles.ctaSecondary} onPress={openPartnership}>
+                  <Text style={styles.ctaSecondaryText}>Request a demo →</Text>
+                </Pressable>
+              </View>
+            </Animated.View>
           </View>
-
         </View>
       </View>
 
-      {/* ── Feature 1 — text left, visual right ── */}
+      {/* ── Tabbed Feature Section ── */}
       <View style={styles.sectionOuter}>
-        <View style={[styles.inner, isWide && styles.featureRow]}>
-          <View style={[styles.featureText, isWide && styles.featureHalf]}>
-            <Text style={styles.featureHeadline}>
-              If you define the problem correctly, you have the solution.
-            </Text>
-            <Text style={styles.featureBody}>
-              AI does the work for you.
-            </Text>
-          </View>
+        {/* Tab bar */}
+        <View style={[styles.tabBar, isWide && styles.tabBarWide]}>
+          {[
+            { label: "Problem → Solution", icon: "bulb-outline" as const },
+            { label: "Stay in Flow",        icon: "flash-outline" as const },
+            { label: "Who It's For",        icon: "people-outline" as const },
+          ].map((tab, i) => (
+            <Pressable
+              key={tab.label}
+              style={[styles.tabBtn, activeTab === i && styles.tabBtnActive]}
+              onPress={() => switchTab(i)}
+            >
+              <Ionicons name={tab.icon} size={16} color={activeTab === i ? "#000" : "#888"} />
+              <Text style={[styles.tabBtnText, activeTab === i && styles.tabBtnTextActive]}>
+                {tab.label}
+              </Text>
+            </Pressable>
+          ))}
         </View>
-      </View>
 
-      {/* ── Feature 2 — visual left, text right ── */}
-      <View style={[styles.sectionOuter, styles.sectionAlt]}>
-        <View style={[styles.inner, isWide && styles.featureRowReverse]}>
-          <View style={[styles.featureText, isWide && styles.featureHalf]}>
-            <Text style={styles.featureHeadline}>
-              Stay in flow inside ChatGPT, Claude, Gemini, and Grok.
-            </Text>
-            <Text style={styles.featureBody}>
-              Less switching. Less rewriting. Less stopping to explain yourself again.
-            </Text>
-          </View>
-          {isWide && (
-            <View style={styles.featureHalf}>
-              <View style={styles.featureCard}>
-                {["ChatGPT", "Claude", "Gemini", "Grok"].map((tool, i) => (
-                  <View
-                    key={tool}
-                    style={[styles.toolRow, i < 3 && styles.toolRowBorder]}
-                  >
-                    <View style={styles.toolDot} />
-                    <Text style={styles.toolName}>{tool}</Text>
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={16}
-                      color="#34d399"
-                    />
-                  </View>
-                ))}
+        {/* Tab content — fades on switch */}
+        <Animated.View style={{ opacity: tabAnim }}>
+          {activeTab === 0 && (
+            <View style={[styles.inner, isWide && styles.featureRow]}>
+              <View style={[styles.featureText, isWide && styles.featureHalf]}>
+                <Text style={styles.featureHeadline}>
+                  If you define the problem correctly, you have the solution.
+                </Text>
+                <Text style={styles.featureBody}>
+                  AI does the work for you.
+                </Text>
               </View>
             </View>
           )}
-        </View>
-      </View>
-
-      {/* ── Feature 3 — centered, user cards ── */}
-      <View style={styles.sectionOuter}>
-        <View style={styles.featureCenteredWrap}>
-
-        </View>
-        <View style={[styles.userCards, isWide && styles.userCardsRow]}>
-          {[
-            { type: "Small Business", icon: "business-outline" as const },
-            { type: "Researcher",     icon: "search-outline" as const },
-            { type: "Freelancer",     icon: "laptop-outline" as const },
-            { type: "Marketer",       icon: "megaphone-outline" as const },
-            { type: "Consultant",     icon: "briefcase-outline" as const },
-          ].map((card) => (
-            <View key={card.type} style={styles.userCard}>
-              <Ionicons name={card.icon} size={22} color="#555" />
-              <Text style={styles.userCardType}>{card.type}</Text>
+          {activeTab === 1 && (
+            <View style={[styles.inner, isWide && styles.featureRow]}>
+              <View style={[styles.featureText, isWide && styles.featureHalf]}>
+                <Text style={styles.featureHeadline}>
+                  Stay in flow inside ChatGPT, Claude, Gemini, and Grok.
+                </Text>
+                <Text style={styles.featureBody}>
+                  Less switching. Less rewriting. Less stopping to explain yourself again.
+                </Text>
+              </View>
+              {isWide && (
+                <View style={styles.featureHalf}>
+                  <View style={styles.featureCard}>
+                    {["ChatGPT", "Claude", "Gemini", "Grok"].map((tool, i) => (
+                      <View key={tool} style={[styles.toolRow, i < 3 && styles.toolRowBorder]}>
+                        <View style={styles.toolDot} />
+                        <Text style={styles.toolName}>{tool}</Text>
+                        <Ionicons name="checkmark-circle" size={16} color="#34d399" />
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              )}
             </View>
-          ))}
-        </View>
+          )}
+          {activeTab === 2 && (
+            <View style={[styles.userCards, isWide && styles.userCardsRow]}>
+              {[
+                { type: "Small Business", icon: "business-outline" as const },
+                { type: "Researcher",     icon: "search-outline" as const },
+                { type: "Freelancer",     icon: "laptop-outline" as const },
+                { type: "Marketer",       icon: "megaphone-outline" as const },
+                { type: "Consultant",     icon: "briefcase-outline" as const },
+              ].map((card) => (
+                <View key={card.type} style={styles.userCard}>
+                  <Ionicons name={card.icon} size={22} color="#555" />
+                  <Text style={styles.userCardType}>{card.type}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+        </Animated.View>
       </View>
 
       {/* ── Get Access Section ── */}
       <View style={styles.getAccessSection}>
+        <Animated.View style={[styles.cycleTextWrap, { opacity: cycleAnim }]}>
+          <Text style={styles.cycleText}>{cycleTexts[cycleIndex]}</Text>
+        </Animated.View>
         <Pressable style={styles.getAccessBtn} onPress={() => setGetAccessVisible(v => !v)}>
           <Text style={styles.getAccessBtnText}>Get Access</Text>
         </Pressable>
@@ -902,6 +1011,92 @@ const styles = StyleSheet.create({
   footerBottomText: {
     fontSize: 13,
     color: "#aaa",
+  },
+
+  // ── Platform Marquee ──
+  marqueeOuter: {
+    overflow: "hidden",
+    backgroundColor: "#f8f9fa",
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: "#e5e7eb",
+    paddingVertical: 14,
+  },
+  marqueeTrack: {
+    flexDirection: "row",
+  },
+  marqueeSet: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingRight: 48,
+  },
+  marqueeItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  marqueeDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: "#bbb",
+    marginRight: 10,
+  },
+  marqueeText: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#444",
+    letterSpacing: 0.3,
+  },
+
+  // ── Feature Tabs ──
+  tabBar: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: "#e5e7eb",
+    marginBottom: 32,
+    paddingHorizontal: 24,
+    gap: 4,
+  },
+  tabBarWide: {
+    paddingHorizontal: 48,
+  },
+  tabBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderBottomWidth: 2,
+    borderBottomColor: "transparent",
+  },
+  tabBtnActive: {
+    borderBottomColor: "#000",
+  },
+  tabBtnText: {
+    fontSize: 14,
+    color: "#888",
+    fontWeight: "400",
+  },
+  tabBtnTextActive: {
+    color: "#000",
+    fontWeight: "600",
+  },
+
+  // ── Cycling CTA text ──
+  cycleTextWrap: {
+    marginBottom: 24,
+    minHeight: 48,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 32,
+  },
+  cycleText: {
+    fontSize: 17,
+    color: "#555",
+    textAlign: "center",
+    fontWeight: "300",
+    lineHeight: 26,
   },
 
   // ── Get Access ──
