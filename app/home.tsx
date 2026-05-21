@@ -282,24 +282,46 @@ export default function Home() {
         <View style={[styles.userCards, isWide && styles.userCardsRow]}>
           {[
             {
-              type: "Founder",
-              desc: "Move faster without losing quality. Generate the right request for every task — writing, research, strategy.",
-              icon: "rocket-outline" as const,
+              type: "Small Business",
+              tags: ["communication fatigue", "alignment problems", "inconsistent quality", "re-explaining"],
+              desc: "Everyone stays aligned. Less repeating. Less confusion. Your team gets on the same page faster.",
+              icon: "business-outline" as const,
             },
             {
               type: "Researcher",
-              desc: "Structure complex questions into precise requests. Get better outputs from every model, every time.",
+              tags: ["misunderstood thoughts", "nuanced ideas", "hates oversimplified outputs", "accuracy"],
+              desc: "Feel understood. Say complex ideas clearly without explaining them five different ways.",
               icon: "search-outline" as const,
             },
             {
-              type: "Operator",
-              desc: "Standardize requests across your team. Consistent inputs produce consistent results at scale.",
-              icon: "people-outline" as const,
+              type: "Freelancer",
+              tags: ["context switching", "works fast", "hates restarting", "values continuity"],
+              desc: "Pick up where you left off. Keep momentum without starting over.",
+              icon: "laptop-outline" as const,
+            },
+            {
+              type: "Marketer",
+              tags: ["speed pressure", "deadline pressure", "volume pressure", "fixing outputs"],
+              desc: "Launch faster with quality. Spend less time fixing and more time publishing.",
+              icon: "megaphone-outline" as const,
+            },
+            {
+              type: "Consultant",
+              tags: ["translating thoughts", "client pressure", "decision fatigue", "wants clarity"],
+              desc: "Stay focused. Turn scattered thoughts into clear direction faster.",
+              icon: "briefcase-outline" as const,
             },
           ].map((card) => (
             <View key={card.type} style={styles.userCard}>
               <Ionicons name={card.icon} size={22} color="#555" />
               <Text style={styles.userCardType}>{card.type}</Text>
+              <View style={styles.userCardTags}>
+                {card.tags.map((tag) => (
+                  <View key={tag} style={styles.userCardTag}>
+                    <Text style={styles.userCardTagText}>{tag}</Text>
+                  </View>
+                ))}
+              </View>
               <Text style={styles.userCardDesc}>{card.desc}</Text>
             </View>
           ))}
@@ -820,6 +842,7 @@ const styles = StyleSheet.create({
   },
   userCardsRow: {
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: 20,
   },
   userCard: {
@@ -840,6 +863,22 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#666",
     lineHeight: 24,
+    fontWeight: "300",
+  },
+  userCardTags: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6,
+  },
+  userCardTag: {
+    backgroundColor: "#f3f4f6",
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  userCardTagText: {
+    fontSize: 12,
+    color: "#888",
     fontWeight: "300",
   },
 
