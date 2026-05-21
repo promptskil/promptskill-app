@@ -48,6 +48,17 @@ export default function Home() {
   const [signInType, setSignInType] = useState<"personal" | "business" | "">("");
   const [signInStep, setSignInStep] = useState<"form" | "result">("form");
 
+  // Slideshow + lightbox state
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [lightboxVisible, setLightboxVisible] = useState(false);
+
+  const slides = [
+    require("../assets/claude2.png"),
+    require("../assets/realexample.png"),
+    require("../assets/chatgpt1.png"),
+    require("../assets/claude1.png"),
+  ];
+
   function openContact() {
     setWorkEmail("");
     setHelpTopic("");
@@ -173,24 +184,36 @@ export default function Home() {
             </View>
           </View>
 
-          {/* Right — screenshots */}
+          {/* Right — slideshow */}
           {isWide && (
             <View style={styles.heroRight}>
-              <View style={styles.screenshotGrid}>
-                {[
-                  require("../assets/claude2.png"),
-                  require("../assets/realexample.png"),
-                  require("../assets/chatgpt1.png"),
-                  require("../assets/claude1.png"),
-                ].map((src, i) => (
-                  <View key={i} style={styles.screenshotCard}>
-                    <Image
-                      source={src}
-                      style={styles.screenshotImage}
-                      resizeMode="cover"
-                    />
-                  </View>
-                ))}
+              <Pressable style={styles.slideshow} onPress={() => setLightboxVisible(true)}>
+                <Image
+                  source={slides[currentSlide]}
+                  style={styles.slideshowImage}
+                  resizeMode="contain"
+                />
+              </Pressable>
+              <View style={styles.slideshowControls}>
+                <Pressable
+                  style={styles.slideshowArrow}
+                  onPress={() => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)}
+                >
+                  <Ionicons name="chevron-back" size={18} color="#555" />
+                </Pressable>
+                <View style={styles.slideshowDots}>
+                  {slides.map((_, i) => (
+                    <Pressable key={i} onPress={() => setCurrentSlide(i)}>
+                      <View style={[styles.slideshowDot, i === currentSlide && styles.slideshowDotActive]} />
+                    </Pressable>
+                  ))}
+                </View>
+                <Pressable
+                  style={styles.slideshowArrow}
+                  onPress={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
+                >
+                  <Ionicons name="chevron-forward" size={18} color="#555" />
+                </Pressable>
               </View>
             </View>
           )}
@@ -326,6 +349,25 @@ export default function Home() {
           ))}
         </View>
       </View>
+
+      {/* ── Lightbox Modal ── */}
+      <Modal
+        visible={lightboxVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setLightboxVisible(false)}
+      >
+        <Pressable style={styles.lightboxOverlay} onPress={() => setLightboxVisible(false)}>
+          <Pressable style={styles.lightboxClose} onPress={() => setLightboxVisible(false)}>
+            <Ionicons name="close" size={24} color="#fff" />
+          </Pressable>
+          <Image
+            source={slides[currentSlide]}
+            style={styles.lightboxImage}
+            resizeMode="contain"
+          />
+        </Pressable>
+      </Modal>
 
       {/* ── Sign In Modal ── */}
       <Modal
@@ -688,27 +730,65 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // ── Screenshot Grid ──
-  screenshotGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-    transform: [{ perspective: 1200 }, { rotateX: "4deg" }, { rotateY: "-10deg" }],
-  },
-  screenshotCard: {
-    width: 240,
-    height: 200,
-    borderRadius: 12,
+  // ── Slideshow ──
+  slideshow: {
+    backgroundColor: "#f8f9fa",
+    borderRadius: 16,
     overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 20,
-    backgroundColor: "#fff",
+    height: 420,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
   },
-  screenshotImage: {
+  slideshowImage: {
     width: "100%",
     height: "100%",
+  },
+  slideshowControls: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 16,
+    gap: 12,
+  },
+  slideshowDots: {
+    flexDirection: "row",
+    gap: 8,
+    alignItems: "center",
+  },
+  slideshowDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#e5e7eb",
+  },
+  slideshowDotActive: {
+    backgroundColor: "#000",
+  },
+  slideshowArrow: {
+    padding: 8,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    borderRadius: 8,
+  },
+
+  // ── Lightbox ──
+  lightboxOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.9)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+  },
+  lightboxImage: {
+    width: "100%",
+    height: "100%",
+  },
+  lightboxClose: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+    padding: 8,
+    zIndex: 1,
   },
 
   // ── Home Image ──
