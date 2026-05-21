@@ -209,12 +209,10 @@ export default function Home() {
         <View style={[styles.inner, isWide && styles.featureRow]}>
           <View style={[styles.featureText, isWide && styles.featureHalf]}>
             <Text style={styles.featureHeadline}>
-              Generate requests in seconds
+              If you define the problem correctly, you have the solution.
             </Text>
             <Text style={styles.featureBody}>
-              Describe what you need in plain language. Vaine structures it into
-              a clear, high-quality prompt, ready for any AI. No rewriting. No
-              second-guessing.
+              AI does the work for you.
             </Text>
           </View>
           {isWide && (
