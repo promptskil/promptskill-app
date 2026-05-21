@@ -123,6 +123,11 @@ export default function Home() {
       {/* ── Nav ── */}
       <View style={styles.navOuter}>
         <View style={[styles.nav, isWide && styles.navConstrained]}>
+          <Image
+            source={require("../assets/logo.png")}
+            style={styles.navLogo}
+            resizeMode="contain"
+          />
           <View style={styles.navRight}>
             <Pressable onPress={openContact}>
               <Text style={styles.navContactSales}>Contact sales</Text>
