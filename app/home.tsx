@@ -209,16 +209,13 @@ export default function Home() {
         </View>
       </View>
 
-      {/* ── AI Strip ── */}
-      <View style={styles.aiStrip}>
-        <View style={styles.aiLogos}>
-          {["Claude", "ChatGPT", "Gemini", "Grok"].map((name) => (
-            <View key={name} style={styles.aiPill}>
-              <Text style={styles.aiPillText}>{name}</Text>
-            </View>
-          ))}
-        </View>
-        <Text style={styles.aiCaption}>All in one place</Text>
+      {/* ── Home Image ── */}
+      <View style={styles.homeImageWrap}>
+        <Image
+          source={require("../assets/home.png")}
+          style={styles.homeImage}
+          resizeMode="contain"
+        />
       </View>
 
       {/* ── Feature 1 — text left, visual right ── */}
@@ -791,38 +788,17 @@ const styles = StyleSheet.create({
     fontWeight: "400",
   },
 
-  // ── AI Strip ──
-  aiStrip: {
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: "#f0f0f0",
-    paddingVertical: 80,
+  // ── Home Image ──
+  homeImageWrap: {
     alignItems: "center",
-    gap: 14,
+    paddingVertical: 80,
+    paddingHorizontal: 32,
   },
-  aiLogos: {
-    flexDirection: "row",
-    gap: 12,
-    flexWrap: "wrap",
-    justifyContent: "center",
-  },
-  aiPill: {
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    borderRadius: 20,
-    paddingHorizontal: 18,
-    paddingVertical: 9,
-    backgroundColor: "#fff",
-  },
-  aiPillText: {
-    fontSize: 15,
-    color: "#333",
-    fontWeight: "400",
-  },
-  aiCaption: {
-    fontSize: 13,
-    color: "#aaa",
-    fontWeight: "300",
+  homeImage: {
+    width: "100%",
+    maxWidth: 500,
+    aspectRatio: 556 / 633,
+    alignSelf: "center",
   },
 
   // ── Feature sections ──
