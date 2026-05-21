@@ -30,7 +30,7 @@ export default function Home() {
   const { width } = useWindowDimensions();
   const isWide = width >= 900;
 
-  const showSignIn = true; // set to true to restore Sign In button
+  const showSignIn = false; // set to true to restore Sign In button
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -124,7 +124,7 @@ export default function Home() {
       <View style={styles.navOuter}>
         <View style={[styles.nav, isWide && styles.navConstrained]}>
           <Image
-            source={require("../assets/logo.png")}
+            source={require("../assets/logo1.png")}
             style={styles.navLogo}
             resizeMode="contain"
           />
@@ -511,8 +511,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   navLogo: {
-    width: 140,
-    height: 34,
+    width: 90,
+    height: 28,
   },
   navLinks: {
     flexDirection: "row",
