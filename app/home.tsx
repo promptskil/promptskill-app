@@ -17,6 +17,7 @@ import {
   TextInput,
   Modal,
   Image,
+  Linking,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -45,16 +46,8 @@ export default function Home() {
   const [helpTopic, setHelpTopic] = useState<"support" | "partnership" | "">("");
   const [contactStep, setContactStep] = useState<"form" | "result">("form");
 
-  // Slideshow + lightbox state
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [lightboxVisible, setLightboxVisible] = useState(false);
-
-  const slides = [
-    require("../assets/claude2.png"),
-    require("../assets/realexample.png"),
-    require("../assets/chatgpt1.png"),
-    require("../assets/claude1.png"),
-  ];
+  // Get Access section state
+  const [getAccessVisible, setGetAccessVisible] = useState(false);
 
   function openContact() {
     setWorkEmail("");
@@ -129,6 +122,9 @@ export default function Home() {
             resizeMode="contain"
           />
           <View style={styles.navRight}>
+            <Pressable onPress={() => Linking.openURL('https://apps.apple.com')} style={styles.navApple}>
+              <Ionicons name="logo-apple" size={20} color="#000" />
+            </Pressable>
             <Pressable onPress={openContact}>
               <Text style={styles.navContactSales}>Contact sales</Text>
             </Pressable>
@@ -170,39 +166,6 @@ export default function Home() {
             </View>
           </View>
 
-          {/* Right — slideshow */}
-          {isWide && (
-            <View style={styles.heroRight}>
-              <Pressable style={styles.slideshow} onPress={() => setLightboxVisible(true)}>
-                <Image
-                  source={slides[currentSlide]}
-                  style={styles.slideshowImage}
-                  resizeMode="contain"
-                />
-              </Pressable>
-              <View style={styles.slideshowControls}>
-                <Pressable
-                  style={styles.slideshowArrow}
-                  onPress={() => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)}
-                >
-                  <Ionicons name="chevron-back" size={18} color="#555" />
-                </Pressable>
-                <View style={styles.slideshowDots}>
-                  {slides.map((_, i) => (
-                    <Pressable key={i} onPress={() => setCurrentSlide(i)}>
-                      <View style={[styles.slideshowDot, i === currentSlide && styles.slideshowDotActive]} />
-                    </Pressable>
-                  ))}
-                </View>
-                <Pressable
-                  style={styles.slideshowArrow}
-                  onPress={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
-                >
-                  <Ionicons name="chevron-forward" size={18} color="#555" />
-                </Pressable>
-              </View>
-            </View>
-          )}
         </View>
       </View>
 
@@ -261,71 +224,39 @@ export default function Home() {
         </View>
         <View style={[styles.userCards, isWide && styles.userCardsRow]}>
           {[
-            {
-              type: "Small Business",
-              tags: ["communication fatigue", "alignment problems", "inconsistent quality", "re-explaining"],
-              desc: "Everyone stays aligned. Less repeating. Less confusion. Your team gets on the same page faster.",
-              icon: "business-outline" as const,
-            },
-            {
-              type: "Researcher",
-              tags: ["misunderstood thoughts", "nuanced ideas", "hates oversimplified outputs", "accuracy"],
-              desc: "Feel understood. Say complex ideas clearly without explaining them five different ways.",
-              icon: "search-outline" as const,
-            },
-            {
-              type: "Freelancer",
-              tags: ["context switching", "works fast", "hates restarting", "values continuity"],
-              desc: "Pick up where you left off. Keep momentum without starting over.",
-              icon: "laptop-outline" as const,
-            },
-            {
-              type: "Marketer",
-              tags: ["speed pressure", "deadline pressure", "volume pressure", "fixing outputs"],
-              desc: "Launch faster with quality. Spend less time fixing and more time publishing.",
-              icon: "megaphone-outline" as const,
-            },
-            {
-              type: "Consultant",
-              tags: ["translating thoughts", "client pressure", "decision fatigue", "wants clarity"],
-              desc: "Stay focused. Turn scattered thoughts into clear direction faster.",
-              icon: "briefcase-outline" as const,
-            },
+            { type: "Small Business", icon: "business-outline" as const },
+            { type: "Researcher",     icon: "search-outline" as const },
+            { type: "Freelancer",     icon: "laptop-outline" as const },
+            { type: "Marketer",       icon: "megaphone-outline" as const },
+            { type: "Consultant",     icon: "briefcase-outline" as const },
           ].map((card) => (
             <View key={card.type} style={styles.userCard}>
               <Ionicons name={card.icon} size={22} color="#555" />
               <Text style={styles.userCardType}>{card.type}</Text>
-              <View style={styles.userCardTags}>
-                {card.tags.map((tag) => (
-                  <View key={tag} style={styles.userCardTag}>
-                    <Text style={styles.userCardTagText}>{tag}</Text>
-                  </View>
-                ))}
-              </View>
-              <Text style={styles.userCardDesc}>{card.desc}</Text>
             </View>
           ))}
         </View>
       </View>
 
-      {/* ── Lightbox Modal ── */}
-      <Modal
-        visible={lightboxVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setLightboxVisible(false)}
-      >
-        <Pressable style={styles.lightboxOverlay} onPress={() => setLightboxVisible(false)}>
-          <Pressable style={styles.lightboxClose} onPress={() => setLightboxVisible(false)}>
-            <Ionicons name="close" size={24} color="#fff" />
-          </Pressable>
-          <Image
-            source={slides[currentSlide]}
-            style={styles.lightboxImage}
-            resizeMode="contain"
-          />
+      {/* ── Get Access Section ── */}
+      <View style={styles.getAccessSection}>
+        <Pressable style={styles.getAccessBtn} onPress={() => setGetAccessVisible(v => !v)}>
+          <Text style={styles.getAccessBtnText}>Get Access</Text>
         </Pressable>
-      </Modal>
+        {getAccessVisible && (
+          <View style={styles.getAccessEmails}>
+            <Pressable style={styles.getAccessRow} onPress={() => Linking.openURL('mailto:support@vaineai.com')}>
+              <Text style={styles.getAccessLabel}>Personal</Text>
+              <Text style={styles.getAccessEmail}>support@vaineai.com</Text>
+            </Pressable>
+            <View style={styles.getAccessDivider} />
+            <Pressable style={styles.getAccessRow} onPress={() => Linking.openURL('mailto:partnership@vaineai.com')}>
+              <Text style={styles.getAccessLabel}>Business</Text>
+              <Text style={styles.getAccessEmail}>partnership@vaineai.com</Text>
+            </Pressable>
+          </View>
+        )}
+      </View>
 
       {/* ── Contact Modal ── */}
       <Modal
@@ -489,6 +420,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 20,
   },
+  navApple: {
+    padding: 4,
+  },
   navContactSales: {
     fontSize: 14,
     color: "#555",
@@ -610,70 +544,6 @@ const styles = StyleSheet.create({
     color: "#666",
     fontSize: 15,
     fontWeight: "400",
-  },
-  heroRight: {
-    flex: 1,
-  },
-
-  // ── Slideshow ──
-  slideshow: {
-    backgroundColor: "#f8f9fa",
-    borderRadius: 16,
-    overflow: "hidden",
-    height: 420,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-  },
-  slideshowImage: {
-    width: "100%",
-    height: "100%",
-  },
-  slideshowControls: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 16,
-    gap: 12,
-  },
-  slideshowDots: {
-    flexDirection: "row",
-    gap: 8,
-    alignItems: "center",
-  },
-  slideshowDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#e5e7eb",
-  },
-  slideshowDotActive: {
-    backgroundColor: "#000",
-  },
-  slideshowArrow: {
-    padding: 8,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    borderRadius: 8,
-  },
-
-  // ── Lightbox ──
-  lightboxOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.9)",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 24,
-  },
-  lightboxImage: {
-    width: "100%",
-    height: "100%",
-  },
-  lightboxClose: {
-    position: "absolute",
-    top: 20,
-    right: 20,
-    padding: 8,
-    zIndex: 1,
   },
 
   // ── Home Image ──
@@ -1032,5 +902,56 @@ const styles = StyleSheet.create({
   footerBottomText: {
     fontSize: 13,
     color: "#aaa",
+  },
+
+  // ── Get Access ──
+  getAccessSection: {
+    alignItems: "center",
+    paddingVertical: 64,
+    paddingHorizontal: 24,
+    backgroundColor: "#fff",
+  },
+  getAccessBtn: {
+    backgroundColor: "#000",
+    borderRadius: 12,
+    paddingHorizontal: 40,
+    paddingVertical: 18,
+  },
+  getAccessBtnText: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#fff",
+    letterSpacing: 0.3,
+  },
+  getAccessEmails: {
+    marginTop: 32,
+    width: "100%",
+    maxWidth: 480,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    borderRadius: 12,
+    overflow: "hidden",
+    backgroundColor: "#fff",
+  },
+  getAccessRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 20,
+  },
+  getAccessDivider: {
+    height: 1,
+    backgroundColor: "#e5e7eb",
+  },
+  getAccessLabel: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#000",
+  },
+  getAccessEmail: {
+    fontSize: 15,
+    color: "#4F46E5",
+    fontWeight: "400",
   },
 });
