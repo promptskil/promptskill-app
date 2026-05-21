@@ -142,7 +142,7 @@ export default function Home() {
             </Text>
             <Text style={styles.heroSub}>
               Less back and forth. Less rewriting. More getting work done. Use
-              ChatGPT, Claude, Gemini, and Grok together in one place — so AI
+              ChatGPT, Claude, Gemini, and Grok together in one place so AI
               feels faster, clearer, and easier to work with.
             </Text>
             <View style={styles.heroCtas}>
@@ -215,7 +215,7 @@ export default function Home() {
             </Text>
             <Text style={styles.featureBody}>
               Describe what you need in plain language. Vaine structures it into
-              a clear, high-quality prompt — ready for any AI. No rewriting. No
+              a clear, high-quality prompt, ready for any AI. No rewriting. No
               second-guessing.
             </Text>
           </View>
@@ -250,7 +250,7 @@ export default function Home() {
             </Text>
             <Text style={styles.featureBody}>
               The Vaine Chrome extension lives inside ChatGPT, Claude, Gemini,
-              and Grok. Generate the right request directly where you work — no
+              and Grok. Generate the right request directly where you work, no
               tab switching, no interruption.
             </Text>
           </View>
