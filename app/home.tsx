@@ -30,6 +30,8 @@ export default function Home() {
   const { width } = useWindowDimensions();
   const isWide = width >= 900;
 
+  const showSignIn = false; // set to true to restore Sign In button
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -58,6 +60,12 @@ export default function Home() {
     setWorkEmail("");
     setHelpTopic("");
     setContactStep("form");
+    setContactVisible(true);
+  }
+
+  function openPartnership() {
+    setHelpTopic("partnership");
+    setContactStep("result");
     setContactVisible(true);
   }
 
@@ -119,12 +127,14 @@ export default function Home() {
             <Pressable onPress={openContact}>
               <Text style={styles.navContactSales}>Contact sales</Text>
             </Pressable>
-            <Pressable
-              style={styles.navSignIn}
-              onPress={() => router.push("/(auth)/login")}
-            >
-              <Text style={styles.navSignInText}>Sign in</Text>
-            </Pressable>
+            {showSignIn && (
+              <Pressable
+                style={styles.navSignIn}
+                onPress={() => router.push("/(auth)/login")}
+              >
+                <Text style={styles.navSignInText}>Sign in</Text>
+              </Pressable>
+            )}
           </View>
         </View>
       </View>
@@ -145,11 +155,11 @@ export default function Home() {
             <View style={styles.heroCtas}>
               <Pressable
                 style={styles.ctaPrimary}
-                onPress={() => router.push("/(auth)/")}
+                onPress={openPartnership}
               >
                 <Text style={styles.ctaPrimaryText}>Get Started →</Text>
               </Pressable>
-              <Pressable style={styles.ctaSecondary} onPress={openContact}>
+              <Pressable style={styles.ctaSecondary} onPress={openPartnership}>
                 <Text style={styles.ctaSecondaryText}>Request a demo →</Text>
               </Pressable>
             </View>
