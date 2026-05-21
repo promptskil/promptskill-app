@@ -115,11 +115,6 @@ export default function Home() {
       {/* ── Nav ── */}
       <View style={styles.navOuter}>
         <View style={[styles.nav, isWide && styles.navConstrained]}>
-          <Image
-            source={require("../assets/logo.png")}
-            style={styles.navLogo}
-            resizeMode="contain"
-          />
           <View style={styles.navRight}>
             <Pressable onPress={openContact}>
               <Text style={styles.navContactSales}>Contact sales</Text>
@@ -196,15 +191,6 @@ export default function Home() {
         </View>
       </View>
 
-      {/* ── Home Image ── */}
-      <View style={[styles.homeImageWrap, isWide && styles.homeImageWrapWide]}>
-        <Image
-          source={require("../assets/home.png")}
-          style={[styles.homeImage, isWide && styles.homeImageWide]}
-          resizeMode="contain"
-        />
-      </View>
-
       {/* ── Feature 1 — text left, visual right ── */}
       <View style={styles.sectionOuter}>
         <View style={[styles.inner, isWide && styles.featureRow]}>
@@ -216,25 +202,6 @@ export default function Home() {
               AI does the work for you.
             </Text>
           </View>
-          {isWide && (
-            <View style={styles.featureHalf}>
-              <View style={styles.featureCard}>
-                <Text style={styles.featureCardLabel}>Input</Text>
-                <Text style={styles.featureCardText}>
-                  Summarize this research paper for a non-technical audience
-                </Text>
-                <View style={styles.featureCardArrow}>
-                  <Ionicons name="arrow-down-outline" size={14} color="#bbb" />
-                </View>
-                <Text style={styles.featureCardLabel}>Request</Text>
-                <Text style={styles.featureCardText}>
-                  You are a science communicator. Summarize the following
-                  research paper for a general audience with no technical
-                  background. Use clear, everyday language...
-                </Text>
-              </View>
-            </View>
-          )}
         </View>
       </View>
 
