@@ -55,9 +55,8 @@ export default function Home() {
   const heroSubAnim = useRef(new Animated.Value(0)).current;
   const heroCTAAnim = useRef(new Animated.Value(0)).current;
 
-  // Animation — platform marquee
-  const marqueeX = useRef(new Animated.Value(0)).current;
-  const MARQUEE_SET_W = 340;
+  // Animation — platform marquee (CSS keyframe, ref-driven)
+  const marqueeRef = useRef<any>(null);
 
   // Animation — feature tabs
   const [activeTab, setActiveTab] = useState(0);
@@ -81,19 +80,20 @@ export default function Home() {
     ]).start();
   }, []);
 
-  // Marquee — recursive timing avoids Animated.loop reset-restart bug on RN Web CSS driver
+  // Marquee — CSS keyframe animation, -50% = exactly 1 copy-width, GPU-composited, no reset flash
   useEffect(() => {
-    function runMarquee() {
-      marqueeX.setValue(0);
-      Animated.timing(marqueeX, {
-        toValue: -MARQUEE_SET_W,
-        duration: 14000,
-        useNativeDriver: true,
-      }).start(({ finished }) => {
-        if (finished) runMarquee();
-      });
+    if (typeof document === 'undefined') return;
+    const styleId = 'vaine-marquee-kf';
+    if (!document.getElementById(styleId)) {
+      const el = document.createElement('style');
+      el.id = styleId;
+      el.textContent =
+        '@keyframes vaineMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }';
+      document.head.appendChild(el);
     }
-    runMarquee();
+    if (marqueeRef.current?.style) {
+      marqueeRef.current.style.animation = 'vaineMarquee 20s linear infinite';
+    }
   }, []);
 
   // Tab fade transition
@@ -205,14 +205,9 @@ export default function Home() {
 
       {/* ── Platform Marquee ── */}
       <View style={styles.marqueeOuter}>
-        <Animated.View
-          style={[styles.marqueeTrack, { transform: [{ translateX: marqueeX }] }]}
-        >
-          {[0, 1, 2].map(copy => (
-            <View
-              key={copy}
-              style={styles.marqueeSet}
-            >
+        <View ref={marqueeRef} style={styles.marqueeTrack}>
+          {[0,1,2,3,4,5,6,7,8,9,10,11].map(copy => (
+            <View key={copy} style={styles.marqueeSet}>
               {["ChatGPT", "Claude", "Gemini", "Grok"].map((name, i) => (
                 <View key={name} style={styles.marqueeItem}>
                   {i > 0 && <View style={styles.marqueeDot} />}
@@ -221,7 +216,7 @@ export default function Home() {
               ))}
             </View>
           ))}
-        </Animated.View>
+        </View>
       </View>
 
       {/* ── Hero ── */}
