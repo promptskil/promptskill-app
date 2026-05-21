@@ -13,6 +13,7 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -135,7 +136,11 @@ export default function Main() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Vaine</Text>
+          <Image
+            source={require("../../assets/logo1.png")}
+            style={styles.headerLogo}
+            resizeMode="contain"
+          />
           <View style={styles.headerRight}>
             <HistoryNavButton onPress={handleHistoryNav} />
             {Platform.OS === "web" && !!businessId && (
@@ -226,6 +231,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
+  },
+  headerLogo: {
+    height: 28,
+    width: 90,
   },
   bottom: {
     paddingHorizontal: 16,
