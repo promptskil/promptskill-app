@@ -23,7 +23,7 @@ export default function TopicInput({
       style={[styles.input, !editable && styles.disabled]}
       value={topic}
       onChangeText={onChangeText}
-      placeholder="Start with what you want. Describe the result you want. Get what you had in mind."
+      placeholder="If you define the problem correctly, you have the solution."
       multiline
       editable={editable}
       textAlignVertical="top"
