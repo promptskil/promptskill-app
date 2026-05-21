@@ -57,7 +57,7 @@ export default function Home() {
 
   // Animation — platform marquee
   const marqueeX = useRef(new Animated.Value(0)).current;
-  const [marqueeWidth, setMarqueeWidth] = useState(0);
+  const MARQUEE_SET_W = 340;
 
   // Animation — feature tabs
   const [activeTab, setActiveTab] = useState(0);
@@ -81,18 +81,17 @@ export default function Home() {
     ]).start();
   }, []);
 
-  // Marquee — start once width is measured
+  // Marquee — start on mount, hardcoded set width avoids onLayout race on RN Web
   useEffect(() => {
-    if (marqueeWidth === 0) return;
     marqueeX.setValue(0);
     Animated.loop(
       Animated.timing(marqueeX, {
-        toValue: -marqueeWidth,
+        toValue: -MARQUEE_SET_W,
         duration: 14000,
         useNativeDriver: true,
       })
     ).start();
-  }, [marqueeWidth]);
+  }, []);
 
   // Tab fade transition
   function switchTab(i: number) {
@@ -186,9 +185,6 @@ export default function Home() {
             resizeMode="contain"
           />
           <View style={styles.navRight}>
-            <Pressable onPress={() => Linking.openURL('https://apps.apple.com')} style={styles.navApple}>
-              <Ionicons name="logo-apple" size={20} color="#000" />
-            </Pressable>
             <Pressable onPress={openContact}>
               <Text style={styles.navContactSales}>Contact sales</Text>
             </Pressable>
@@ -213,7 +209,6 @@ export default function Home() {
             <View
               key={copy}
               style={styles.marqueeSet}
-              onLayout={copy === 0 ? (e) => setMarqueeWidth(e.nativeEvent.layout.width) : undefined}
             >
               {["ChatGPT", "Claude", "Gemini", "Grok"].map((name, i) => (
                 <View key={name} style={styles.marqueeItem}>
@@ -259,6 +254,13 @@ export default function Home() {
                   <Text style={styles.ctaSecondaryText}>Request a demo →</Text>
                 </Pressable>
               </View>
+              <Pressable
+                style={styles.dlChip}
+                onPress={() => Linking.openURL('https://apps.apple.com')}
+              >
+                <Ionicons name="logo-apple" size={16} color="#000" />
+                <Text style={styles.dlChipText}>Download for iPhone →</Text>
+              </Pressable>
             </Animated.View>
           </View>
         </View>
@@ -529,9 +531,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 20,
   },
-  navApple: {
-    padding: 4,
-  },
   navContactSales: {
     fontSize: 14,
     color: "#555",
@@ -632,6 +631,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 20,
     flexWrap: "wrap",
+  },
+  dlChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    borderWidth: 1,
+    borderColor: "#000",
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    alignSelf: "flex-start",
+    marginTop: 16,
+  },
+  dlChipText: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#000",
   },
   ctaPrimary: {
     backgroundColor: "#000",
