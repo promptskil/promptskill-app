@@ -55,9 +55,6 @@ export default function Home() {
   const heroSubAnim = useRef(new Animated.Value(0)).current;
   const heroCTAAnim = useRef(new Animated.Value(0)).current;
 
-  // Animation — platform marquee
-  const marqueeX = useRef(new Animated.Value(0)).current;
-  const MARQUEE_SET_W = 340;
 
   // Animation — feature tabs
   const [activeTab, setActiveTab] = useState(0);
@@ -81,20 +78,6 @@ export default function Home() {
     ]).start();
   }, []);
 
-  // Marquee — recursive timing avoids Animated.loop reset-restart bug on RN Web CSS driver
-  useEffect(() => {
-    function runMarquee() {
-      marqueeX.setValue(0);
-      Animated.timing(marqueeX, {
-        toValue: -MARQUEE_SET_W,
-        duration: 14000,
-        useNativeDriver: true,
-      }).start(({ finished }) => {
-        if (finished) runMarquee();
-      });
-    }
-    runMarquee();
-  }, []);
 
   // Tab fade transition
   function switchTab(i: number) {
@@ -203,25 +186,16 @@ export default function Home() {
         </View>
       </View>
 
-      {/* ── Platform Marquee ── */}
+      {/* ── Platform Strip ── */}
       <View style={styles.marqueeOuter}>
-        <Animated.View
-          style={[styles.marqueeTrack, { transform: [{ translateX: marqueeX }] }]}
-        >
-          {[0, 1, 2].map(copy => (
-            <View
-              key={copy}
-              style={styles.marqueeSet}
-            >
-              {["ChatGPT", "Claude", "Gemini", "Grok"].map((name, i) => (
-                <View key={name} style={styles.marqueeItem}>
-                  {i > 0 && <View style={styles.marqueeDot} />}
-                  <Text style={styles.marqueeText}>{name}</Text>
-                </View>
-              ))}
+        <View style={styles.marqueeStatic}>
+          {["ChatGPT", "Claude", "Gemini", "Grok"].map((name, i) => (
+            <View key={name} style={styles.marqueeItem}>
+              {i > 0 && <View style={styles.marqueeDot} />}
+              <Text style={styles.marqueeText}>{name}</Text>
             </View>
           ))}
-        </Animated.View>
+        </View>
       </View>
 
       {/* ── Hero ── */}
@@ -1041,13 +1015,12 @@ const styles = StyleSheet.create({
     borderColor: "#e5e7eb",
     paddingVertical: 14,
   },
-  marqueeTrack: {
-    flexDirection: "row",
-  },
-  marqueeSet: {
+  marqueeStatic: {
     flexDirection: "row",
     alignItems: "center",
-    paddingRight: 48,
+    justifyContent: "center",
+    paddingVertical: 2,
+    gap: 8,
   },
   marqueeItem: {
     flexDirection: "row",
