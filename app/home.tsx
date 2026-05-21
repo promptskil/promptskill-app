@@ -283,10 +283,7 @@ export default function Home() {
           <Text style={[styles.featureHeadline, styles.textCenter]}>
             Built for individuals and teams
           </Text>
-          <Text style={[styles.featureBody, styles.featureBodyCentered]}>
-            Personal accounts for solo users. Business accounts with org
-            management, member invites, and shared request history.
-          </Text>
+
         </View>
         <View style={[styles.userCards, isWide && styles.userCardsRow]}>
           {[
