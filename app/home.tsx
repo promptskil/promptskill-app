@@ -43,6 +43,11 @@ export default function Home() {
   const [helpTopic, setHelpTopic] = useState<"support" | "partnership" | "">("");
   const [contactStep, setContactStep] = useState<"form" | "result">("form");
 
+  // Sign in modal state
+  const [signInVisible, setSignInVisible] = useState(false);
+  const [signInType, setSignInType] = useState<"personal" | "business" | "">("");
+  const [signInStep, setSignInStep] = useState<"form" | "result">("form");
+
   function openContact() {
     setWorkEmail("");
     setHelpTopic("");
@@ -59,6 +64,25 @@ export default function Home() {
     setContactVisible(false);
     setContactStep("form");
   }
+
+  function openSignIn() {
+    setSignInType("");
+    setSignInStep("form");
+    setSignInVisible(true);
+  }
+
+  function handleSignInContinue() {
+    if (!signInType) return;
+    setSignInStep("result");
+  }
+
+  function closeSignIn() {
+    setSignInVisible(false);
+    setSignInStep("form");
+  }
+
+  const signInEmail =
+    signInType === "personal" ? "support@vaineai.com" : "partnership@vaineai.com";
 
   const contactEmail =
     helpTopic === "support" ? "support@vaineai.com" : "partnership@vaineai.com";
@@ -115,7 +139,7 @@ export default function Home() {
             </Pressable>
             <Pressable
               style={styles.navSignIn}
-              onPress={() => router.push("/(auth)/login")}
+              onPress={openSignIn}
             >
               <Text style={styles.navSignInText}>Sign in</Text>
             </Pressable>
@@ -317,6 +341,79 @@ export default function Home() {
           ))}
         </View>
       </View>
+
+      {/* ── Sign In Modal ── */}
+      <Modal
+        visible={signInVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={closeSignIn}
+      >
+        <Pressable style={styles.modalOverlay} onPress={closeSignIn}>
+          <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation()}>
+            <Pressable style={styles.modalClose} onPress={closeSignIn}>
+              <Ionicons name="close" size={20} color="#999" />
+            </Pressable>
+
+            {signInStep === "form" ? (
+              <>
+                <Text style={styles.modalTitle}>How would you like to sign in?</Text>
+                <View style={styles.modalSelector}>
+                  <Pressable
+                    style={[
+                      styles.modalOption,
+                      signInType === "personal" && styles.modalOptionSelected,
+                    ]}
+                    onPress={() => setSignInType("personal")}
+                  >
+                    <Text
+                      style={[
+                        styles.modalOptionText,
+                        signInType === "personal" && styles.modalOptionTextSelected,
+                      ]}
+                    >
+                      Personal
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={[
+                      styles.modalOption,
+                      styles.modalOptionBorderTop,
+                      signInType === "business" && styles.modalOptionSelected,
+                    ]}
+                    onPress={() => setSignInType("business")}
+                  >
+                    <Text
+                      style={[
+                        styles.modalOptionText,
+                        signInType === "business" && styles.modalOptionTextSelected,
+                      ]}
+                    >
+                      Business
+                    </Text>
+                  </Pressable>
+                </View>
+                <Pressable
+                  style={[
+                    styles.modalContinue,
+                    !signInType && styles.modalContinueDisabled,
+                  ]}
+                  onPress={handleSignInContinue}
+                  disabled={!signInType}
+                >
+                  <Text style={styles.modalContinueText}>Continue</Text>
+                </Pressable>
+              </>
+            ) : (
+              <>
+                <Text style={styles.modalTitle}>How would you like to sign in?</Text>
+                <Text style={styles.modalResultLabel}>Reach us at</Text>
+                <Text style={styles.modalResultEmail}>{signInEmail}</Text>
+              </>
+            )}
+          </Pressable>
+        </Pressable>
+      </Modal>
 
       {/* ── Contact Modal ── */}
       <Modal
