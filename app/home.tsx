@@ -55,8 +55,6 @@ export default function Home() {
   const heroSubAnim = useRef(new Animated.Value(0)).current;
   const heroCTAAnim = useRef(new Animated.Value(0)).current;
 
-  // Animation — platform marquee (CSS keyframe, ref-driven)
-  const marqueeRef = useRef<any>(null);
 
   // Animation — feature tabs
   const [activeTab, setActiveTab] = useState(0);
@@ -80,21 +78,6 @@ export default function Home() {
     ]).start();
   }, []);
 
-  // Marquee — CSS keyframe animation, -50% = exactly 1 copy-width, GPU-composited, no reset flash
-  useEffect(() => {
-    if (typeof document === 'undefined') return;
-    const styleId = 'vaine-marquee-kf';
-    if (!document.getElementById(styleId)) {
-      const el = document.createElement('style');
-      el.id = styleId;
-      el.textContent =
-        '@keyframes vaineMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }';
-      document.head.appendChild(el);
-    }
-    if (marqueeRef.current?.style) {
-      marqueeRef.current.style.animation = 'vaineMarquee 20s linear infinite';
-    }
-  }, []);
 
   // Tab fade transition
   function switchTab(i: number) {
@@ -203,17 +186,13 @@ export default function Home() {
         </View>
       </View>
 
-      {/* ── Platform Marquee ── */}
+      {/* ── Platform Strip ── */}
       <View style={styles.marqueeOuter}>
-        <View ref={marqueeRef} style={styles.marqueeTrack}>
-          {[0,1,2,3,4,5,6,7,8,9,10,11].map(copy => (
-            <View key={copy} style={styles.marqueeSet}>
-              {["ChatGPT", "Claude", "Gemini", "Grok"].map((name, i) => (
-                <View key={name} style={styles.marqueeItem}>
-                  {i > 0 && <View style={styles.marqueeDot} />}
-                  <Text style={styles.marqueeText}>{name}</Text>
-                </View>
-              ))}
+        <View style={styles.marqueeStatic}>
+          {["ChatGPT", "Claude", "Gemini", "Grok"].map((name, i) => (
+            <View key={name} style={styles.marqueeItem}>
+              {i > 0 && <View style={styles.marqueeDot} />}
+              <Text style={styles.marqueeText}>{name}</Text>
             </View>
           ))}
         </View>
@@ -1036,13 +1015,12 @@ const styles = StyleSheet.create({
     borderColor: "#e5e7eb",
     paddingVertical: 14,
   },
-  marqueeTrack: {
-    flexDirection: "row",
-  },
-  marqueeSet: {
+  marqueeStatic: {
     flexDirection: "row",
     alignItems: "center",
-    paddingRight: 48,
+    justifyContent: "center",
+    paddingVertical: 2,
+    gap: 8,
   },
   marqueeItem: {
     flexDirection: "row",
