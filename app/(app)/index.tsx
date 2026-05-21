@@ -192,6 +192,7 @@ export default function Main() {
             </Pressable>
           )}
         </View>
+        <Text style={styles.inputHint}>AI does the work for you.</Text>
       </View>
     </KeyboardAvoidingView>
   );
@@ -257,5 +258,11 @@ const styles = StyleSheet.create({
     color: "#d00",
     fontSize: 14,
     textAlign: "center",
+  },
+  inputHint: {
+    fontSize: 12,
+    color: "#aaa",
+    textAlign: "center",
+    fontWeight: "300",
   },
 });
