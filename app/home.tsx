@@ -81,16 +81,19 @@ export default function Home() {
     ]).start();
   }, []);
 
-  // Marquee — start on mount, hardcoded set width avoids onLayout race on RN Web
+  // Marquee — recursive timing avoids Animated.loop reset-restart bug on RN Web CSS driver
   useEffect(() => {
-    marqueeX.setValue(0);
-    Animated.loop(
+    function runMarquee() {
+      marqueeX.setValue(0);
       Animated.timing(marqueeX, {
         toValue: -MARQUEE_SET_W,
         duration: 14000,
         useNativeDriver: true,
-      })
-    ).start();
+      }).start(({ finished }) => {
+        if (finished) runMarquee();
+      });
+    }
+    runMarquee();
   }, []);
 
   // Tab fade transition
