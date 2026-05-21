@@ -244,12 +244,10 @@ export default function Home() {
         <View style={[styles.inner, isWide && styles.featureRowReverse]}>
           <View style={[styles.featureText, isWide && styles.featureHalf]}>
             <Text style={styles.featureHeadline}>
-              Works inside your favorite AI tools
+              Stay in flow inside ChatGPT, Claude, Gemini, and Grok.
             </Text>
             <Text style={styles.featureBody}>
-              The Vaine Chrome extension lives inside ChatGPT, Claude, Gemini,
-              and Grok. Generate the right request directly where you work, no
-              tab switching, no interruption.
+              Less switching. Less rewriting. Less stopping to explain yourself again.
             </Text>
           </View>
           {isWide && (
