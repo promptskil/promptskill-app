@@ -96,7 +96,7 @@ export default function Home() {
       <View style={styles.announcementBar}>
         <Ionicons name="logo-apple" size={13} color="#d1d5db" />
         <Text style={styles.announcementText}>
-          Available on iOS and Web for individuals and teams.
+          Available on iOS and the web for personal and small businesses.
         </Text>
         <Ionicons name="globe-outline" size={13} color="#d1d5db" />
       </View>
@@ -109,13 +109,6 @@ export default function Home() {
             style={styles.navLogo}
             resizeMode="contain"
           />
-          {isWide && (
-            <View style={styles.navLinks}>
-              <Text style={styles.navLink}>Features</Text>
-              <Text style={styles.navLink}>Download</Text>
-              <Text style={styles.navLink}>Teams</Text>
-            </View>
-          )}
           <View style={styles.navRight}>
             <Pressable onPress={openContact}>
               <Text style={styles.navContactSales}>Contact sales</Text>
@@ -274,9 +267,6 @@ export default function Home() {
       {/* ── Feature 3 — centered, user cards ── */}
       <View style={styles.sectionOuter}>
         <View style={styles.featureCenteredWrap}>
-          <Text style={[styles.featureHeadline, styles.textCenter]}>
-            Built for individuals and teams
-          </Text>
 
         </View>
         <View style={[styles.userCards, isWide && styles.userCardsRow]}>
@@ -856,14 +846,14 @@ const styles = StyleSheet.create({
   },
   userCardType: {
     fontSize: 17,
-    fontWeight: "500",
+    fontWeight: "600",
     color: "#000",
   },
   userCardDesc: {
     fontSize: 15,
-    color: "#666",
+    color: "#111",
     lineHeight: 24,
-    fontWeight: "300",
+    fontWeight: "400",
   },
   userCardTags: {
     flexDirection: "row",
@@ -871,15 +861,15 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   userCardTag: {
-    backgroundColor: "#f3f4f6",
+    backgroundColor: "#fef9f0",
     borderRadius: 20,
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
   userCardTagText: {
     fontSize: 12,
-    color: "#888",
-    fontWeight: "300",
+    color: "#92400e",
+    fontWeight: "400",
   },
 
   // ── Login Section ──
