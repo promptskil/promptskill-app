@@ -9,14 +9,22 @@
 
 import { useEffect } from "react";
 import { Platform } from "react-native";
-import { Stack, useRouter } from "expo-router";
+import { Stack, useRouter, usePathname } from "expo-router";
 import { getToken, getOnboardingComplete, clearToken } from "../storage/storage";
 import { apiCall, SessionExpiredError } from "../services/api";
 
+// Public routes — session gate is bypassed for these
+const PUBLIC_ROUTES = ["/privacy"];
+
 export default function RootLayout() {
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
+    // Skip session gate on public routes (privacy policy, etc.)
+    if (PUBLIC_ROUTES.includes(pathname)) {
+      return;
+    }
     const initializeSession = async () => {
       try {
         const token = await getToken();
@@ -75,6 +83,7 @@ export default function RootLayout() {
     <Stack screenOptions={{ headerShown: false, title: "Vaine" }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="home" />
+      <Stack.Screen name="privacy" />
       <Stack.Screen name="(auth)" />
       <Stack.Screen name="(app)" />
       <Stack.Screen name="onboarding" />
