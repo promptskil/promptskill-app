@@ -32,7 +32,7 @@ export default function Home() {
   const { width } = useWindowDimensions();
   const isWide = width >= 900;
 
-  const showSignIn = false;
+  const showSignIn = true;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
