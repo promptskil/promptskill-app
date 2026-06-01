@@ -14,14 +14,29 @@ import { getToken, getOnboardingComplete, clearToken } from "../storage/storage"
 import { apiCall, SessionExpiredError } from "../services/api";
 
 // Public routes — session gate is bypassed for these
-const PUBLIC_ROUTES = ["/privacy"];
+const PUBLIC_ROUTES = ["/privacy", "/business"];
+
+// Domain-specific routing — hostname maps to landing route
+const BUSINESS_HOSTNAME = "business.vaineai.com";
 
 export default function RootLayout() {
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    // Skip session gate on public routes (privacy policy, etc.)
+    // Hostname-based routing: business.vaineai.com → /business landing
+    // (web-only; native platforms have no hostname concept)
+    if (Platform.OS === "web" && typeof window !== "undefined") {
+      if (
+        window.location.hostname === BUSINESS_HOSTNAME &&
+        pathname !== "/business"
+      ) {
+        router.replace("/business");
+        return;
+      }
+    }
+
+    // Skip session gate on public routes (privacy policy, business landing, etc.)
     if (PUBLIC_ROUTES.includes(pathname)) {
       return;
     }
@@ -84,6 +99,7 @@ export default function RootLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="home" />
       <Stack.Screen name="privacy" />
+      <Stack.Screen name="business" />
       <Stack.Screen name="(auth)" />
       <Stack.Screen name="(app)" />
       <Stack.Screen name="onboarding" />
