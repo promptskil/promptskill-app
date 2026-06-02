@@ -10,7 +10,7 @@
 import { useEffect } from "react";
 import { Platform } from "react-native";
 import { Stack, useRouter, usePathname } from "expo-router";
-import { getToken, getOnboardingComplete, clearToken } from "../storage/storage";
+import { getToken, getOnboardingComplete, clearToken, getBusinessId } from "../storage/storage";
 import { apiCall, SessionExpiredError } from "../services/api";
 
 // Public routes — session gate is bypassed for these
@@ -69,7 +69,9 @@ export default function RootLayout() {
             }
 
             // State 4: Token valid + onboarding true -> Main
-            router.replace("/(app)/");
+            // Q4 — business member lands on business dashboard
+            const businessId = await getBusinessId();
+            router.replace(businessId ? "/(app)/business" : "/(app)/");
             return;
           } catch (error) {
             // State 5/6: Token invalid or expired
