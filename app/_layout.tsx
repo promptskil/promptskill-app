@@ -14,7 +14,7 @@ import { getToken, getOnboardingComplete, clearToken, getBusinessId } from "../s
 import { apiCall, SessionExpiredError } from "../services/api";
 
 // Public routes — session gate is bypassed for these
-const PUBLIC_ROUTES = ["/privacy", "/business", "/business/login", "/invite/accept"];
+const PUBLIC_ROUTES = ["/privacy", "/business", "/business/login", "/invite/accept", "/reset-password"];
 
 // Domain-specific routing — hostname maps to landing route
 const BUSINESS_HOSTNAME = "business.vaineai.com";
@@ -29,7 +29,8 @@ export default function RootLayout() {
     if (Platform.OS === "web" && typeof window !== "undefined") {
       if (
         window.location.hostname === BUSINESS_HOSTNAME &&
-        pathname !== "/business"
+        pathname !== "/business" &&
+        !PUBLIC_ROUTES.includes(pathname)
       ) {
         router.replace("/business");
         return;
