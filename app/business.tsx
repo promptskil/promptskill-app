@@ -36,7 +36,7 @@ export default function Business() {
         </Pressable>
         <Pressable
           style={styles.signIn}
-          onPress={() => router.push("/(auth)/login")}
+          onPress={() => router.push("/business/login")}
         >
           <Text style={styles.signInText}>Sign in</Text>
         </Pressable>
