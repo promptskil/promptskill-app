@@ -22,7 +22,12 @@ import HistoryNavButton from "../../components/HistoryNavButton";
 import ModelInfoCard from "../../components/ModelInfoCard";
 import TopicInput from "../../components/TopicInput";
 import InlineResultItem from "../../components/InlineResultItem";
-import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
+import {
+  apiCall,
+  ApiError,
+  SessionExpiredError,
+  businessContextHeader,
+} from "../../services/api";
 import { getDefaultModel, setDefaultModel, getBusinessId } from "../../storage/storage";
 import type { Model } from "../../types";
 
@@ -82,11 +87,13 @@ export default function Main() {
     const controller = new AbortController();
     abortRef.current = controller;
     try {
+      const ctx = await businessContextHeader();
       const data = await apiCall<{ prompt_id: string; prompt: string }>(
         "POST",
         "/generate",
         { model: selectedModel, topic },
-        controller.signal
+        controller.signal,
+        ctx
       );
       setResults(prev => [...prev, {
         id: Date.now().toString(),
