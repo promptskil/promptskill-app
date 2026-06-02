@@ -10,7 +10,7 @@
 import { useEffect } from "react";
 import { Platform } from "react-native";
 import { Stack, useRouter, usePathname } from "expo-router";
-import { getToken, getOnboardingComplete, clearToken, getBusinessId } from "../storage/storage";
+import { getToken, getOnboardingComplete, clearToken } from "../storage/storage";
 import { apiCall, SessionExpiredError } from "../services/api";
 
 // Public routes — session gate is bypassed for these
@@ -24,20 +24,8 @@ export default function RootLayout() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Hostname-based routing: business.vaineai.com → /business landing
-    // (web-only; native platforms have no hostname concept)
-    if (Platform.OS === "web" && typeof window !== "undefined") {
-      if (
-        window.location.hostname === BUSINESS_HOSTNAME &&
-        pathname !== "/business" &&
-        !PUBLIC_ROUTES.includes(pathname)
-      ) {
-        router.replace("/business");
-        return;
-      }
-    }
-
-    // Skip session gate on public routes (privacy policy, business landing, etc.)
+    // Skip session gate on public routes (privacy, business landing,
+    // business login, invite accept, reset password).
     if (PUBLIC_ROUTES.includes(pathname)) {
       return;
     }
@@ -46,15 +34,20 @@ export default function RootLayout() {
         const token = await getToken();
         const onboarding = await getOnboardingComplete();
 
-        // State 1: Token absent + onboarding absent/false -> Home (web) / Login (iOS)
-        if (!token && (onboarding === null || onboarding === false)) {
-          router.replace(Platform.OS === "web" ? "/home" : "/(auth)/login");
-          return;
-        }
+        const onBusinessHost =
+          Platform.OS === "web" &&
+          typeof window !== "undefined" &&
+          window.location.hostname === BUSINESS_HOSTNAME;
 
-        // State 2: Token absent + onboarding true -> Home (web) / Login (iOS)
-        if (!token && onboarding === true) {
-          router.replace(Platform.OS === "web" ? "/home" : "/(auth)/login");
+        // No token: business host → business landing; otherwise
+        // Home (web) / Login (iOS). Authenticated users are NOT bounced
+        // to the landing (so a reload on the business host stays put).
+        if (!token) {
+          if (onBusinessHost) {
+            router.replace("/business");
+          } else {
+            router.replace(Platform.OS === "web" ? "/home" : "/(auth)/login");
+          }
           return;
         }
 
@@ -69,10 +62,10 @@ export default function RootLayout() {
               return;
             }
 
-            // State 4: Token valid + onboarding true -> Main
-            // Q4 — business member lands on business dashboard
-            const businessId = await getBusinessId();
-            router.replace(businessId ? "/(app)/business" : "/(app)/");
+            // State 4: Token valid + onboarded -> Main (everyone).
+            // Admins reach the org panel via the "Manage org" entry on
+            // Main (gated on account_type).
+            router.replace("/(app)/");
             return;
           } catch (error) {
             // State 5/6: Token invalid or expired

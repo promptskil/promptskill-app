@@ -6,7 +6,6 @@
 // x-app-version present on all calls
 
 import Constants from "expo-constants";
-import { Platform } from "react-native";
 import { getToken, clearToken, getBusinessId } from "../storage/storage";
 
 export const API_BASE_URL =
@@ -29,24 +28,15 @@ export class ApiError extends Error {
   }
 }
 
-const BUSINESS_HOSTNAME = "business.vaineai.com";
-
 /**
- * Business context header. Present only on the business web surface
- * (business.vaineai.com) when a business session is stored. The server
- * re-validates membership before trusting it. Drives clean
- * personal/business prompt separation.
+ * Business context header. Present whenever a business session is stored —
+ * admin/employee accounts are business-only, so their prompts are always
+ * org-context. The server re-validates membership before trusting it.
  */
 export async function businessContextHeader(): Promise<Record<string, string>> {
-  if (
-    Platform.OS === "web" &&
-    typeof window !== "undefined" &&
-    window.location.hostname === BUSINESS_HOSTNAME
-  ) {
-    const businessId = await getBusinessId();
-    if (businessId) {
-      return { "x-business-id": businessId };
-    }
+  const businessId = await getBusinessId();
+  if (businessId) {
+    return { "x-business-id": businessId };
   }
   return {};
 }

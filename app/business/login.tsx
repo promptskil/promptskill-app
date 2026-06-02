@@ -40,20 +40,14 @@ export default function BusinessLogin() {
       const data = await apiCall<{
         token: string;
         business_id: string | null;
-        role: string | null;
+        account_type: string;
       }>("POST", "/auth/login", {
         email,
         password,
       });
       await setToken(data.token);
-      await setBusinessContext(data.business_id, data.role);
-
-      // Q4 — business_id present → business dashboard, else → consumer main
-      if (data.business_id) {
-        router.replace("/(app)/business");
-      } else {
-        router.replace("/(app)/");
-      }
+      await setBusinessContext(data.business_id, data.account_type);
+      router.replace("/(app)/");
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
         setError("Incorrect email or password.");
