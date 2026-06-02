@@ -14,7 +14,7 @@ import { getToken, getOnboardingComplete, clearToken } from "../storage/storage"
 import { apiCall, SessionExpiredError } from "../services/api";
 
 // Public routes — session gate is bypassed for these
-const PUBLIC_ROUTES = ["/privacy", "/business", "/invite/accept"];
+const PUBLIC_ROUTES = ["/privacy", "/business", "/business/login", "/invite/accept"];
 
 // Domain-specific routing — hostname maps to landing route
 const BUSINESS_HOSTNAME = "business.vaineai.com";
@@ -100,6 +100,7 @@ export default function RootLayout() {
       <Stack.Screen name="home" />
       <Stack.Screen name="privacy" />
       <Stack.Screen name="business" />
+      <Stack.Screen name="business/login" />
       <Stack.Screen name="invite/accept" />
       <Stack.Screen name="(auth)" />
       <Stack.Screen name="(app)" />
