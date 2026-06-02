@@ -11,7 +11,12 @@ import PromptDisplay from "./PromptDisplay";
 import CopyPromptButton from "./CopyPromptButton";
 import ThumbsFeedback from "./ThumbsFeedback";
 import ModelLaunchChips from "./ModelLaunchChips";
-import { apiCall, ApiError, SessionExpiredError } from "../services/api";
+import {
+  apiCall,
+  ApiError,
+  SessionExpiredError,
+  businessContextHeader,
+} from "../services/api";
 import type { Model } from "../types";
 
 interface InlineResultItemProps {
@@ -60,10 +65,13 @@ export default function InlineResultItem({
     setFeedbackVote(null);
 
     try {
+      const ctx = await businessContextHeader();
       const data = await apiCall<{ prompt_id: string; prompt: string }>(
         "POST",
         "/generate",
-        { model, topic }
+        { model, topic },
+        undefined,
+        ctx
       );
       setPromptId(data.prompt_id);
       setCurrentPrompt(data.prompt);
