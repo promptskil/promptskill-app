@@ -28,7 +28,7 @@ import {
   SessionExpiredError,
   businessContextHeader,
 } from "../../services/api";
-import { getDefaultModel, setDefaultModel, getBusinessId } from "../../storage/storage";
+import { getDefaultModel, setDefaultModel, getRole } from "../../storage/storage";
 import type { Model } from "../../types";
 
 interface ResultItem {
@@ -50,13 +50,13 @@ export default function Main() {
 
   // Accumulated results — prompt display only
   const [results, setResults] = useState<ResultItem[]>([]);
-  const [businessId, setBusinessId] = useState<string | null>(null);
+  const [accountType, setAccountType] = useState<string | null>(null);
 
   useEffect(() => {
     getDefaultModel().then((model) => {
       setSelectedModel(model as Model);
     });
-    getBusinessId().then(setBusinessId);
+    getRole().then(setAccountType);
   }, []);
 
   function handleHistoryNav() {
@@ -150,7 +150,7 @@ export default function Main() {
           />
           <View style={styles.headerRight}>
             <HistoryNavButton onPress={handleHistoryNav} />
-            {Platform.OS === "web" && !!businessId && (
+            {Platform.OS === "web" && accountType === "admin" && (
               <Pressable onPress={() => router.push("/(app)/business/")}>
                 <Ionicons name="business-outline" size={26} color="#333" />
               </Pressable>
