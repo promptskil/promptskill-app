@@ -40,7 +40,11 @@ export default function Login() {
       });
       await setToken(data.token);
       await setBusinessContext(data.business_id, data.role);
-      router.replace("/(app)/");
+      if (data.business_id) {
+        router.replace("/(app)/business");
+      } else {
+        router.replace("/(app)/");
+      }
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
         setError("Incorrect email or password.");
