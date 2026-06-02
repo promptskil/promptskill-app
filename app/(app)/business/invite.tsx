@@ -19,14 +19,11 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { apiCall, ApiError, SessionExpiredError } from "../../../services/api";
 
-type Role = "employee" | "admin";
-
 export default function BusinessInvite() {
   const router = useRouter();
   const { businessId } = useLocalSearchParams<{ businessId: string }>();
 
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<Role>("employee");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -40,7 +37,7 @@ export default function BusinessInvite() {
       await apiCall(
         "POST",
         `/business/${businessId}/invite`,
-        { email: email.trim(), role }
+        { email: email.trim(), role: "employee" }
       );
       setSuccess(true);
       setTimeout(() => {
@@ -97,45 +94,6 @@ export default function BusinessInvite() {
           editable={!loading && !success}
           autoFocus
         />
-      </View>
-
-      {/* Role selector */}
-      <View style={styles.section}>
-        <Text style={styles.label}>Role</Text>
-        <View style={styles.roleRow}>
-          <Pressable
-            style={[
-              styles.roleBtn,
-              role === "employee" && styles.roleBtnActive,
-            ]}
-            onPress={() => setRole("employee")}
-          >
-            <Text
-              style={[
-                styles.roleBtnText,
-                role === "employee" && styles.roleBtnTextActive,
-              ]}
-            >
-              Employee
-            </Text>
-          </Pressable>
-          <Pressable
-            style={[
-              styles.roleBtn,
-              role === "admin" && styles.roleBtnActive,
-            ]}
-            onPress={() => setRole("admin")}
-          >
-            <Text
-              style={[
-                styles.roleBtnText,
-                role === "admin" && styles.roleBtnTextActive,
-              ]}
-            >
-              Admin
-            </Text>
-          </Pressable>
-        </View>
       </View>
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
