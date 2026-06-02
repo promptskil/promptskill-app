@@ -61,7 +61,7 @@ export default function BusinessDashboard() {
         return;
       }
       if (err instanceof ApiError && err.status === 404) {
-        router.replace("/(app)/business/create");
+        router.replace("/(app)/");
         return;
       }
       if (err instanceof ApiError && err.status === 429) {
