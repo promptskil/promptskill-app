@@ -26,6 +26,8 @@ export default function Login() {
 
   const canSubmit = email.length > 0 && password.length > 0 && !loading;
 
+  const showSignupLink = false;
+
   async function handleLogin() {
     setError("");
     setLoading(true);
@@ -83,12 +85,14 @@ export default function Login() {
         <Text style={styles.link}>Forgot password?</Text>
       </Pressable>
 
-      <Pressable
-        style={styles.signupLink}
-        onPress={() => router.push("/(auth)/")}
-      >
-        <Text style={styles.link}>New here? Create an account</Text>
-      </Pressable>
+      {showSignupLink && (
+        <Pressable
+          style={styles.signupLink}
+          onPress={() => router.push("/(auth)/")}
+        >
+          <Text style={styles.link}>New here? Create an account</Text>
+        </Pressable>
+      )}
     </View>
   );
 }
