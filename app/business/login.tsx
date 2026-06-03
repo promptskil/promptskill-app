@@ -45,6 +45,15 @@ export default function BusinessLogin() {
         email,
         password,
       });
+
+      // Business surface gate — individual accounts are not permitted here.
+      // Org access itself is enforced server-side by require_member; this is
+      // a front-door UX rule, not the security boundary.
+      if (data.account_type !== "admin" && data.account_type !== "employee") {
+        setError("This login is for business accounts. Use the email you were invited with.");
+        return;
+      }
+
       await setToken(data.token);
       await setBusinessContext(data.business_id, data.account_type);
       router.replace("/(app)/");
