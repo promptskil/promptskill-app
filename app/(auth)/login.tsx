@@ -14,7 +14,7 @@ import {
 import { useRouter } from "expo-router";
 import EmailInput from "../../components/EmailInput";
 import PasswordInput from "../../components/PasswordInput";
-import { apiCall, ApiError } from "../../services/api";
+import { apiCall, ApiError, loginPath } from "../../services/api";
 import { setToken, setBusinessContext } from "../../storage/storage";
 
 export default function Login() {
@@ -36,7 +36,7 @@ export default function Login() {
         token: string;
         business_id: string | null;
         account_type: string;
-      }>("POST", "/auth/login", {
+      }>("POST", loginPath(), {
         email,
         password,
       });
@@ -44,7 +44,9 @@ export default function Login() {
       await setBusinessContext(data.business_id, data.account_type);
       router.replace("/(app)/");
     } catch (err) {
-      if (err instanceof ApiError && err.status === 401) {
+      if (err instanceof ApiError && err.status === 403) {
+        setError("This login is for business accounts. Use the email you were invited with.");
+      } else if (err instanceof ApiError && err.status === 401) {
         setError("Incorrect email or password.");
       } else {
         setError("Something went wrong. Please try again.");
