@@ -146,7 +146,7 @@ export default function BusinessDashboard() {
       {/* Header */}
       <View style={styles.headerRow}>
         <Pressable
-          onPress={() => router.replace("/(app)/")}
+          onPress={() => (router.canGoBack() ? router.back() : router.replace("/(app)/"))}
           style={styles.backBtn}
         >
           <Ionicons name="arrow-back" size={24} color="#333" />
