@@ -41,14 +41,14 @@ export default function BusinessLogin() {
         token: string;
         business_id: string | null;
         account_type: string;
-      }>("POST", "/auth/login", {
+      }>("POST", "/auth/business/login", {
         email,
         password,
       });
 
-      // Business surface gate — individual accounts are not permitted here.
-      // Org access itself is enforced server-side by require_member; this is
-      // a front-door UX rule, not the security boundary.
+      // Defense-in-depth fallback. Primary enforcement is server-side:
+      // /auth/business/login returns 403 for individual accounts before
+      // issuing a session (handled in the catch below).
       if (data.account_type !== "admin" && data.account_type !== "employee") {
         setError("This login is for business accounts. Use the email you were invited with.");
         return;
@@ -58,7 +58,9 @@ export default function BusinessLogin() {
       await setBusinessContext(data.business_id, data.account_type);
       router.replace("/(app)/");
     } catch (err) {
-      if (err instanceof ApiError && err.status === 401) {
+      if (err instanceof ApiError && err.status === 403) {
+        setError("This login is for business accounts. Use the email you were invited with.");
+      } else if (err instanceof ApiError && err.status === 401) {
         setError("Incorrect email or password.");
       } else {
         setError("Something went wrong. Please try again.");
