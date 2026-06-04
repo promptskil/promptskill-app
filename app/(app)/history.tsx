@@ -4,11 +4,13 @@
 // Back gesture: ENABLED
 
 import { useState, useEffect, useCallback } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import PromptList from "../../components/PromptList";
+import InlineResultItem from "../../components/InlineResultItem";
 import { apiCall, SessionExpiredError } from "../../services/api";
+import type { Model } from "../../types";
 interface PromptRecord {
   prompt_id: string;
   model: string;
@@ -30,6 +32,13 @@ export default function History() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<{
+    id: string;
+    model: string;
+    topic: string;
+    prompt_text: string;
+    feedback_vote: "up" | "down" | null;
+  } | null>(null);
 
   const fetchHistory = useCallback(
     async (pageNum: number) => {
@@ -73,17 +82,9 @@ export default function History() {
     prompt_text: string;
     feedback_vote: "up" | "down" | null;
   }) {
-    // Load existing record into Result — no regeneration
-    // record.id carries the prompt_id value (mapped at PromptList level)
-    router.push({
-      pathname: "/(app)/result",
-      params: {
-        promptId: record.id,
-        generatedPrompt: record.prompt_text,
-        selectedModel: record.model,
-        topic: record.topic,
-      },
-    });
+    // In-memory detail — no navigation, no params (matches the extension).
+    // The prompt never leaves memory, so it can't be truncated/lost.
+    setSelected(record);
   }
 
   async function handleItemDelete(id: string) {
@@ -102,6 +103,27 @@ export default function History() {
     return (
       <View style={styles.container}>
         <Text style={styles.loading}>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (selected) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.headerRow}>
+          <Pressable onPress={() => setSelected(null)} style={styles.backBtn}>
+            <Ionicons name="arrow-back" size={24} color="#333" />
+          </Pressable>
+          <Text style={styles.header}>History</Text>
+        </View>
+        <ScrollView contentContainerStyle={styles.detailContent}>
+          <InlineResultItem
+            topic={selected.topic}
+            model={selected.model as Model}
+            promptId={selected.id}
+            initialPrompt={selected.prompt_text}
+          />
+        </ScrollView>
       </View>
     );
   }
@@ -153,5 +175,8 @@ const styles = StyleSheet.create({
     color: "#999",
     textAlign: "center",
     marginTop: 32,
+  },
+  detailContent: {
+    padding: 24,
   },
 });
