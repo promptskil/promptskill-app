@@ -12,6 +12,15 @@ export const API_BASE_URL =
   (Constants.expoConfig?.extra?.apiBaseUrl as string | undefined) ??
   "https://web-production-3a6e3.up.railway.app";
 
+export const onBusinessHost = (): boolean =>
+  typeof window !== "undefined" &&
+  window.location.hostname === "business.vaineai.com";
+
+// Business surface uses the gated endpoint (rejects individual accounts
+// before a session is issued). Every other surface uses /auth/login.
+export const loginPath = (): string =>
+  onBusinessHost() ? "/auth/business/login" : "/auth/login";
+
 export class SessionExpiredError extends Error {
   constructor() {
     super("Session expired. Please log in again.");
