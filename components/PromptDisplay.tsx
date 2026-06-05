@@ -26,6 +26,7 @@ interface PromptDisplayProps {
   editing?: boolean;
   editedText?: string;
   model?: Model;
+  animate?: boolean;
   onEditRequest?: () => void;
   onEditChange?: (text: string) => void;
 }
@@ -37,6 +38,7 @@ export default function PromptDisplay({
   editing = false,
   editedText = "",
   model,
+  animate = true,
   onEditRequest,
   onEditChange,
 }: PromptDisplayProps) {
@@ -45,6 +47,11 @@ export default function PromptDisplay({
   const inputRef = useRef<TextInput>(null);
 
   useEffect(() => {
+    if (!animate) {
+      // Static mode — render the stored prompt immediately, no typewriter.
+      setAnimating(false);
+      return;
+    }
     if (!prompt || loading || error) {
       setDisplayedText("");
       setAnimating(false);
@@ -66,7 +73,7 @@ export default function PromptDisplay({
     }, 10);
 
     return () => clearInterval(interval);
-  }, [prompt, loading, error]);
+  }, [prompt, loading, error, animate]);
 
   useEffect(() => {
     if (editing && inputRef.current) {
@@ -130,7 +137,7 @@ export default function PromptDisplay({
         </View>
       )}
       <Pressable onPress={onEditRequest}>
-        {displayedText === prompt && !animating ? (
+        {!animate || (displayedText === prompt && !animating) ? (
           <Markdown style={markdownStyles}>{prompt}</Markdown>
         ) : (
           <Text style={styles.plainText} selectable>
