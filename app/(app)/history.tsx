@@ -122,6 +122,7 @@ export default function History() {
             model={selected.model as Model}
             promptId={selected.id}
             initialPrompt={selected.prompt_text}
+            animate={false}
           />
         </ScrollView>
       </View>
