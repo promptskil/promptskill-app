@@ -22,6 +22,7 @@ import HistoryNavButton from "../../components/HistoryNavButton";
 import ModelInfoCard from "../../components/ModelInfoCard";
 import TopicInput from "../../components/TopicInput";
 import InlineResultItem from "../../components/InlineResultItem";
+import PromptDisplay from "../../components/PromptDisplay";
 import {
   apiCall,
   ApiError,
@@ -174,8 +175,13 @@ export default function Main() {
             model={item.model}
             promptId={item.promptId}
             initialPrompt={item.prompt}
+            animate={false}
           />
         ))}
+
+        {loading && (
+          <PromptDisplay prompt="" loading error={null} model={selectedModel} />
+        )}
 
       </ScrollView>
 
