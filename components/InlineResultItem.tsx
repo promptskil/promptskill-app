@@ -200,6 +200,7 @@ export default function InlineResultItem({
             editing={false}
             editedText=""
             model={model}
+            animate={false}
             onEditChange={() => {}}
           />
           {regenerated !== null && (
