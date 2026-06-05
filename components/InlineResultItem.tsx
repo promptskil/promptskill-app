@@ -26,6 +26,7 @@ interface InlineResultItemProps {
   promptId: string | null;
   initialPrompt: string;
   animate?: boolean;
+  editable?: boolean;
 }
 
 export default function InlineResultItem({
@@ -34,6 +35,7 @@ export default function InlineResultItem({
   promptId,
   initialPrompt,
   animate = true,
+  editable = true,
 }: InlineResultItemProps) {
   const router = useRouter();
 
@@ -149,9 +151,11 @@ export default function InlineResultItem({
           {latest.length > 0 && (
             <>
               <View style={styles.actionRow}>
-                <Pressable style={styles.iconBtn} onPress={handleEditRequest}>
-                  <Ionicons name="create-outline" size={16} color="#999" />
-                </Pressable>
+                {editable && (
+                  <Pressable style={styles.iconBtn} onPress={handleEditRequest}>
+                    <Ionicons name="create-outline" size={16} color="#999" />
+                  </Pressable>
+                )}
                 <CopyPromptButton promptText={latest} />
                 <ThumbsFeedback
                   vote={vote}
