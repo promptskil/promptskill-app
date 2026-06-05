@@ -9,6 +9,7 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import PromptList from "../../components/PromptList";
 import InlineResultItem from "../../components/InlineResultItem";
+import NewPromptButton from "../../components/NewPromptButton";
 import { apiCall, SessionExpiredError } from "../../services/api";
 import type { Model } from "../../types";
 interface PromptRecord {
@@ -117,6 +118,13 @@ export default function History() {
           <Text style={styles.header}>History</Text>
         </View>
         <ScrollView contentContainerStyle={styles.detailContent}>
+          {selected.topic.length > 0 && (
+            <View style={styles.topicBubble}>
+              <Text style={styles.topicBubbleText} selectable>
+                {selected.topic}
+              </Text>
+            </View>
+          )}
           <InlineResultItem
             topic={selected.topic}
             model={selected.model as Model}
@@ -124,6 +132,9 @@ export default function History() {
             initialPrompt={selected.prompt_text}
             animate={false}
           />
+          <View style={styles.detailActions}>
+            <NewPromptButton onPress={() => router.replace("/(app)/")} />
+          </View>
         </ScrollView>
       </View>
     );
@@ -179,5 +190,23 @@ const styles = StyleSheet.create({
   },
   detailContent: {
     padding: 24,
+  },
+  topicBubble: {
+    width: "100%",
+    maxWidth: 680,
+    alignSelf: "center",
+    backgroundColor: "#f8f9fa",
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 12,
+  },
+  topicBubbleText: {
+    fontSize: 16,
+    color: "#111",
+    lineHeight: 26,
+  },
+  detailActions: {
+    alignItems: "center",
+    marginTop: 24,
   },
 });
