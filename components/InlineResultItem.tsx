@@ -1,10 +1,11 @@
-// InlineResultItem — static result (Main + History) with regenerate.
-// initialPrompt is WRITE-ONCE, never overwritten. No edit.
-// Regenerate → a second result below with the SAME actions as the original
-// (Copy · Regenerate · Thumbs · launch chips); spinner while generating; no label.
+// InlineResultItem — single latest result (Main + History).
+// Shows only the LATEST prompt. Edit → add a refinement (the prompt stays
+// visible); Save sends the ORIGINAL topic + the refinement to /generate, the
+// backend connects both, and the new prompt replaces the view.
+// Actions: Edit · Copy · Thumbs · launch chips. No standalone Regenerate.
 
 import { useState } from "react";
-import { View, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet, TextInput } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import PromptDisplay from "./PromptDisplay";
@@ -36,32 +37,42 @@ export default function InlineResultItem({
 }: InlineResultItemProps) {
   const router = useRouter();
 
+  // Single, latest visible result.
+  const [latest, setLatest] = useState(initialPrompt);
+  const [latestPromptId, setLatestPromptId] = useState(promptId);
+
+  const [editing, setEditing] = useState(false);
+  const [refineText, setRefineText] = useState("");
   const [regenerating, setRegenerating] = useState(false);
-  const [regenError, setRegenError] = useState("");
-  const [regenerated, setRegenerated] = useState<string | null>(null);
-  const [regeneratedPromptId, setRegeneratedPromptId] = useState<string | null>(
-    null
-  );
-
+  const [error, setError] = useState("");
   const [vote, setVote] = useState<"up" | "down" | null>(null);
-  const [regenVote, setRegenVote] = useState<"up" | "down" | null>(null);
 
-  async function handleRegenerate() {
-    setRegenError("");
-    setRegenVote(null);
+  function handleEditRequest() {
+    setRefineText("");
+    setEditing(true);
+  }
+  function handleCancel() {
+    setEditing(false);
+    setRefineText("");
+  }
+
+  async function handleSave() {
+    setEditing(false);
+    setError("");
     setRegenerating(true);
     try {
       const ctx = await businessContextHeader();
       const data = await apiCall<{ prompt_id: string; prompt: string }>(
         "POST",
         "/generate",
-        { model, topic },
+        // Original topic + the refinement — backend connects both.
+        { model, topic, refinement: refineText },
         undefined,
         ctx
       );
-      // Replaces the regenerated slot only — original initialPrompt untouched.
-      setRegenerated(data.prompt);
-      setRegeneratedPromptId(data.prompt_id);
+      setLatest(data.prompt);
+      setLatestPromptId(data.prompt_id);
+      setVote(null);
     } catch (err) {
       if (err instanceof SessionExpiredError) {
         router.replace("/(auth)/login");
@@ -69,24 +80,26 @@ export default function InlineResultItem({
       }
       if (err instanceof ApiError) {
         if (err.status === 429) {
-          setRegenError("Too many requests. Try again later.");
+          setError("Too many requests. Try again later.");
         } else if (err.status === 504) {
-          setRegenError("Generation timed out. Please try again.");
+          setError("Generation timed out. Please try again.");
         } else {
-          setRegenError("Something went wrong. Please try again.");
+          setError("Something went wrong. Please try again.");
         }
       } else {
-        setRegenError("Something went wrong. Please try again.");
+        setError("Something went wrong. Please try again.");
       }
     } finally {
       setRegenerating(false);
+      setRefineText("");
     }
   }
 
-  function sendVote(targetId: string | null, v: "up" | "down") {
-    if (targetId) {
+  function handleVote(v: "up" | "down") {
+    setVote(v);
+    if (latestPromptId) {
       apiCall("PATCH", "/user/feedback", {
-        prompt_id: targetId,
+        prompt_id: latestPromptId,
         vote: v,
       }).catch(() => {});
     }
@@ -94,72 +107,62 @@ export default function InlineResultItem({
 
   return (
     <View style={styles.container}>
-      {/* ORIGINAL (static, write-once) */}
-      <PromptDisplay
-        prompt={initialPrompt}
-        loading={false}
-        error={null}
-        model={model}
-        animate={animate}
-      />
-      {initialPrompt.length > 0 && (
+      {regenerating ? (
+        <PromptDisplay prompt="" loading error={null} model={model} />
+      ) : editing ? (
         <>
-          <View style={styles.actionRow}>
-            <CopyPromptButton promptText={initialPrompt} />
-            <Pressable
-              style={styles.iconBtn}
-              onPress={handleRegenerate}
-              disabled={regenerating}
-            >
-              <Ionicons name="refresh" size={16} color="#999" />
-            </Pressable>
-            <ThumbsFeedback
-              vote={vote}
-              onVote={(v) => {
-                setVote(v);
-                sendVote(promptId, v);
-              }}
-              onDeselect={() => setVote(null)}
-            />
-          </View>
-          <ModelLaunchChips generatedBy={model} />
-        </>
-      )}
-
-      {/* REGENERATED — same actions as original, no label, spinner while generating */}
-      {(regenerating || regenError !== "" || regenerated !== null) && (
-        <View style={styles.derivedPanel}>
           <PromptDisplay
-            prompt={regenerated ?? ""}
-            loading={regenerating}
-            error={regenError || null}
+            prompt={latest}
+            loading={false}
+            error={null}
             model={model}
             animate={false}
           />
-          {regenerated !== null && (
+          <TextInput
+            style={styles.refineInput}
+            value={refineText}
+            onChangeText={setRefineText}
+            placeholder="Add a refinement (e.g. make it more concise)…"
+            placeholderTextColor="#bbb"
+            multiline
+            textAlignVertical="top"
+          />
+          <View style={styles.editActions}>
+            <Pressable style={styles.cancelBtn} onPress={handleCancel}>
+              <Text style={styles.cancelText}>Cancel</Text>
+            </Pressable>
+            <Pressable style={styles.saveBtn} onPress={handleSave}>
+              <Text style={styles.saveText}>Save</Text>
+            </Pressable>
+          </View>
+        </>
+      ) : (
+        <>
+          <PromptDisplay
+            prompt={latest}
+            loading={false}
+            error={null}
+            model={model}
+            animate={animate}
+          />
+          {error !== "" && <Text style={styles.errorText}>{error}</Text>}
+          {latest.length > 0 && (
             <>
               <View style={styles.actionRow}>
-                <CopyPromptButton promptText={regenerated} />
-                <Pressable
-                  style={styles.iconBtn}
-                  onPress={handleRegenerate}
-                  disabled={regenerating}
-                >
-                  <Ionicons name="refresh" size={16} color="#999" />
+                <Pressable style={styles.iconBtn} onPress={handleEditRequest}>
+                  <Ionicons name="create-outline" size={16} color="#999" />
                 </Pressable>
+                <CopyPromptButton promptText={latest} />
                 <ThumbsFeedback
-                  vote={regenVote}
-                  onVote={(v) => {
-                    setRegenVote(v);
-                    sendVote(regeneratedPromptId, v);
-                  }}
-                  onDeselect={() => setRegenVote(null)}
+                  vote={vote}
+                  onVote={handleVote}
+                  onDeselect={() => setVote(null)}
                 />
               </View>
               <ModelLaunchChips generatedBy={model} />
             </>
           )}
-        </View>
+        </>
       )}
     </View>
   );
@@ -167,6 +170,39 @@ export default function InlineResultItem({
 
 const styles = StyleSheet.create({
   container: { flexShrink: 0 },
+  refineInput: {
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    borderRadius: 8,
+    padding: 12,
+    minHeight: 60,
+    fontSize: 15,
+    color: "#111",
+  },
+  editActions: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 12,
+  },
+  cancelBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    backgroundColor: "#fff",
+  },
+  cancelText: { fontSize: 14, color: "#666", fontWeight: "500" },
+  saveBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: "#000",
+  },
+  saveText: { fontSize: 14, color: "#fff", fontWeight: "500" },
   actionRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -175,11 +211,5 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   iconBtn: { padding: 6, borderRadius: 6 },
-  derivedPanel: {
-    marginTop: 20,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: "#f0f0f0",
-    gap: 8,
-  },
+  errorText: { color: "#d00", fontSize: 14, textAlign: "center", marginTop: 8 },
 });
