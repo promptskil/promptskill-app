@@ -195,6 +195,9 @@ export default function Main() {
             editable={!loading}
             onFocus={() => setTopicFocused(true)}
             onBlur={() => setTopicFocused(false)}
+            onSubmit={() => {
+              if (canGenerate) handleGenerate();
+            }}
           />
           {loading ? (
             <Pressable style={styles.sendBtn} onPress={handleCancel}>
