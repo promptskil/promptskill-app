@@ -131,6 +131,7 @@ export default function History() {
             promptId={selected.id}
             initialPrompt={selected.prompt_text}
             animate={false}
+            editable={false}
           />
           <View style={styles.detailActions}>
             <NewPromptButton onPress={() => router.replace("/(app)/")} />
