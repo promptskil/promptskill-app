@@ -1,7 +1,7 @@
 // TopicInput (2.2) — Phase 12, Step 12.2
 // Unstructured free text. No character limit.
 
-import { TextInput, StyleSheet } from "react-native";
+import { TextInput, StyleSheet, Platform } from "react-native";
 
 interface TopicInputProps {
   topic: string;
@@ -9,6 +9,7 @@ interface TopicInputProps {
   editable?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
+  onSubmit?: () => void;
 }
 
 export default function TopicInput({
@@ -17,6 +18,7 @@ export default function TopicInput({
   editable = true,
   onFocus,
   onBlur,
+  onSubmit,
 }: TopicInputProps) {
   return (
     <TextInput
@@ -30,6 +32,17 @@ export default function TopicInput({
       textAlignVertical="top"
       onFocus={onFocus}
       onBlur={onBlur}
+      onKeyPress={(e: any) => {
+        // Web only: Enter submits, Shift+Enter inserts a newline.
+        if (
+          Platform.OS === "web" &&
+          e?.nativeEvent?.key === "Enter" &&
+          !e?.nativeEvent?.shiftKey
+        ) {
+          e.preventDefault?.();
+          onSubmit?.();
+        }
+      }}
     />
   );
 }
