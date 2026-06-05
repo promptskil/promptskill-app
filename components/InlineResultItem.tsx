@@ -1,10 +1,10 @@
-// InlineResultItem — static result with on-top working layers (Main + History).
-// The generated prompt (initialPrompt) is WRITE-ONCE and never overwritten.
-// Edit  → a transient working copy (copy/send; revertible). Original preserved.
-// Regen → a separate "Regenerated" panel beside the static original.
+// InlineResultItem — static result (Main + History) with regenerate.
+// initialPrompt is WRITE-ONCE, never overwritten. No edit.
+// Regenerate → a second result below with the SAME actions as the original
+// (Copy · Regenerate · Thumbs · launch chips); spinner while generating; no label.
 
 import { useState } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import PromptDisplay from "./PromptDisplay";
@@ -36,39 +36,19 @@ export default function InlineResultItem({
 }: InlineResultItemProps) {
   const router = useRouter();
 
-  // Edit → transient working copy (never overwrites initialPrompt)
-  const [editing, setEditing] = useState(false);
-  const [editedText, setEditedText] = useState("");
-  const [workingCopy, setWorkingCopy] = useState<string | null>(null);
-
-  // Regenerate → separate panel (never overwrites initialPrompt)
   const [regenerating, setRegenerating] = useState(false);
   const [regenError, setRegenError] = useState("");
   const [regenerated, setRegenerated] = useState<string | null>(null);
+  const [regeneratedPromptId, setRegeneratedPromptId] = useState<string | null>(
+    null
+  );
 
-  const [feedbackVote, setFeedbackVote] = useState<"up" | "down" | null>(null);
-
-  function handleEditRequest() {
-    setEditedText(workingCopy ?? initialPrompt);
-    setEditing(true);
-  }
-  function handleCancel() {
-    setEditing(false);
-    setEditedText("");
-  }
-  function handleSave() {
-    // Working copy only — the original initialPrompt is never overwritten.
-    setWorkingCopy(editedText);
-    setEditing(false);
-    setEditedText("");
-  }
-  function handleRevert() {
-    // Back to the static original.
-    setWorkingCopy(null);
-  }
+  const [vote, setVote] = useState<"up" | "down" | null>(null);
+  const [regenVote, setRegenVote] = useState<"up" | "down" | null>(null);
 
   async function handleRegenerate() {
     setRegenError("");
+    setRegenVote(null);
     setRegenerating(true);
     try {
       const ctx = await businessContextHeader();
@@ -79,8 +59,9 @@ export default function InlineResultItem({
         undefined,
         ctx
       );
-      // Separate panel — the original initialPrompt is never overwritten.
+      // Replaces the regenerated slot only — original initialPrompt untouched.
       setRegenerated(data.prompt);
+      setRegeneratedPromptId(data.prompt_id);
     } catch (err) {
       if (err instanceof SessionExpiredError) {
         router.replace("/(auth)/login");
@@ -102,111 +83,81 @@ export default function InlineResultItem({
     }
   }
 
-  function handleVote(vote: "up" | "down") {
-    setFeedbackVote(vote);
-    if (promptId) {
+  function sendVote(targetId: string | null, v: "up" | "down") {
+    if (targetId) {
       apiCall("PATCH", "/user/feedback", {
-        prompt_id: promptId,
-        vote,
+        prompt_id: targetId,
+        vote: v,
       }).catch(() => {});
     }
-  }
-  function handleDeselect() {
-    setFeedbackVote(null);
   }
 
   return (
     <View style={styles.container}>
-      {/* STATIC ORIGINAL (write-once) — or editor when editing */}
+      {/* ORIGINAL (static, write-once) */}
       <PromptDisplay
         prompt={initialPrompt}
         loading={false}
         error={null}
-        editing={editing}
-        editedText={editedText}
         model={model}
         animate={animate}
-        onEditChange={setEditedText}
       />
-
-      {editing ? (
-        <View style={styles.editActions}>
-          <Pressable style={styles.cancelBtn} onPress={handleCancel}>
-            <Text style={styles.cancelText}>Cancel</Text>
-          </Pressable>
-          <Pressable style={styles.saveBtn} onPress={handleSave}>
-            <Text style={styles.saveText}>Save</Text>
-          </Pressable>
-        </View>
-      ) : (
-        initialPrompt.length > 0 && (
-          <>
-            <View style={styles.feedbackRow}>
-              <CopyPromptButton promptText={initialPrompt} />
-              <Pressable style={styles.iconBtn} onPress={handleEditRequest}>
-                <Ionicons name="create-outline" size={16} color="#999" />
-              </Pressable>
-              <Pressable
-                style={styles.iconBtn}
-                onPress={handleRegenerate}
-                disabled={regenerating}
-              >
-                <Ionicons name="refresh" size={16} color="#999" />
-              </Pressable>
-              <ThumbsFeedback
-                vote={feedbackVote}
-                onVote={handleVote}
-                onDeselect={handleDeselect}
-              />
-            </View>
-            <ModelLaunchChips generatedBy={model} />
-          </>
-        )
-      )}
-
-      {/* WORKING COPY — transient, original preserved + revertible */}
-      {!editing && workingCopy !== null && (
-        <View style={styles.derivedPanel}>
-          <View style={styles.derivedHeader}>
-            <Text style={styles.derivedLabel}>Your edit</Text>
-            <Pressable onPress={handleRevert}>
-              <Text style={styles.revertText}>Revert</Text>
+      {initialPrompt.length > 0 && (
+        <>
+          <View style={styles.actionRow}>
+            <CopyPromptButton promptText={initialPrompt} />
+            <Pressable
+              style={styles.iconBtn}
+              onPress={handleRegenerate}
+              disabled={regenerating}
+            >
+              <Ionicons name="refresh" size={16} color="#999" />
             </Pressable>
+            <ThumbsFeedback
+              vote={vote}
+              onVote={(v) => {
+                setVote(v);
+                sendVote(promptId, v);
+              }}
+              onDeselect={() => setVote(null)}
+            />
           </View>
-          <PromptDisplay
-            prompt={workingCopy}
-            loading={false}
-            error={null}
-            editing={false}
-            editedText=""
-            model={model}
-            animate={false}
-            onEditChange={() => {}}
-          />
-          <View style={styles.feedbackRow}>
-            <CopyPromptButton promptText={workingCopy} />
-          </View>
-        </View>
+          <ModelLaunchChips generatedBy={model} />
+        </>
       )}
 
-      {/* REGENERATED — separate panel beside the static original */}
-      {!editing && (regenerating || regenError !== "" || regenerated !== null) && (
+      {/* REGENERATED — same actions as original, no label, spinner while generating */}
+      {(regenerating || regenError !== "" || regenerated !== null) && (
         <View style={styles.derivedPanel}>
-          <Text style={styles.derivedLabel}>Regenerated</Text>
           <PromptDisplay
             prompt={regenerated ?? ""}
             loading={regenerating}
             error={regenError || null}
-            editing={false}
-            editedText=""
             model={model}
             animate={false}
-            onEditChange={() => {}}
           />
           {regenerated !== null && (
-            <View style={styles.feedbackRow}>
-              <CopyPromptButton promptText={regenerated} />
-            </View>
+            <>
+              <View style={styles.actionRow}>
+                <CopyPromptButton promptText={regenerated} />
+                <Pressable
+                  style={styles.iconBtn}
+                  onPress={handleRegenerate}
+                  disabled={regenerating}
+                >
+                  <Ionicons name="refresh" size={16} color="#999" />
+                </Pressable>
+                <ThumbsFeedback
+                  vote={regenVote}
+                  onVote={(v) => {
+                    setRegenVote(v);
+                    sendVote(regeneratedPromptId, v);
+                  }}
+                  onDeselect={() => setRegenVote(null)}
+                />
+              </View>
+              <ModelLaunchChips generatedBy={model} />
+            </>
           )}
         </View>
       )}
@@ -216,30 +167,7 @@ export default function InlineResultItem({
 
 const styles = StyleSheet.create({
   container: { flexShrink: 0 },
-  editActions: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 12,
-    marginTop: 12,
-  },
-  cancelBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    backgroundColor: "#fff",
-  },
-  cancelText: { fontSize: 14, color: "#666", fontWeight: "500" },
-  saveBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    backgroundColor: "#000",
-  },
-  saveText: { fontSize: 14, color: "#fff", fontWeight: "500" },
-  feedbackRow: {
+  actionRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -254,17 +182,4 @@ const styles = StyleSheet.create({
     borderTopColor: "#f0f0f0",
     gap: 8,
   },
-  derivedHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  derivedLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#888",
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  revertText: { fontSize: 13, color: "#4F46E5", fontWeight: "500" },
 });
