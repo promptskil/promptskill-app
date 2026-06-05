@@ -24,6 +24,7 @@ interface InlineResultItemProps {
   model: Model;
   promptId: string | null;
   initialPrompt: string;
+  animate?: boolean;
 }
 
 export default function InlineResultItem({
@@ -31,6 +32,7 @@ export default function InlineResultItem({
   model,
   promptId,
   initialPrompt,
+  animate = true,
 }: InlineResultItemProps) {
   const router = useRouter();
 
@@ -123,6 +125,7 @@ export default function InlineResultItem({
         editing={editing}
         editedText={editedText}
         model={model}
+        animate={animate}
         onEditChange={setEditedText}
       />
 
@@ -177,6 +180,7 @@ export default function InlineResultItem({
             editing={false}
             editedText=""
             model={model}
+            animate={false}
             onEditChange={() => {}}
           />
           <View style={styles.feedbackRow}>
