@@ -14,7 +14,7 @@ import {
 import { useRouter } from "expo-router";
 import EmailInput from "../../components/EmailInput";
 import PasswordInput from "../../components/PasswordInput";
-import { apiCall, ApiError, loginPath } from "../../services/api";
+import { apiCall, ApiError, loginPath, onBusinessHost } from "../../services/api";
 import { setToken, setBusinessContext } from "../../storage/storage";
 
 export default function Login() {
@@ -26,7 +26,7 @@ export default function Login() {
 
   const canSubmit = email.length > 0 && password.length > 0 && !loading;
 
-  const showSignupLink = false;
+  const showSignupLink = !onBusinessHost();
 
   async function handleLogin() {
     setError("");
