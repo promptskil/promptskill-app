@@ -6,6 +6,7 @@
 // x-app-version present on all calls
 
 import Constants from "expo-constants";
+import { Platform } from "react-native";
 import { getToken, clearToken, getBusinessId } from "../storage/storage";
 
 export const API_BASE_URL =
@@ -13,6 +14,7 @@ export const API_BASE_URL =
   "https://web-production-3a6e3.up.railway.app";
 
 export const onBusinessHost = (): boolean =>
+  Platform.OS === "web" &&
   typeof window !== "undefined" &&
   window.location.hostname === "business.vaineai.com";
 
