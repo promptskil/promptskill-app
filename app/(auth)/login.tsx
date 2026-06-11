@@ -59,7 +59,7 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      <Image source={require("../../assets/loginlogo.png")} style={styles.logo} resizeMode="contain" />
+      <Image source={require("../../assets/logo1.png")} style={styles.logo} resizeMode="contain" />
 
       <View style={styles.form}>
         <EmailInput value={email} onChangeText={setEmail} editable={!loading} />
@@ -108,8 +108,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   logo: {
-    width: 140,
-    aspectRatio: 745 / 250,
+    width: 90,
+    height: 28,
     alignSelf: "center",
     marginBottom: 24,
   },
