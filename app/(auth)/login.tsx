@@ -10,7 +10,6 @@ import {
   Pressable,
   StyleSheet,
   ActivityIndicator,
-  Image,
 } from "react-native";
 import { useRouter } from "expo-router";
 import EmailInput from "../../components/EmailInput";
@@ -59,7 +58,7 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      <Image source={require("../../assets/loginlogo.png")} style={styles.logo} resizeMode="contain" />
+      <Text style={styles.header}>Login</Text>
 
       <View style={styles.form}>
         <EmailInput value={email} onChangeText={setEmail} editable={!loading} />
@@ -106,12 +105,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 24,
     backgroundColor: "#fff",
-  },
-  logo: {
-    width: 120,
-    aspectRatio: 745 / 250,
-    alignSelf: "center",
-    marginBottom: 24,
   },
   header: {
     fontSize: 28,
