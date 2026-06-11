@@ -79,7 +79,7 @@ export default function BusinessLogin() {
       <View style={styles.header}>
         <Pressable onPress={() => router.push("/business")}>
           <Image
-            source={require("../../assets/logo.png")}
+            source={require("../../assets/logo1.png")}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#eaeaea",
   },
-  logo: { width: 140, height: 34 },
+  logo: { width: 140, height: 44 },
   body: {
     paddingHorizontal: 24,
     paddingTop: 64,
