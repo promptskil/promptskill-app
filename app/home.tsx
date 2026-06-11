@@ -179,41 +179,6 @@ export default function Home() {
         </View>
       </View>
 
-      {/* ── Platform Strip ── */}
-      <View style={styles.marqueeOuter}>
-        <View style={styles.marqueeStatic}>
-          {["ChatGPT", "Claude", "Gemini", "Grok"].map((name, i) => (
-            <View key={name} style={styles.marqueeItem}>
-              {i > 0 && <View style={styles.marqueeDot} />}
-              <Text style={styles.marqueeText}>{name}</Text>
-            </View>
-          ))}
-        </View>
-      </View>
-
-      {/* ── Get Access Section ── */}
-      <View style={styles.getAccessSection}>
-        <Animated.View style={[styles.cycleTextWrap, { opacity: cycleAnim }]}>
-          <Text style={styles.cycleText}>{cycleTexts[cycleIndex]}</Text>
-        </Animated.View>
-        <Pressable style={styles.getAccessBtn} onPress={() => setGetAccessVisible(v => !v)}>
-          <Text style={styles.getAccessBtnText}>Get Access</Text>
-        </Pressable>
-        {getAccessVisible && (
-          <View style={styles.getAccessEmails}>
-            <Pressable style={styles.getAccessRow} onPress={() => Linking.openURL('mailto:support@vaineai.com')}>
-              <Text style={styles.getAccessLabel}>Personal</Text>
-              <Text style={styles.getAccessEmail}>support@vaineai.com</Text>
-            </Pressable>
-            <View style={styles.getAccessDivider} />
-            <Pressable style={styles.getAccessRow} onPress={() => Linking.openURL('mailto:partnership@vaineai.com')}>
-              <Text style={styles.getAccessLabel}>Business</Text>
-              <Text style={styles.getAccessEmail}>partnership@vaineai.com</Text>
-            </Pressable>
-          </View>
-        )}
-      </View>
-
       {/* ── Contact Modal ── */}
       <Modal
         visible={contactVisible}
