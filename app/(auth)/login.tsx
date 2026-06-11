@@ -108,15 +108,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   logo: {
-    width: 200,
-    height: 80,
+    width: 240,
+    aspectRatio: 3 / 2,
     alignSelf: "center",
-    marginBottom: 32,
+    marginBottom: 24,
   },
   header: {
     fontSize: 28,
     fontWeight: "700",
-    marginBottom: 32,
+    marginBottom: 24,
     textAlign: "center",
   },
   form: {
