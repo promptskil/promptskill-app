@@ -155,15 +155,6 @@ export default function Home() {
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="handled"
     >
-      {/* ── Announcement Bar ── */}
-      <View style={styles.announcementBar}>
-        <Ionicons name="logo-apple" size={13} color="#d1d5db" />
-        <Text style={styles.announcementText}>
-          Available on iOS and the web for personal and small businesses.
-        </Text>
-        <Ionicons name="globe-outline" size={13} color="#d1d5db" />
-      </View>
-
       {/* ── Nav ── */}
       <View style={styles.navOuter}>
         <View style={[styles.nav, isWide && styles.navConstrained]}>
@@ -198,131 +189,6 @@ export default function Home() {
             </View>
           ))}
         </View>
-      </View>
-
-      {/* ── Hero ── */}
-      <View style={[styles.sectionOuter, styles.heroSection]}>
-        <View style={[styles.inner, isWide && styles.heroRow]}>
-          {/* Left */}
-          <View style={[styles.heroLeft, isWide && styles.heroLeftWide]}>
-            <Animated.View style={{
-              opacity: heroAnim,
-              transform: [{ translateY: heroAnim.interpolate({ inputRange: [0,1], outputRange: [24, 0] }) }],
-            }}>
-              <Text style={[styles.heroHeadline, isWide && styles.heroHeadlineWide]}>
-                Stay in flow{"\n"}with AI.
-              </Text>
-            </Animated.View>
-            <Animated.View style={{
-              opacity: heroSubAnim,
-              transform: [{ translateY: heroSubAnim.interpolate({ inputRange: [0,1], outputRange: [20, 0] }) }],
-            }}>
-              <Text style={styles.heroSub}>
-                Less back and forth. Less rewriting. More getting work done.{"\n"}You already know what you want. Vaine helps AI understand you.
-              </Text>
-            </Animated.View>
-            <Animated.View style={{
-              opacity: heroCTAAnim,
-              transform: [{ translateY: heroCTAAnim.interpolate({ inputRange: [0,1], outputRange: [16, 0] }) }],
-            }}>
-              <View style={styles.heroCtas}>
-                <Pressable style={styles.ctaPrimary} onPress={openPartnership}>
-                  <Text style={styles.ctaPrimaryText}>Get Started →</Text>
-                </Pressable>
-                <Pressable style={styles.ctaSecondary} onPress={openPartnership}>
-                  <Text style={styles.ctaSecondaryText}>Request a demo →</Text>
-                </Pressable>
-              </View>
-              <Pressable
-                style={styles.dlChip}
-                onPress={() => Linking.openURL('https://apps.apple.com')}
-              >
-                <Ionicons name="logo-apple" size={16} color="#000" />
-                <Text style={styles.dlChipText}>Download for iPhone →</Text>
-              </Pressable>
-            </Animated.View>
-          </View>
-        </View>
-      </View>
-
-      {/* ── Tabbed Feature Section ── */}
-      <View style={styles.sectionOuter}>
-        {/* Tab bar */}
-        <View style={[styles.tabBar, isWide && styles.tabBarWide]}>
-          {[
-            { label: "Problem → Solution", icon: "bulb-outline" as const },
-            { label: "Stay in Flow",        icon: "flash-outline" as const },
-            { label: "Who It's For",        icon: "people-outline" as const },
-          ].map((tab, i) => (
-            <Pressable
-              key={tab.label}
-              style={[styles.tabBtn, activeTab === i && styles.tabBtnActive]}
-              onPress={() => switchTab(i)}
-            >
-              <Ionicons name={tab.icon} size={16} color={activeTab === i ? "#000" : "#888"} />
-              <Text style={[styles.tabBtnText, activeTab === i && styles.tabBtnTextActive]}>
-                {tab.label}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-
-        {/* Tab content — fades on switch */}
-        <Animated.View style={{ opacity: tabAnim }}>
-          {activeTab === 0 && (
-            <View style={[styles.inner, isWide && styles.featureRow]}>
-              <View style={[styles.featureText, isWide && styles.featureHalf]}>
-                <Text style={styles.featureHeadline}>
-                  If you define the problem correctly, you have the solution.
-                </Text>
-                <Text style={styles.featureBody}>
-                  AI does the work for you.
-                </Text>
-              </View>
-            </View>
-          )}
-          {activeTab === 1 && (
-            <View style={[styles.inner, isWide && styles.featureRow]}>
-              <View style={[styles.featureText, isWide && styles.featureHalf]}>
-                <Text style={styles.featureHeadline}>
-                  Stay in flow inside ChatGPT, Claude, Gemini, and Grok.
-                </Text>
-                <Text style={styles.featureBody}>
-                  Less switching. Less rewriting. Less stopping to explain yourself again.
-                </Text>
-              </View>
-              {isWide && (
-                <View style={styles.featureHalf}>
-                  <View style={styles.featureCard}>
-                    {["ChatGPT", "Claude", "Gemini", "Grok"].map((tool, i) => (
-                      <View key={tool} style={[styles.toolRow, i < 3 && styles.toolRowBorder]}>
-                        <View style={styles.toolDot} />
-                        <Text style={styles.toolName}>{tool}</Text>
-                        <Ionicons name="checkmark-circle" size={16} color="#34d399" />
-                      </View>
-                    ))}
-                  </View>
-                </View>
-              )}
-            </View>
-          )}
-          {activeTab === 2 && (
-            <View style={[styles.userCards, isWide && styles.userCardsRow]}>
-              {[
-                { type: "Small Business", icon: "business-outline" as const },
-                { type: "Researcher",     icon: "search-outline" as const },
-                { type: "Freelancer",     icon: "laptop-outline" as const },
-                { type: "Marketer",       icon: "megaphone-outline" as const },
-                { type: "Consultant",     icon: "briefcase-outline" as const },
-              ].map((card) => (
-                <View key={card.type} style={styles.userCard}>
-                  <Ionicons name={card.icon} size={22} color="#555" />
-                  <Text style={styles.userCardType}>{card.type}</Text>
-                </View>
-              ))}
-            </View>
-          )}
-        </Animated.View>
       </View>
 
       {/* ── Get Access Section ── */}
@@ -436,46 +302,6 @@ export default function Home() {
         </Pressable>
       </Modal>
 
-      {/* ── Footer ── */}
-      <View style={styles.footerOuter}>
-        <View style={styles.footerTop}>
-          {/* Columns */}
-          <View style={[styles.footerCols, isWide && styles.footerColsRow]}>
-            {/* Product */}
-            <View style={styles.footerCol}>
-              <Text style={styles.footerColTitle}>Product</Text>
-              <Text style={styles.footerColLink}>iOS App</Text>
-              <Text style={styles.footerColLink}>Enterprise</Text>
-              <Text style={styles.footerColLink}>Individual</Text>
-            </View>
-            {/* Company */}
-            <View style={styles.footerCol}>
-              <Text style={styles.footerColTitle}>Company</Text>
-              <Text style={styles.footerColLink}>About</Text>
-              <Text style={styles.footerColLink}>Careers</Text>
-              <Text style={styles.footerColLink}>Blog</Text>
-            </View>
-            {/* Legal */}
-            <View style={styles.footerCol}>
-              <Text style={styles.footerColTitle}>Legal</Text>
-              <Text style={styles.footerColLink}>Terms of Service</Text>
-              <Text style={styles.footerColLink}>Privacy Policy</Text>
-              <Text style={styles.footerColLink}>Data Use</Text>
-              <Text style={styles.footerColLink}>Security</Text>
-            </View>
-            {/* Connect */}
-            <View style={styles.footerCol}>
-              <Text style={styles.footerColTitle}>Connect</Text>
-              <Text style={styles.footerColLink}>X ↗</Text>
-              <Text style={styles.footerColLink}>LinkedIn ↗</Text>
-            </View>
-          </View>
-        </View>
-        {/* Bottom bar */}
-        <View style={styles.footerBottom}>
-          <Text style={styles.footerBottomText}>© 2026 Vaine, INC.</Text>
-        </View>
-      </View>
     </ScrollView>
   );
 }
