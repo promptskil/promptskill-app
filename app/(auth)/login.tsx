@@ -108,8 +108,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   logo: {
-    width: 140,
-    aspectRatio: 648 / 202,
+    width: 120,
+    aspectRatio: 3 / 2,
     alignSelf: "center",
     marginBottom: 24,
   },
