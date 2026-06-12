@@ -1,8 +1,8 @@
 // Screen — Home (web only)
 // Public landing page — shown to unauthenticated web users.
-// Structure: nav -> hero (2 clickable 3D mock-screen stacks) -> image+title
-//            -> download (1 mobile badge) -> notice band -> footer -> chat widget.
-// Contact modal: opened from "Contact sales" (nav) and the hero CTA.
+// Structure: nav -> hero (2 click-to-rotate 3D mock-screen stacks) -> image+title
+//            -> download (Apple iOS icon) -> notice band -> footer -> chat widget.
+// Contact modal: opened from the hero CTA, notice-band link, and chat widget.
 
 import { useState, type ReactNode } from "react";
 import {
@@ -23,56 +23,58 @@ const ACCENT = "#1acb97";
 
 // ── 3D stack position per slot (0 = back, 1 = mid, 2 = front) ───────────────
 // horizontal recede: cards step back to the right and zoom out, one behind another
-function posStyle(pos: number, count: number) {
+function posStyle(pos: number, count: number, wide: boolean) {
   const depth = count - 1 - pos; // 0 = front-most
+  const ox = wide ? 52 : 32;
+  const oy = wide ? 30 : 18;
   return {
     transform: [
       { perspective: 1600 },
-      { translateX: depth * 40 },
-      { translateY: depth * 10 },
-      { scale: 1 - depth * 0.08 },
+      { translateX: depth * ox },
+      { translateY: depth * oy },
+      { scale: 1 - depth * 0.06 },
     ],
+    opacity: 1 - depth * 0.12,
     zIndex: pos + 1,
   };
 }
 
-// web-only smooth fade/move for dissolve
+// web-only smooth move/scale for the rotate transition
 const fadeStyle = {
   transitionProperty: "opacity, transform",
-  transitionDuration: "360ms",
-  transitionTimingFunction: "ease",
+  transitionDuration: "420ms",
+  transitionTimingFunction: "cubic-bezier(.22,.61,.36,1)",
 } as any;
 
-// ── A clickable, static 3D stack of 3 screens (cycles front->back on press) ──
-function Stack3D({ screens, wide }: { screens: ReactNode[]; wide: boolean }) {
-  const [visible, setVisible] = useState<number[]>(() => screens.map((_, i) => i));
-  const [fading, setFading] = useState<number | null>(null);
+// web-only gradient text for the hero accent line
+const GRAD = "linear-gradient(120deg,#1acb97 0%,#38bdf8 50%,#8b5cf6 100%)";
+const gradLine = {
+  backgroundImage: GRAD,
+  backgroundClip: "text",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  color: "transparent",
+} as any;
 
-  const dissolve = () => {
-    if (fading !== null || visible.length === 0) return;
-    const front = visible[visible.length - 1];
-    setFading(front);
-    setTimeout(() => {
-      setVisible((v) => {
-        const next = v.filter((i) => i !== front);
-        return next.length === 0 ? screens.map((_, i) => i) : next;
-      });
-      setFading(null);
-    }, 360);
+// ── A clickable 3D stack: click rotates the front image to the back (cycles) ──
+function Stack3D({ screens, wide }: { screens: ReactNode[]; wide: boolean }) {
+  const [order, setOrder] = useState<number[]>(() => screens.map((_, i) => i));
+
+  const rotate = () => {
+    setOrder((o) => {
+      if (o.length < 2) return o;
+      const next = o.slice();
+      next.unshift(next.pop() as number); // front (last) -> back (first)
+      return next;
+    });
   };
 
   return (
-    <Pressable style={[s.stack, !wide && s.stackNarrow]} onPress={dissolve} accessibilityRole="button">
-      {visible.map((idx, pos) => (
+    <Pressable style={[s.stack, !wide && s.stackNarrow]} onPress={rotate} accessibilityRole="button">
+      {order.map((idx, pos) => (
         <View
           key={idx}
-          style={[
-            s.mock,
-            wide ? null : s.mockNarrow,
-            posStyle(pos, visible.length),
-            fadeStyle,
-            { opacity: idx === fading ? 0 : 1 },
-          ]}
+          style={[s.mock, wide ? null : s.mockNarrow, posStyle(pos, order.length, wide), fadeStyle]}
         >
           {screens[idx]}
         </View>
@@ -180,9 +182,6 @@ export default function Home() {
           <View style={[s.wrap, s.nav]}>
             <Image source={require("../assets/logo1.png")} style={s.navLogo} resizeMode="contain" />
             <View style={s.navRight}>
-              <Pressable onPress={openContact}>
-                <Text style={s.navContact}>Contact sales</Text>
-              </Pressable>
               {showSignIn && (
                 <Pressable style={s.signIn} onPress={() => router.push("/(auth)/login")}>
                   <Text style={s.signInT}>Sign in</Text>
@@ -197,9 +196,10 @@ export default function Home() {
           <View style={[s.heroRow, !isWide && s.heroCol]}>
             <View style={[s.heroLeft, !isWide && s.heroLeftNarrow]}>
               <Text style={s.eyebrow}>[ ANNOUNCEMENT HEADING ]</Text>
-              <Text style={s.h1}>[ Main headline goes here ]</Text>
+              <Text style={s.h1}>[ Main headline ]{"\n"}<Text style={gradLine}>[ accent line ]</Text></Text>
+              <Text style={s.lede}>[ Supporting subhead — one or two lines of value proposition. ]</Text>
               <Pressable style={s.cta} onPress={openContact}>
-                <Text style={s.ctaT}>[ Primary CTA ]</Text>
+                <Text style={s.ctaT}>[ Primary CTA ]  →</Text>
               </Pressable>
             </View>
             <View style={s.heroRight}>
@@ -222,20 +222,10 @@ export default function Home() {
 
         {/* Download */}
         <View style={s.download}>
-          <View style={s.wrap}>
-            <Text style={s.dlH}>[ Download heading ]</Text>
-            <Text style={s.dlSub}>[ Short download subtext ]</Text>
-            <View style={s.badges}>
-              <Pressable style={s.badge} onPress={() => {}}>
-                <View style={s.badgeGlyph}>
-                  <Text style={s.badgeGlyphT}>[ic]</Text>
-                </View>
-                <View>
-                  <Text style={s.badgeSmall}>[ DOWNLOAD FOR ]</Text>
-                  <Text style={s.badgeBig}>[ iPhone / iOS ]</Text>
-                </View>
-              </Pressable>
-            </View>
+          <View style={[s.wrap, s.appleWrap]}>
+            <Pressable style={s.appleTile} onPress={() => {}} accessibilityRole="button">
+              <Ionicons name="logo-apple" size={120} color="#fff" />
+            </Pressable>
           </View>
         </View>
 
@@ -344,7 +334,8 @@ const s = StyleSheet.create({
   heroLeftNarrow: { alignItems: "center", marginBottom: 8 },
   heroRight: { flex: 1.25, alignItems: "center", width: "100%" },
   eyebrow: { color: ACCENT, fontSize: 13, fontWeight: "700", letterSpacing: 1, marginBottom: 14 },
-  h1: { fontSize: 42, lineHeight: 48, fontWeight: "800", textAlign: "left", color: "#1f2937", maxWidth: 520, marginBottom: 26 },
+  h1: { fontSize: 42, lineHeight: 48, fontWeight: "800", textAlign: "left", color: "#1f2937", maxWidth: 520, marginBottom: 14 },
+  lede: { fontSize: 18, lineHeight: 26, color: "#64748b", maxWidth: 480, marginBottom: 28, textAlign: "left" },
   cta: { backgroundColor: ACCENT, borderRadius: 10, paddingVertical: 14, paddingHorizontal: 26 },
   ctaT: { color: "#fff", fontSize: 16, fontWeight: "700" },
   stackTitle: { color: "#9aa3af", fontSize: 12, fontWeight: "700", letterSpacing: 1, marginTop: 48 },
@@ -375,7 +366,9 @@ const s = StyleSheet.create({
   imgBlock: { width: "100%", maxWidth: 880, height: 380, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 14, backgroundColor: "#f8fafc", alignItems: "center", justifyContent: "center" },
   phT: { color: "#9aa3af", fontSize: 14 },
 
-  download: { backgroundColor: "#0f172a", paddingVertical: 64, alignItems: "center" },
+  download: { backgroundColor: "#0f172a", paddingVertical: 80, alignItems: "center" },
+  appleWrap: { alignItems: "center" },
+  appleTile: { width: 184, height: 184, borderRadius: 40, backgroundColor: "#111a2b", borderWidth: 1, borderColor: "#243049", alignItems: "center", justifyContent: "center" },
   dlH: { color: "#fff", fontSize: 28, fontWeight: "800", textAlign: "center", marginBottom: 8 },
   dlSub: { color: "#cbd5e1", textAlign: "center", maxWidth: 520, marginBottom: 26, alignSelf: "center" },
   badges: { flexDirection: "row", justifyContent: "center" },
