@@ -195,16 +195,17 @@ export default function Home() {
         <View style={[s.wrap, s.hero]}>
           <View style={[s.heroRow, !isWide && s.heroCol]}>
             <View style={[s.heroLeft, !isWide && s.heroLeftNarrow]}>
-              <Text style={s.eyebrow}>[ ANNOUNCEMENT HEADING ]</Text>
-              <Text style={s.h1}>[ Main headline ]{"\n"}<Text style={gradLine}>[ accent line ]</Text></Text>
+              <Text style={s.h1}>What You Mean isn't What AI Does</Text>
               <Text style={s.lede}>[ Supporting subhead — one or two lines of value proposition. ]</Text>
               <Pressable style={s.cta} onPress={openContact}>
-                <Text style={s.ctaT}>[ Primary CTA ]  →</Text>
+                <Text style={s.ctaT}>Get Started</Text>
               </Pressable>
             </View>
             <View style={s.heroRight}>
               <Text style={s.stackTitle}>[ SCREENSHOT / IMAGE — SET 1 ]</Text>
-              <Stack3D screens={set1} wide={isWide} />
+              <View style={[s.heroStackWrap, isWide && s.heroStackShift]}>
+                <Stack3D screens={set1} wide={isWide} />
+              </View>
             </View>
           </View>
 
@@ -330,9 +331,11 @@ const s = StyleSheet.create({
   hero: { alignItems: "center", paddingTop: 64, paddingBottom: 56 },
   heroRow: { flexDirection: "row", alignItems: "center", width: "100%", gap: 36 },
   heroCol: { flexDirection: "column", gap: 8 },
-  heroLeft: { flex: 1, alignItems: "flex-start" },
+  heroLeft: { flex: 1, alignItems: "flex-start", zIndex: 2 },
   heroLeftNarrow: { alignItems: "center", marginBottom: 8 },
-  heroRight: { flex: 1.25, alignItems: "center", width: "100%" },
+  heroRight: { flex: 1.25, alignItems: "center", width: "100%", zIndex: 1 },
+  heroStackWrap: { width: "100%", alignItems: "center" },
+  heroStackShift: { paddingLeft: 120 },
   eyebrow: { color: ACCENT, fontSize: 13, fontWeight: "700", letterSpacing: 1, marginBottom: 14 },
   h1: { fontSize: 42, lineHeight: 48, fontWeight: "800", textAlign: "left", color: "#1f2937", maxWidth: 520, marginBottom: 14 },
   lede: { fontSize: 18, lineHeight: 26, color: "#64748b", maxWidth: 480, marginBottom: 28, textAlign: "left" },
