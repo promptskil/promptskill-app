@@ -25,16 +25,16 @@ const ACCENT = "#1acb97";
 // horizontal recede: cards step back to the right and zoom out, one behind another
 function posStyle(pos: number, count: number, wide: boolean) {
   const depth = count - 1 - pos; // 0 = front-most
-  const ox = wide ? 52 : 32;
+  const ox = wide ? 46 : 26;
   const oy = wide ? 30 : 18;
   return {
     transform: [
       { perspective: 1600 },
       { translateX: depth * ox },
       { translateY: depth * oy },
-      { scale: 1 - depth * 0.06 },
+      { scale: 1 - depth * 0.05 },
     ],
-    opacity: 1 - depth * 0.12,
+    opacity: 1 - depth * 0.09,
     zIndex: pos + 1,
   };
 }
@@ -175,7 +175,7 @@ export default function Home() {
   ];
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+    <View style={{ flex: 1, backgroundColor: "#fff", overflow: "hidden" }}>
       <ScrollView contentContainerStyle={s.container} keyboardShouldPersistTaps="handled">
         {/* Nav */}
         <View style={s.navWrap}>
@@ -195,16 +195,17 @@ export default function Home() {
         <View style={[s.wrap, s.hero]}>
           <View style={[s.heroRow, !isWide && s.heroCol]}>
             <View style={[s.heroLeft, !isWide && s.heroLeftNarrow]}>
-              <Text style={s.eyebrow}>[ ANNOUNCEMENT HEADING ]</Text>
-              <Text style={s.h1}>[ Main headline ]{"\n"}<Text style={gradLine}>[ accent line ]</Text></Text>
+              <Text style={s.h1}>What You Mean isn't What AI Does</Text>
               <Text style={s.lede}>[ Supporting subhead — one or two lines of value proposition. ]</Text>
               <Pressable style={s.cta} onPress={openContact}>
-                <Text style={s.ctaT}>[ Primary CTA ]  →</Text>
+                <Text style={s.ctaT}>Get Started</Text>
               </Pressable>
             </View>
             <View style={s.heroRight}>
               <Text style={s.stackTitle}>[ SCREENSHOT / IMAGE — SET 1 ]</Text>
-              <Stack3D screens={set1} wide={isWide} />
+              <View style={[s.heroStackWrap, isWide && s.heroStackShift]}>
+                <Stack3D screens={set1} wide={isWide} />
+              </View>
             </View>
           </View>
 
@@ -330,20 +331,22 @@ const s = StyleSheet.create({
   hero: { alignItems: "center", paddingTop: 64, paddingBottom: 56 },
   heroRow: { flexDirection: "row", alignItems: "center", width: "100%", gap: 36 },
   heroCol: { flexDirection: "column", gap: 8 },
-  heroLeft: { flex: 1, alignItems: "flex-start" },
+  heroLeft: { flex: 1, alignItems: "flex-start", zIndex: 2 },
   heroLeftNarrow: { alignItems: "center", marginBottom: 8 },
-  heroRight: { flex: 1.25, alignItems: "center", width: "100%" },
+  heroRight: { flex: 1.25, alignItems: "center", width: "100%", zIndex: 1 },
+  heroStackWrap: { width: "100%", alignItems: "center" },
+  heroStackShift: { paddingLeft: 160 },
   eyebrow: { color: ACCENT, fontSize: 13, fontWeight: "700", letterSpacing: 1, marginBottom: 14 },
-  h1: { fontSize: 42, lineHeight: 48, fontWeight: "800", textAlign: "left", color: "#1f2937", maxWidth: 520, marginBottom: 14 },
+  h1: { fontSize: 34, lineHeight: 40, fontWeight: "800", textAlign: "left", color: "#1f2937", maxWidth: 520, marginBottom: 14 },
   lede: { fontSize: 18, lineHeight: 26, color: "#64748b", maxWidth: 480, marginBottom: 28, textAlign: "left" },
   cta: { backgroundColor: ACCENT, borderRadius: 10, paddingVertical: 14, paddingHorizontal: 26 },
   ctaT: { color: "#fff", fontSize: 16, fontWeight: "700" },
   stackTitle: { color: "#9aa3af", fontSize: 12, fontWeight: "700", letterSpacing: 1, marginTop: 48 },
 
-  stack: { position: "relative", height: 360, width: "100%", maxWidth: 600, marginTop: 16, alignItems: "center", justifyContent: "center" },
-  stackNarrow: { height: 260 },
-  mock: { position: "absolute", width: 440, height: 275, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 14, overflow: "hidden", backgroundColor: "#fff", shadowColor: "#000", shadowOpacity: 0.18, shadowRadius: 28, shadowOffset: { width: 0, height: 16 } },
-  mockNarrow: { width: 320, height: 200 },
+  stack: { position: "relative", height: 640, width: "100%", maxWidth: 600, marginTop: 16, alignItems: "center", justifyContent: "center" },
+  stackNarrow: { height: 420 },
+  mock: { position: "absolute", width: 880, height: 506, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 20, overflow: "hidden", backgroundColor: "#fff", shadowColor: "#000", shadowOpacity: 0.18, shadowRadius: 36, shadowOffset: { width: 0, height: 18 } },
+  mockNarrow: { width: 600, height: 360 },
   bar: { flexDirection: "row", gap: 6, paddingVertical: 9, paddingHorizontal: 12, backgroundColor: "#f3f4f6", borderBottomWidth: 1, borderBottomColor: "#e5e7eb" },
   dot: { width: 9, height: 9, borderRadius: 5 },
   screen: { flex: 1, padding: 18 },
