@@ -23,7 +23,7 @@ const ACCENT = "#1acb97";
 
 // ── 3D stack position per slot (0 = back, 1 = mid, 2 = front) ───────────────
 function posStyle(pos: number, wide: boolean) {
-  const X = wide ? 130 : 68;
+  const X = wide ? 160 : 84;
   const tilt = wide ? "-24deg" : "-18deg";
   const cfgs = [
     { tx: -X, sc: wide ? 0.88 : 0.84, op: 0.8, z: 1 },
@@ -316,12 +316,12 @@ const s = StyleSheet.create({
   ctaT: { color: "#fff", fontSize: 16, fontWeight: "700" },
   stackTitle: { color: "#9aa3af", fontSize: 12, fontWeight: "700", letterSpacing: 1, marginTop: 48 },
 
-  stack: { position: "relative", height: 300, width: "100%", maxWidth: 760, marginTop: 24, alignItems: "center", justifyContent: "center" },
-  mock: { position: "absolute", width: 280, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 13, overflow: "hidden", backgroundColor: "#fff" },
-  mockNarrow: { width: 200 },
+  stack: { position: "relative", height: 400, width: "100%", maxWidth: 900, marginTop: 24, alignItems: "center", justifyContent: "center" },
+  mock: { position: "absolute", width: 360, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 13, overflow: "hidden", backgroundColor: "#fff" },
+  mockNarrow: { width: 260 },
   bar: { flexDirection: "row", gap: 6, paddingVertical: 9, paddingHorizontal: 12, backgroundColor: "#f3f4f6", borderBottomWidth: 1, borderBottomColor: "#e5e7eb" },
   dot: { width: 9, height: 9, borderRadius: 5 },
-  screen: { padding: 16, minHeight: 196 },
+  screen: { padding: 16, minHeight: 260 },
   mLogo: { fontWeight: "800", color: "#1f2a44", marginBottom: 14 },
   mInput: { height: 30, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 8, marginBottom: 10, backgroundColor: "#fafafa" },
   mBtn: { marginTop: 8, backgroundColor: ACCENT, borderRadius: 8, paddingVertical: 9, alignItems: "center" },
