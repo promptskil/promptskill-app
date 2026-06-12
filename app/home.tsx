@@ -22,15 +22,15 @@ import { Ionicons } from "@expo/vector-icons";
 const ACCENT = "#1acb97";
 
 // ── 3D stack position per slot (0 = back, 1 = mid, 2 = front) ───────────────
-// 3D straight stack: cards centered + aligned, tilted back, one behind another
+// horizontal recede: cards step back to the right and zoom out, one behind another
 function posStyle(pos: number, count: number) {
   const depth = count - 1 - pos; // 0 = front-most
   return {
     transform: [
-      { perspective: 1400 },
-      { rotateX: "8deg" },
-      { translateY: -depth * 22 },
-      { scale: 1 - depth * 0.06 },
+      { perspective: 1600 },
+      { translateX: depth * 40 },
+      { translateY: depth * 10 },
+      { scale: 1 - depth * 0.08 },
     ],
     zIndex: pos + 1,
   };
@@ -194,14 +194,19 @@ export default function Home() {
 
         {/* Hero */}
         <View style={[s.wrap, s.hero]}>
-          <Text style={s.eyebrow}>[ ANNOUNCEMENT HEADING ]</Text>
-          <Text style={s.h1}>[ Main headline goes here ]</Text>
-          <Pressable style={s.cta} onPress={openContact}>
-            <Text style={s.ctaT}>[ Primary CTA ]</Text>
-          </Pressable>
-
-          <Text style={s.stackTitle}>[ SCREENSHOT / IMAGE — SET 1 ]</Text>
-          <Stack3D screens={set1} wide={isWide} />
+          <View style={[s.heroRow, !isWide && s.heroCol]}>
+            <View style={[s.heroLeft, !isWide && s.heroLeftNarrow]}>
+              <Text style={s.eyebrow}>[ ANNOUNCEMENT HEADING ]</Text>
+              <Text style={s.h1}>[ Main headline goes here ]</Text>
+              <Pressable style={s.cta} onPress={openContact}>
+                <Text style={s.ctaT}>[ Primary CTA ]</Text>
+              </Pressable>
+            </View>
+            <View style={s.heroRight}>
+              <Text style={s.stackTitle}>[ SCREENSHOT / IMAGE — SET 1 ]</Text>
+              <Stack3D screens={set1} wide={isWide} />
+            </View>
+          </View>
 
           <Text style={s.stackTitle}>[ SCREENSHOT / IMAGE — SET 2 ]</Text>
           <Stack3D screens={set2} wide={isWide} />
@@ -333,16 +338,21 @@ const s = StyleSheet.create({
   signInT: { color: "#fff", fontSize: 14, fontWeight: "700" },
 
   hero: { alignItems: "center", paddingTop: 64, paddingBottom: 56 },
+  heroRow: { flexDirection: "row", alignItems: "center", width: "100%", gap: 36 },
+  heroCol: { flexDirection: "column", gap: 8 },
+  heroLeft: { flex: 1, alignItems: "flex-start" },
+  heroLeftNarrow: { alignItems: "center", marginBottom: 8 },
+  heroRight: { flex: 1.25, alignItems: "center", width: "100%" },
   eyebrow: { color: ACCENT, fontSize: 13, fontWeight: "700", letterSpacing: 1, marginBottom: 14 },
-  h1: { fontSize: 42, lineHeight: 48, fontWeight: "800", textAlign: "center", color: "#1f2937", maxWidth: 760, marginBottom: 26 },
+  h1: { fontSize: 42, lineHeight: 48, fontWeight: "800", textAlign: "left", color: "#1f2937", maxWidth: 520, marginBottom: 26 },
   cta: { backgroundColor: ACCENT, borderRadius: 10, paddingVertical: 14, paddingHorizontal: 26 },
   ctaT: { color: "#fff", fontSize: 16, fontWeight: "700" },
   stackTitle: { color: "#9aa3af", fontSize: 12, fontWeight: "700", letterSpacing: 1, marginTop: 48 },
 
-  stack: { position: "relative", height: 520, width: "100%", maxWidth: 720, marginTop: 28, alignItems: "center", justifyContent: "center" },
-  stackNarrow: { height: 340 },
-  mock: { position: "absolute", width: 640, height: 400, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 14, overflow: "hidden", backgroundColor: "#fff", shadowColor: "#000", shadowOpacity: 0.18, shadowRadius: 30, shadowOffset: { width: 0, height: 18 } },
-  mockNarrow: { width: 340, height: 213 },
+  stack: { position: "relative", height: 360, width: "100%", maxWidth: 600, marginTop: 16, alignItems: "center", justifyContent: "center" },
+  stackNarrow: { height: 260 },
+  mock: { position: "absolute", width: 440, height: 275, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 14, overflow: "hidden", backgroundColor: "#fff", shadowColor: "#000", shadowOpacity: 0.18, shadowRadius: 28, shadowOffset: { width: 0, height: 16 } },
+  mockNarrow: { width: 320, height: 200 },
   bar: { flexDirection: "row", gap: 6, paddingVertical: 9, paddingHorizontal: 12, backgroundColor: "#f3f4f6", borderBottomWidth: 1, borderBottomColor: "#e5e7eb" },
   dot: { width: 9, height: 9, borderRadius: 5 },
   screen: { flex: 1, padding: 18 },
