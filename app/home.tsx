@@ -4,7 +4,7 @@
 //            -> download (Apple iOS icon) -> notice band -> footer -> chat widget.
 // Contact modal: opened from the hero CTA, notice-band link, and chat widget.
 
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import {
   View,
   Text,
@@ -20,6 +20,8 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 const ACCENT = "#1acb97";
+// Cursor type system — proprietary CursorGothic falls back to this system stack (license-safe)
+const FONT = 'system-ui, -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif';
 
 // ── 3D stack position per slot (0 = back, 1 = mid, 2 = front) ───────────────
 // horizontal recede: cards step back to the right and zoom out, one behind another
@@ -56,9 +58,10 @@ const gradLine = {
   color: "transparent",
 } as any;
 
-// ── A clickable 3D stack: click rotates the front image to the back (cycles) ──
+// ── A 3D stack: auto-cycles screenshots until the user clicks, then manual ────
 function Stack3D({ screens, wide }: { screens: ReactNode[]; wide: boolean }) {
   const [order, setOrder] = useState<number[]>(() => screens.map((_, i) => i));
+  const [userControl, setUserControl] = useState(false);
 
   const rotate = () => {
     setOrder((o) => {
@@ -69,8 +72,20 @@ function Stack3D({ screens, wide }: { screens: ReactNode[]; wide: boolean }) {
     });
   };
 
+  // auto-play every 2.5s until the user takes control by clicking
+  useEffect(() => {
+    if (userControl || screens.length < 2) return;
+    const id = setInterval(rotate, 2500);
+    return () => clearInterval(id);
+  }, [userControl, screens.length]);
+
+  const handlePress = () => {
+    if (!userControl) setUserControl(true);
+    rotate();
+  };
+
   return (
-    <Pressable style={[s.stack, !wide && s.stackNarrow]} onPress={rotate} accessibilityRole="button">
+    <Pressable style={[s.stack, !wide && s.stackNarrow]} onPress={handlePress} accessibilityRole="button">
       {order.map((idx, pos) => (
         <View
           key={idx}
@@ -164,14 +179,14 @@ export default function Home() {
     helpTopic === "support" ? "support@vaineai.com" : "partnership@vaineai.com";
 
   const set1: ReactNode[] = [
-    <ScreenForm cta="[ Generate ]" />,
-    <ScreenOutput chip="[ Result ]" />,
-    <ScreenList items={["[ Option A ]", "[ Option B ]", "[ Option C ]", "[ Option D ]"]} sel={1} />,
+    <Image source={require("../assets/login-640x400.png")} style={s.cardImg} resizeMode="cover" />,
+    <Image source={require("../assets/vaine-screenshot-1-chatgpt-hero.png")} style={s.cardImg} resizeMode="cover" />,
+    <Image source={require("../assets/vaine-screenshot-2-empty-state.png")} style={s.cardImg} resizeMode="cover" />,
   ];
   const set2: ReactNode[] = [
-    <ScreenOutput chip="[ Detail ]" />,
-    <ScreenList items={["[ Item 1 ]", "[ Item 2 ]", "[ Item 3 ]", "[ Item 4 ]"]} sel={0} />,
-    <ScreenForm cta="[ Action ]" />,
+    <Image source={require("../assets/vaine-screenshot-1-chatgpt-hero.png")} style={s.cardImg} resizeMode="cover" />,
+    <Image source={require("../assets/vaine-screenshot-2-empty-state.png")} style={s.cardImg} resizeMode="cover" />,
+    <Image source={require("../assets/login-640x400.png")} style={s.cardImg} resizeMode="cover" />,
   ];
 
   return (
@@ -184,7 +199,7 @@ export default function Home() {
             <View style={s.navRight}>
               {showSignIn && (
                 <Pressable style={s.signIn} onPress={() => router.push("/(auth)/login")}>
-                  <Text style={s.signInT}>Sign in</Text>
+                  <Text style={s.signInT}>Log in</Text>
                 </Pressable>
               )}
             </View>
@@ -194,11 +209,11 @@ export default function Home() {
         {/* Hero */}
         <View style={[s.wrap, s.hero]}>
           <View style={[s.heroRow, !isWide && s.heroCol]}>
-            <View style={[s.heroLeft, !isWide && s.heroLeftNarrow]}>
-              <Text style={s.h1}>What You Mean isn't What AI Does</Text>
+            <View style={[s.heroLeft, isWide ? s.heroLeftTop : s.heroLeftNarrow]}>
+              <Text style={s.h1}>What You Mean Isn't What AI Does.</Text>
               <Text style={s.lede}>[ Supporting subhead — one or two lines of value proposition. ]</Text>
               <Pressable style={s.cta} onPress={openContact}>
-                <Text style={s.ctaT}>Get Started</Text>
+                <Text style={s.ctaT}>Try for $0.00</Text>
               </Pressable>
             </View>
             <View style={s.heroRight}>
@@ -215,7 +230,7 @@ export default function Home() {
 
         {/* Image + title */}
         <View style={[s.wrap, s.imgSec]}>
-          <Text style={s.imgTitle}>[ Section title ]</Text>
+          <Text style={s.imgTitle}>What You Mean. What AI Does.</Text>
           <View style={s.imgBlock}>
             <Text style={s.phT}>[ Image ]</Text>
           </View>
@@ -224,8 +239,12 @@ export default function Home() {
         {/* Download */}
         <View style={s.download}>
           <View style={[s.wrap, s.appleWrap]}>
-            <Pressable style={s.appleTile} onPress={() => {}} accessibilityRole="button">
-              <Ionicons name="logo-apple" size={120} color="#fff" />
+            <Pressable style={s.storeBadge} onPress={() => {}} accessibilityRole="button">
+              <Ionicons name="logo-apple" size={34} color="#fff" />
+              <View>
+                <Text style={s.storeSmall}>Download on the</Text>
+                <Text style={s.storeBig}>App Store</Text>
+              </View>
             </Pressable>
           </View>
         </View>
@@ -236,7 +255,7 @@ export default function Home() {
             <Text style={s.bandH}>[ Notice / heading ]</Text>
             <Text style={s.bandP}>[ Supporting paragraph — details, instructions ]</Text>
             <Pressable onPress={openContact}>
-              <Text style={s.bandLink}>[ Secondary link / CTA ]</Text>
+              <Text style={s.bandLink}>GET STARTED</Text>
             </Pressable>
           </View>
         </View>
@@ -253,11 +272,6 @@ export default function Home() {
           </View>
         </View>
       </ScrollView>
-
-      {/* Floating chat widget */}
-      <Pressable style={s.chat} onPress={openContact}>
-        <Ionicons name="chatbubble-ellipses" size={26} color="#fff" />
-      </Pressable>
 
       {/* Contact modal */}
       <Modal visible={contactVisible} transparent animationType="fade" onRequestClose={closeContact}>
@@ -325,28 +339,30 @@ const s = StyleSheet.create({
   navLogo: { width: 90, height: 28 },
   navRight: { flexDirection: "row", alignItems: "center", gap: 18 },
   navContact: { color: "#6b7280", fontSize: 14, fontWeight: "600" },
-  signIn: { backgroundColor: "#0f172a", borderRadius: 8, paddingVertical: 8, paddingHorizontal: 14 },
-  signInT: { color: "#fff", fontSize: 14, fontWeight: "700" },
+  signIn: { backgroundColor: "#4f46e5", borderRadius: 8, paddingVertical: 8, paddingHorizontal: 14 },
+  signInT: { color: "#fff", fontSize: 14, fontWeight: "400", fontFamily: FONT },
 
   hero: { alignItems: "center", paddingTop: 64, paddingBottom: 56 },
   heroRow: { flexDirection: "row", alignItems: "center", width: "100%", gap: 36 },
   heroCol: { flexDirection: "column", gap: 8 },
   heroLeft: { flex: 1, alignItems: "flex-start", zIndex: 2 },
+  heroLeftTop: { alignSelf: "flex-start" },
   heroLeftNarrow: { alignItems: "center", marginBottom: 8 },
   heroRight: { flex: 1.25, alignItems: "center", width: "100%", zIndex: 1 },
   heroStackWrap: { width: "100%", alignItems: "center" },
-  heroStackShift: { paddingLeft: 160 },
+  heroStackShift: { marginLeft: -120 },
   eyebrow: { color: ACCENT, fontSize: 13, fontWeight: "700", letterSpacing: 1, marginBottom: 14 },
-  h1: { fontSize: 34, lineHeight: 40, fontWeight: "800", textAlign: "left", color: "#1f2937", maxWidth: 520, marginBottom: 14 },
-  lede: { fontSize: 18, lineHeight: 26, color: "#64748b", maxWidth: 480, marginBottom: 28, textAlign: "left" },
-  cta: { backgroundColor: ACCENT, borderRadius: 10, paddingVertical: 14, paddingHorizontal: 26 },
-  ctaT: { color: "#fff", fontSize: 16, fontWeight: "700" },
-  stackTitle: { color: "#9aa3af", fontSize: 12, fontWeight: "700", letterSpacing: 1, marginTop: 48 },
+  h1: { fontSize: 36, lineHeight: 44, fontWeight: "400", letterSpacing: -0.7, textAlign: "left", color: "#1f2937", maxWidth: 520, marginBottom: 14, fontFamily: FONT },
+  lede: { fontSize: 18, lineHeight: 26, color: "#64748b", maxWidth: 480, marginBottom: 28, textAlign: "left", fontFamily: FONT },
+  cta: { backgroundColor: "#4f46e5", borderRadius: 10, paddingVertical: 14, paddingHorizontal: 26 },
+  ctaT: { color: "#fff", fontSize: 16, fontWeight: "400", fontFamily: FONT },
+  stackTitle: { color: "#9aa3af", fontSize: 12, fontWeight: "400", letterSpacing: 1, marginTop: 48, fontFamily: FONT },
 
   stack: { position: "relative", height: 640, width: "100%", maxWidth: 600, marginTop: 16, alignItems: "center", justifyContent: "center" },
   stackNarrow: { height: 420 },
   mock: { position: "absolute", width: 880, height: 506, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 20, overflow: "hidden", backgroundColor: "#fff", shadowColor: "#000", shadowOpacity: 0.18, shadowRadius: 36, shadowOffset: { width: 0, height: 18 } },
   mockNarrow: { width: 600, height: 360 },
+  cardImg: { width: "100%", height: "100%" },
   bar: { flexDirection: "row", gap: 6, paddingVertical: 9, paddingHorizontal: 12, backgroundColor: "#f3f4f6", borderBottomWidth: 1, borderBottomColor: "#e5e7eb" },
   dot: { width: 9, height: 9, borderRadius: 5 },
   screen: { flex: 1, padding: 18 },
@@ -365,13 +381,16 @@ const s = StyleSheet.create({
   mRowTSel: { color: "#0f172a", fontWeight: "600" },
 
   imgSec: { alignItems: "center", paddingVertical: 64 },
-  imgTitle: { fontSize: 28, fontWeight: "800", color: "#1f2937", marginBottom: 24, textAlign: "center" },
+  imgTitle: { fontSize: 28, fontWeight: "400", letterSpacing: -0.5, color: "#1f2937", marginBottom: 24, textAlign: "center", fontFamily: FONT },
   imgBlock: { width: "100%", maxWidth: 880, height: 380, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 14, backgroundColor: "#f8fafc", alignItems: "center", justifyContent: "center" },
-  phT: { color: "#9aa3af", fontSize: 14 },
+  phT: { color: "#9aa3af", fontSize: 14, fontFamily: FONT },
 
   download: { backgroundColor: "#0f172a", paddingVertical: 80, alignItems: "center" },
   appleWrap: { alignItems: "center" },
   appleTile: { width: 184, height: 184, borderRadius: 40, backgroundColor: "#111a2b", borderWidth: 1, borderColor: "#243049", alignItems: "center", justifyContent: "center" },
+  storeBadge: { flexDirection: "row", alignItems: "center", gap: 14, backgroundColor: "#000", borderWidth: 1, borderColor: "#2a3344", borderRadius: 14, paddingVertical: 14, paddingHorizontal: 28 },
+  storeSmall: { color: "#cbd5e1", fontSize: 12, letterSpacing: 0.3, fontFamily: FONT },
+  storeBig: { color: "#fff", fontSize: 20, fontWeight: "400", marginTop: 1, fontFamily: FONT },
   dlH: { color: "#fff", fontSize: 28, fontWeight: "800", textAlign: "center", marginBottom: 8 },
   dlSub: { color: "#cbd5e1", textAlign: "center", maxWidth: 520, marginBottom: 26, alignSelf: "center" },
   badges: { flexDirection: "row", justifyContent: "center" },
@@ -382,13 +401,13 @@ const s = StyleSheet.create({
   badgeBig: { color: "#fff", fontSize: 15, fontWeight: "700" },
 
   band: { backgroundColor: "#f4f6f8", paddingVertical: 56, alignItems: "center" },
-  bandH: { fontSize: 26, fontWeight: "800", color: "#1f2937", textAlign: "center", marginBottom: 12, maxWidth: 680 },
-  bandP: { color: "#6b7280", textAlign: "center", maxWidth: 620, marginBottom: 22, alignSelf: "center" },
-  bandLink: { fontWeight: "700", color: "#1f2937", textDecorationLine: "underline" },
+  bandH: { fontSize: 26, fontWeight: "400", letterSpacing: -0.5, color: "#1f2937", textAlign: "center", marginBottom: 12, maxWidth: 680, fontFamily: FONT },
+  bandP: { color: "#6b7280", textAlign: "center", maxWidth: 620, marginBottom: 22, alignSelf: "center", fontFamily: FONT },
+  bandLink: { fontWeight: "400", color: "#1f2937", textDecorationLine: "underline", fontFamily: FONT },
 
   footer: { borderTopWidth: 1, borderTopColor: "#e5e7eb", paddingVertical: 28, alignItems: "center" },
   footLinks: { flexDirection: "row", justifyContent: "center", gap: 24 },
-  footLink: { color: "#6b7280", fontSize: 14, fontWeight: "600" },
+  footLink: { color: "#6b7280", fontSize: 14, fontWeight: "400", fontFamily: FONT },
 
   chat: { position: "absolute", right: 22, bottom: 22, width: 60, height: 60, borderRadius: 30, backgroundColor: ACCENT, alignItems: "center", justifyContent: "center" },
 
