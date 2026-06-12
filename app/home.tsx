@@ -21,42 +21,54 @@ import { Ionicons } from "@expo/vector-icons";
 
 const ACCENT = "#1acb97";
 
-// web-only soft conic ("spiral") gradient for the page background
-const spiralBg = {
-  backgroundImage:
-    "conic-gradient(from 200deg at 50% 25%, #ffffff 0deg, rgba(26,203,151,0.12) 70deg, rgba(56,189,248,0.12) 160deg, rgba(139,92,246,0.12) 250deg, #ffffff 360deg)",
-} as any;
-
 // ── 3D stack position per slot (0 = back, 1 = mid, 2 = front) ───────────────
-function posStyle(pos: number, wide: boolean) {
-  const X = wide ? 160 : 84;
-  const tilt = wide ? "-24deg" : "-18deg";
-  const cfgs = [
-    { tx: -X, sc: wide ? 0.88 : 0.84, op: 0.8, z: 1 },
-    { tx: 0, sc: wide ? 0.95 : 0.92, op: 0.92, z: 2 },
-    { tx: X, sc: wide ? 1.04 : 1.0, op: 1, z: 3 },
-  ];
-  const c = cfgs[pos] ?? cfgs[2];
+// straight stack: cards centered, one behind another, receding upward
+function posStyle(pos: number, count: number) {
+  const depth = count - 1 - pos; // 0 = front-most
   return {
-    transform: [
-      { perspective: 1600 },
-      { rotateY: tilt },
-      { translateX: c.tx },
-      { scale: c.sc },
-    ],
-    opacity: c.op,
-    zIndex: c.z,
+    transform: [{ translateY: -depth * 14 }, { scale: 1 - depth * 0.05 }],
+    zIndex: pos + 1,
   };
 }
 
+// web-only smooth fade/move for dissolve
+const fadeStyle = {
+  transitionProperty: "opacity, transform",
+  transitionDuration: "360ms",
+  transitionTimingFunction: "ease",
+} as any;
+
 // ── A clickable, static 3D stack of 3 screens (cycles front->back on press) ──
 function Stack3D({ screens, wide }: { screens: ReactNode[]; wide: boolean }) {
-  const [order, setOrder] = useState<number[]>(() => screens.map((_, i) => i));
-  const cycle = () => setOrder((o) => [o[o.length - 1], ...o.slice(0, -1)]);
+  const [visible, setVisible] = useState<number[]>(() => screens.map((_, i) => i));
+  const [fading, setFading] = useState<number | null>(null);
+
+  const dissolve = () => {
+    if (fading !== null || visible.length === 0) return;
+    const front = visible[visible.length - 1];
+    setFading(front);
+    setTimeout(() => {
+      setVisible((v) => {
+        const next = v.filter((i) => i !== front);
+        return next.length === 0 ? screens.map((_, i) => i) : next;
+      });
+      setFading(null);
+    }, 360);
+  };
+
   return (
-    <Pressable style={s.stack} onPress={cycle} accessibilityRole="button">
-      {order.map((idx, pos) => (
-        <View key={idx} style={[s.mock, wide ? null : s.mockNarrow, posStyle(pos, wide)]}>
+    <Pressable style={s.stack} onPress={dissolve} accessibilityRole="button">
+      {visible.map((idx, pos) => (
+        <View
+          key={idx}
+          style={[
+            s.mock,
+            wide ? null : s.mockNarrow,
+            posStyle(pos, visible.length),
+            fadeStyle,
+            { opacity: idx === fading ? 0 : 1 },
+          ]}
+        >
           {screens[idx]}
         </View>
       ))}
@@ -156,7 +168,7 @@ export default function Home() {
   ];
 
   return (
-    <View style={[{ flex: 1 }, spiralBg]}>
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <ScrollView contentContainerStyle={s.container} keyboardShouldPersistTaps="handled">
         {/* Nav */}
         <View style={s.navWrap}>
@@ -304,7 +316,7 @@ export default function Home() {
 }
 
 const s = StyleSheet.create({
-  container: { flexGrow: 1 },
+  container: { flexGrow: 1, backgroundColor: "#fff" },
   wrap: { width: "100%", maxWidth: 1040, marginHorizontal: "auto", paddingHorizontal: 24 },
 
   navWrap: { borderBottomWidth: 1, borderBottomColor: "#e5e7eb" },
@@ -323,7 +335,7 @@ const s = StyleSheet.create({
   stackTitle: { color: "#9aa3af", fontSize: 12, fontWeight: "700", letterSpacing: 1, marginTop: 48 },
 
   stack: { position: "relative", height: 400, width: "100%", maxWidth: 900, marginTop: 24, alignItems: "center", justifyContent: "center" },
-  mock: { position: "absolute", width: 360, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 13, overflow: "hidden", backgroundColor: "#fff" },
+  mock: { position: "absolute", width: 360, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 13, overflow: "hidden", backgroundColor: "#fff", shadowColor: "#000", shadowOpacity: 0.12, shadowRadius: 20, shadowOffset: { width: 0, height: 12 } },
   mockNarrow: { width: 260 },
   bar: { flexDirection: "row", gap: 6, paddingVertical: 9, paddingHorizontal: 12, backgroundColor: "#f3f4f6", borderBottomWidth: 1, borderBottomColor: "#e5e7eb" },
   dot: { width: 9, height: 9, borderRadius: 5 },
