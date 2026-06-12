@@ -22,11 +22,16 @@ import { Ionicons } from "@expo/vector-icons";
 const ACCENT = "#1acb97";
 
 // ── 3D stack position per slot (0 = back, 1 = mid, 2 = front) ───────────────
-// straight stack: cards centered, one behind another, receding upward
+// 3D straight stack: cards centered + aligned, tilted back, one behind another
 function posStyle(pos: number, count: number) {
   const depth = count - 1 - pos; // 0 = front-most
   return {
-    transform: [{ translateY: -depth * 14 }, { scale: 1 - depth * 0.05 }],
+    transform: [
+      { perspective: 1400 },
+      { rotateX: "8deg" },
+      { translateY: -depth * 22 },
+      { scale: 1 - depth * 0.06 },
+    ],
     zIndex: pos + 1,
   };
 }
@@ -57,7 +62,7 @@ function Stack3D({ screens, wide }: { screens: ReactNode[]; wide: boolean }) {
   };
 
   return (
-    <Pressable style={s.stack} onPress={dissolve} accessibilityRole="button">
+    <Pressable style={[s.stack, !wide && s.stackNarrow]} onPress={dissolve} accessibilityRole="button">
       {visible.map((idx, pos) => (
         <View
           key={idx}
@@ -334,12 +339,13 @@ const s = StyleSheet.create({
   ctaT: { color: "#fff", fontSize: 16, fontWeight: "700" },
   stackTitle: { color: "#9aa3af", fontSize: 12, fontWeight: "700", letterSpacing: 1, marginTop: 48 },
 
-  stack: { position: "relative", height: 400, width: "100%", maxWidth: 900, marginTop: 24, alignItems: "center", justifyContent: "center" },
-  mock: { position: "absolute", width: 360, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 13, overflow: "hidden", backgroundColor: "#fff", shadowColor: "#000", shadowOpacity: 0.12, shadowRadius: 20, shadowOffset: { width: 0, height: 12 } },
-  mockNarrow: { width: 260 },
+  stack: { position: "relative", height: 520, width: "100%", maxWidth: 720, marginTop: 28, alignItems: "center", justifyContent: "center" },
+  stackNarrow: { height: 340 },
+  mock: { position: "absolute", width: 640, height: 400, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 14, overflow: "hidden", backgroundColor: "#fff", shadowColor: "#000", shadowOpacity: 0.18, shadowRadius: 30, shadowOffset: { width: 0, height: 18 } },
+  mockNarrow: { width: 340, height: 213 },
   bar: { flexDirection: "row", gap: 6, paddingVertical: 9, paddingHorizontal: 12, backgroundColor: "#f3f4f6", borderBottomWidth: 1, borderBottomColor: "#e5e7eb" },
   dot: { width: 9, height: 9, borderRadius: 5 },
-  screen: { padding: 16, minHeight: 260 },
+  screen: { flex: 1, padding: 18 },
   mLogo: { fontWeight: "800", color: "#1f2a44", marginBottom: 14 },
   mInput: { height: 30, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 8, marginBottom: 10, backgroundColor: "#fafafa" },
   mBtn: { marginTop: 8, backgroundColor: ACCENT, borderRadius: 8, paddingVertical: 9, alignItems: "center" },
