@@ -21,6 +21,12 @@ import { Ionicons } from "@expo/vector-icons";
 
 const ACCENT = "#1acb97";
 
+// web-only soft conic ("spiral") gradient for the page background
+const spiralBg = {
+  backgroundImage:
+    "conic-gradient(from 200deg at 50% 25%, #ffffff 0deg, rgba(26,203,151,0.12) 70deg, rgba(56,189,248,0.12) 160deg, rgba(139,92,246,0.12) 250deg, #ffffff 360deg)",
+} as any;
+
 // ── 3D stack position per slot (0 = back, 1 = mid, 2 = front) ───────────────
 function posStyle(pos: number, wide: boolean) {
   const X = wide ? 160 : 84;
@@ -150,7 +156,7 @@ export default function Home() {
   ];
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+    <View style={[{ flex: 1 }, spiralBg]}>
       <ScrollView contentContainerStyle={s.container} keyboardShouldPersistTaps="handled">
         {/* Nav */}
         <View style={s.navWrap}>
@@ -298,7 +304,7 @@ export default function Home() {
 }
 
 const s = StyleSheet.create({
-  container: { flexGrow: 1, backgroundColor: "#fff" },
+  container: { flexGrow: 1 },
   wrap: { width: "100%", maxWidth: 1040, marginHorizontal: "auto", paddingHorizontal: 24 },
 
   navWrap: { borderBottomWidth: 1, borderBottomColor: "#e5e7eb" },
