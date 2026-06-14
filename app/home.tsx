@@ -402,9 +402,6 @@ const s = StyleSheet.create({
   galleryArrow: { position: "absolute", top: "50%", marginTop: -22, width: 44, height: 44, borderRadius: 22, backgroundColor: "rgba(255,255,255,0.92)", borderWidth: 1, borderColor: "#e5e7eb", alignItems: "center", justifyContent: "center", shadowColor: "#000", shadowOpacity: 0.12, shadowRadius: 8, shadowOffset: { width: 0, height: 2 } },
   galleryArrowLeft: { left: 14 },
   galleryArrowRight: { right: 14 },
-  galleryArrow: { position: "absolute", top: "50%", marginTop: -22, width: 44, height: 44, borderRadius: 22, backgroundColor: "rgba(255,255,255,0.92)", borderWidth: 1, borderColor: "#e5e7eb", alignItems: "center", justifyContent: "center", shadowColor: "#000", shadowOpacity: 0.12, shadowRadius: 8, shadowOffset: { width: 0, height: 2 } },
-  galleryArrowLeft: { left: 14 },
-  galleryArrowRight: { right: 14 },
 
   download: { backgroundColor: "#0f172a", paddingVertical: 80, alignItems: "center" },
   appleWrap: { alignItems: "center" },
