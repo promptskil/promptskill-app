@@ -179,7 +179,16 @@ export default function Home() {
     helpTopic === "support" ? "support@vaineai.com" : "partnership@vaineai.com";
 
   // Image gallery — 6 empty slots. Replace a null with <Image .../> to fill one later.
-  const imageSet: (ReactNode | null)[] = [null, null, null, null, null, null];
+  const imageSet: (ReactNode | null)[] = [
+    <Image source={require("../assets/image1.png")} style={{ width: "100%", height: "100%" }} resizeMode="cover" />,
+    <View style={{ width: "100%", height: "100%", backgroundColor: "#fff" }}>
+      <Image source={require("../assets/picture2.png")} style={{ width: "100%", height: "100%" }} resizeMode="contain" />
+    </View>,
+    <Image source={require("../assets/claude.png")} style={{ width: "100%", height: "100%" }} resizeMode="contain" />,
+    <Image source={require("../assets/chatgpt.png")} style={{ width: "100%", height: "100%" }} resizeMode="cover" />,
+    <Image source={require("../assets/gemini.png")} style={{ width: "100%", height: "100%" }} resizeMode="cover" />,
+    <Image source={require("../assets/grok.png")} style={{ width: "100%", height: "100%" }} resizeMode="cover" />,
+  ];
   const [imgIdx, setImgIdx] = useState(0);
   const prevImg = () => setImgIdx((i) => (i - 1 + imageSet.length) % imageSet.length);
   const nextImg = () => setImgIdx((i) => (i + 1) % imageSet.length);
@@ -218,7 +227,7 @@ export default function Home() {
             <View style={[s.heroLeft, isWide ? s.heroLeftTop : s.heroLeftNarrow]}>
               <Text style={s.h1}>What You Mean Isn't What AI Does.</Text>
               <Text style={s.lede}>See what you're missing with less back-and-forth.</Text>
-              <Pressable style={s.cta} onPress={openContact}>
+              <Pressable style={s.cta} onPress={() => router.push("/(auth)/")}>
                 <Text style={s.ctaT}>Try for $0.00</Text>
               </Pressable>
             </View>
@@ -267,10 +276,8 @@ export default function Home() {
         {/* Notice band */}
         <View style={s.band}>
           <View style={s.wrap}>
-            <Text style={s.bandH}>[ Notice / heading ]</Text>
-            <Text style={s.bandP}>[ Supporting paragraph — details, instructions ]</Text>
-            <Pressable onPress={openContact}>
-              <Text style={s.bandLink}>GET STARTED</Text>
+            <Pressable style={[s.cta, { alignSelf: "center" }]} onPress={() => router.push("/(auth)/")}>
+              <Text style={s.ctaT}>GET STARTED</Text>
             </Pressable>
           </View>
         </View>
