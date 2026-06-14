@@ -178,15 +178,21 @@ export default function Home() {
   const contactEmail =
     helpTopic === "support" ? "support@vaineai.com" : "partnership@vaineai.com";
 
+  // Image gallery — 6 empty slots. Replace a null with <Image .../> to fill one later.
+  const imageSet: (ReactNode | null)[] = [null, null, null, null, null, null];
+  const [imgIdx, setImgIdx] = useState(0);
+  const prevImg = () => setImgIdx((i) => (i - 1 + imageSet.length) % imageSet.length);
+  const nextImg = () => setImgIdx((i) => (i + 1) % imageSet.length);
+
   const set1: ReactNode[] = [
-    <Image source={require("../assets/login-640x400.png")} style={s.cardImg} resizeMode="cover" />,
-    <Image source={require("../assets/vaine-screenshot-1-chatgpt-hero.png")} style={s.cardImg} resizeMode="cover" />,
-    <Image source={require("../assets/vaine-screenshot-2-empty-state.png")} style={s.cardImg} resizeMode="cover" />,
+    <Image source={require("../assets/11.png")} style={s.cardImg} resizeMode="contain" />,
+    <Image source={require("../assets/22.png")} style={s.cardImg} resizeMode="contain" />,
+    <Image source={require("../assets/33.png")} style={s.cardImg} resizeMode="contain" />,
   ];
   const set2: ReactNode[] = [
-    <Image source={require("../assets/vaine-screenshot-1-chatgpt-hero.png")} style={s.cardImg} resizeMode="cover" />,
-    <Image source={require("../assets/vaine-screenshot-2-empty-state.png")} style={s.cardImg} resizeMode="cover" />,
-    <Image source={require("../assets/login-640x400.png")} style={s.cardImg} resizeMode="cover" />,
+    <View />,
+    <View />,
+    <View />,
   ];
 
   return (
@@ -211,20 +217,20 @@ export default function Home() {
           <View style={[s.heroRow, !isWide && s.heroCol]}>
             <View style={[s.heroLeft, isWide ? s.heroLeftTop : s.heroLeftNarrow]}>
               <Text style={s.h1}>What You Mean Isn't What AI Does.</Text>
-              <Text style={s.lede}>[ Supporting subhead — one or two lines of value proposition. ]</Text>
+              <Text style={s.lede}>See what you're missing with less back-and-forth.</Text>
               <Pressable style={s.cta} onPress={openContact}>
                 <Text style={s.ctaT}>Try for $0.00</Text>
               </Pressable>
             </View>
             <View style={s.heroRight}>
-              <Text style={s.stackTitle}>[ SCREENSHOT / IMAGE — SET 1 ]</Text>
+              <Text style={[s.stackTitle, { opacity: 0 }]}>[ SCREENSHOT / IMAGE — SET 1 ]</Text>
               <View style={[s.heroStackWrap, isWide && s.heroStackShift]}>
                 <Stack3D screens={set1} wide={isWide} />
               </View>
             </View>
           </View>
 
-          <Text style={s.stackTitle}>[ SCREENSHOT / IMAGE — SET 2 ]</Text>
+          <Text style={[s.stackTitle, { opacity: 0 }]}>[ SCREENSHOT / IMAGE — SET 2 ]</Text>
           <Stack3D screens={set2} wide={isWide} />
         </View>
 
@@ -232,7 +238,16 @@ export default function Home() {
         <View style={[s.wrap, s.imgSec]}>
           <Text style={s.imgTitle}>What You Mean. What AI Does.</Text>
           <View style={s.imgBlock}>
-            <Text style={s.phT}>[ Image ]</Text>
+            {imageSet[imgIdx] ?? <Text style={s.phT}>[ Image {imgIdx + 1} ]</Text>}
+
+            <Pressable style={[s.galleryArrow, s.galleryArrowLeft]} onPress={prevImg}
+              accessibilityRole="button" accessibilityLabel="Previous image">
+              <Ionicons name="chevron-back" size={24} color="#1f2937" />
+            </Pressable>
+            <Pressable style={[s.galleryArrow, s.galleryArrowRight]} onPress={nextImg}
+              accessibilityRole="button" accessibilityLabel="Next image">
+              <Ionicons name="chevron-forward" size={24} color="#1f2937" />
+            </Pressable>
           </View>
         </View>
 
@@ -382,8 +397,14 @@ const s = StyleSheet.create({
 
   imgSec: { alignItems: "center", paddingVertical: 64 },
   imgTitle: { fontSize: 28, fontWeight: "400", letterSpacing: -0.5, color: "#1f2937", marginBottom: 24, textAlign: "center", fontFamily: FONT },
-  imgBlock: { width: "100%", maxWidth: 880, height: 380, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 14, backgroundColor: "#f8fafc", alignItems: "center", justifyContent: "center" },
+  imgBlock: { width: "100%", maxWidth: 880, height: 506, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 14, backgroundColor: "#f8fafc", alignItems: "center", justifyContent: "center" },
   phT: { color: "#9aa3af", fontSize: 14, fontFamily: FONT },
+  galleryArrow: { position: "absolute", top: "50%", marginTop: -22, width: 44, height: 44, borderRadius: 22, backgroundColor: "rgba(255,255,255,0.92)", borderWidth: 1, borderColor: "#e5e7eb", alignItems: "center", justifyContent: "center", shadowColor: "#000", shadowOpacity: 0.12, shadowRadius: 8, shadowOffset: { width: 0, height: 2 } },
+  galleryArrowLeft: { left: 14 },
+  galleryArrowRight: { right: 14 },
+  galleryArrow: { position: "absolute", top: "50%", marginTop: -22, width: 44, height: 44, borderRadius: 22, backgroundColor: "rgba(255,255,255,0.92)", borderWidth: 1, borderColor: "#e5e7eb", alignItems: "center", justifyContent: "center", shadowColor: "#000", shadowOpacity: 0.12, shadowRadius: 8, shadowOffset: { width: 0, height: 2 } },
+  galleryArrowLeft: { left: 14 },
+  galleryArrowRight: { right: 14 },
 
   download: { backgroundColor: "#0f172a", paddingVertical: 80, alignItems: "center" },
   appleWrap: { alignItems: "center" },
