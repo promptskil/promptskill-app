@@ -405,7 +405,7 @@ const s = StyleSheet.create({
 
   imgSec: { alignItems: "center", paddingVertical: 64 },
   imgTitle: { fontSize: 28, fontWeight: "400", letterSpacing: -0.5, color: "#1f2937", marginBottom: 24, textAlign: "center", fontFamily: FONT },
-  imgBlock: { width: "100%", maxWidth: 880, height: 506, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 14, backgroundColor: "#f8fafc", alignItems: "center", justifyContent: "center" },
+  imgBlock: { width: "100%", maxWidth: 880, aspectRatio: 880 / 506, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 14, backgroundColor: "#f8fafc", alignItems: "center", justifyContent: "center" },
   phT: { color: "#9aa3af", fontSize: 14, fontFamily: FONT },
   galleryArrow: { position: "absolute", top: "50%", marginTop: -22, width: 44, height: 44, borderRadius: 22, backgroundColor: "rgba(255,255,255,0.92)", borderWidth: 1, borderColor: "#e5e7eb", alignItems: "center", justifyContent: "center", shadowColor: "#000", shadowOpacity: 0.12, shadowRadius: 8, shadowOffset: { width: 0, height: 2 } },
   galleryArrowLeft: { left: 14 },
