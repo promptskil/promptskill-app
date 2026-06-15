@@ -51,10 +51,23 @@ export default function RootLayout() {
           return;
         }
 
-        // Token present -- validate with server
+        // Token present -- validate with server.
+        // /auth/validate reads the token from the request BODY (always 200,
+        // body carries {valid}); the Bearer header alone yields a 422.
         if (token) {
           try {
-            await apiCall<{ valid: boolean }>("POST", "/auth/validate");
+            const { valid } = await apiCall<{ valid: boolean }>(
+              "POST",
+              "/auth/validate",
+              { token },
+            );
+
+            // Server rejected the token (expired/invalid) -> Login
+            if (!valid) {
+              await clearToken();
+              router.replace("/(auth)/login");
+              return;
+            }
 
             // State 3: Token valid + onboarding false/absent -> Onboarding
             if (onboarding === null || onboarding === false) {
