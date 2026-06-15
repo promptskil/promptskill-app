@@ -85,7 +85,7 @@ function Stack3D({ screens, wide, scale }: { screens: ReactNode[]; wide: boolean
   };
 
   return (
-    <Pressable style={[s.stack, !wide && s.stackNarrow, { transform: [{ scale }] }]} onPress={handlePress} accessibilityRole="button">
+    <Pressable style={[s.stack, !wide && s.stackNarrow, { transform: [{ scale }], marginVertical: -((wide ? 640 : 420) * (1 - scale)) / 2 }]} onPress={handlePress} accessibilityRole="button">
       {order.map((idx, pos) => (
         <View
           key={idx}
