@@ -229,7 +229,7 @@ export default function Home() {
               <Text style={s.h1}>What You Mean Isn't What AI Does.</Text>
               <Text style={s.lede}>See what you're missing with less back-and-forth.</Text>
               <Pressable style={s.cta} onPress={() => router.push("/(auth)/")}>
-                <Text style={s.ctaT}>Try for $0.00</Text>
+                <Text style={s.ctaT}>Try for Free</Text>
               </Pressable>
             </View>
             <View style={s.heroRight}>
