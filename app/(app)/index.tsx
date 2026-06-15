@@ -29,6 +29,7 @@ import {
   SessionExpiredError,
   businessContextHeader,
 } from "../../services/api";
+import { startCheckout } from "../../services/billing";
 import { getDefaultModel, setDefaultModel, getRole } from "../../storage/storage";
 import type { Model } from "../../types";
 
@@ -114,6 +115,14 @@ export default function Main() {
         return;
       }
       if (err instanceof ApiError) {
+        if (err.status === 402) {
+          if (Platform.OS === "web") {
+            startCheckout().catch(() => setError("Could not start checkout."));
+          } else {
+            setError("A subscription is required to continue.");
+          }
+          return;
+        }
         if (err.status === 429) {
           setError("Too many requests. Try again later.");
         } else if (err.status === 504) {
