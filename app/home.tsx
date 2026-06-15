@@ -59,7 +59,7 @@ const gradLine = {
 } as any;
 
 // ── A 3D stack: auto-cycles screenshots until the user clicks, then manual ────
-function Stack3D({ screens, wide }: { screens: ReactNode[]; wide: boolean }) {
+function Stack3D({ screens, wide, scale }: { screens: ReactNode[]; wide: boolean; scale: number }) {
   const [order, setOrder] = useState<number[]>(() => screens.map((_, i) => i));
   const [userControl, setUserControl] = useState(false);
 
@@ -85,7 +85,7 @@ function Stack3D({ screens, wide }: { screens: ReactNode[]; wide: boolean }) {
   };
 
   return (
-    <Pressable style={[s.stack, !wide && s.stackNarrow]} onPress={handlePress} accessibilityRole="button">
+    <Pressable style={[s.stack, !wide && s.stackNarrow, { transform: [{ scale }] }]} onPress={handlePress} accessibilityRole="button">
       {order.map((idx, pos) => (
         <View
           key={idx}
@@ -152,6 +152,7 @@ export default function Home() {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const isWide = width >= 900;
+  const stackScale = isWide ? 1 : Math.min(1, (width - 32) / 600);
 
   const showSignIn = true;
 
@@ -234,13 +235,13 @@ export default function Home() {
             <View style={s.heroRight}>
               <Text style={[s.stackTitle, { opacity: 0 }]}>[ SCREENSHOT / IMAGE — SET 1 ]</Text>
               <View style={[s.heroStackWrap, isWide && s.heroStackShift]}>
-                <Stack3D screens={set1} wide={isWide} />
+                <Stack3D screens={set1} wide={isWide} scale={stackScale} />
               </View>
             </View>
           </View>
 
           <Text style={[s.stackTitle, { opacity: 0 }]}>[ SCREENSHOT / IMAGE — SET 2 ]</Text>
-          <Stack3D screens={set2} wide={isWide} />
+          <Stack3D screens={set2} wide={isWide} scale={stackScale} />
         </View>
 
         {/* Image + title */}
