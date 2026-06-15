@@ -7,7 +7,7 @@
 // Profile nav: removed — Screen 2 (Main) only
 
 import { useState } from "react";
-import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
+import { View, Text, Pressable, StyleSheet, ScrollView, Platform } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import PromptDisplay from "../../components/PromptDisplay";
@@ -16,6 +16,7 @@ import ModelLaunchChips from "../../components/ModelLaunchChips";
 import ThumbsFeedback from "../../components/ThumbsFeedback";
 import NewPromptButton from "../../components/NewPromptButton";
 import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
+import { startCheckout } from "../../services/billing";
 import type { Model } from "../../types";
 
 export default function Result() {
@@ -83,6 +84,14 @@ export default function Result() {
         return;
       }
       if (err instanceof ApiError) {
+        if (err.status === 402) {
+          if (Platform.OS === "web") {
+            startCheckout().catch(() => setError("Could not start checkout."));
+          } else {
+            setError("A subscription is required to continue.");
+          }
+          return;
+        }
         if (err.status === 429) {
           setError("Too many requests. Try again later.");
         } else if (err.status === 504) {

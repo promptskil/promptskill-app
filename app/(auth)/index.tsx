@@ -9,12 +9,14 @@ import {
   Pressable,
   StyleSheet,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
 import EmailInput from "../../components/EmailInput";
 import PasswordInput from "../../components/PasswordInput";
 import { apiCall, ApiError } from "../../services/api";
 import { setToken, setOnboardingComplete } from "../../storage/storage";
+import { startCheckout } from "../../services/billing";
 
 export default function AccountCreation() {
   const router = useRouter();
@@ -35,7 +37,11 @@ export default function AccountCreation() {
       });
       await setToken(data.token);
       await setOnboardingComplete(false);
-      router.replace("/onboarding");
+      if (Platform.OS === "web") {
+        await startCheckout();  // redirect to Stripe; returns to /onboarding
+        return;
+      }
+      router.replace("/onboarding");  // mobile: Apple IAP
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.status === 409) {
