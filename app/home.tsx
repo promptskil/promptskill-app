@@ -200,9 +200,9 @@ export default function Home() {
     <Image source={require("../assets/33.png")} style={s.cardImg} resizeMode="contain" />,
   ];
   const set2: ReactNode[] = [
-    <View />,
-    <View />,
-    <View />,
+    <Image source={require("../assets/claude0.png")} style={s.cardImg} resizeMode="contain" />,
+    <Image source={require("../assets/claude2.png")} style={s.cardImg} resizeMode="contain" />,
+    <Image source={require("../assets/claude1.png")} style={s.cardImg} resizeMode="contain" />,
   ];
 
   return (
