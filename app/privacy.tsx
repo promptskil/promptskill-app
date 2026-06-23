@@ -28,7 +28,7 @@ export default function Privacy() {
       <View style={styles.header}>
         <Pressable onPress={() => router.push("/home")}>
           <Image
-            source={require("../assets/logo.png")}
+            source={require("../assets/logo1.png")}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#eaeaea",
   },
-  logo: { width: 140, height: 34 },
+  logo: { width: 90, height: 28 },
   body: {
     paddingHorizontal: 24,
     paddingTop: 48,
