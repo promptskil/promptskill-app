@@ -289,7 +289,7 @@ export default function Home() {
             <Pressable onPress={() => router.push("/privacy")}>
               <Text style={s.footLink}>Privacy</Text>
             </Pressable>
-            <Pressable onPress={() => {}}>
+            <Pressable onPress={openContact}>
               <Text style={s.footLink}>Support</Text>
             </Pressable>
           </View>
