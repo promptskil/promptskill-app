@@ -286,7 +286,7 @@ export default function Home() {
         {/* Footer */}
         <View style={s.footer}>
           <View style={[s.wrap, s.footLinks]}>
-            <Pressable onPress={() => {}}>
+            <Pressable onPress={() => router.push("/privacy")}>
               <Text style={s.footLink}>Privacy</Text>
             </Pressable>
             <Pressable onPress={() => {}}>
