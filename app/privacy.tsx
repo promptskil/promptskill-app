@@ -38,8 +38,6 @@ export default function Privacy() {
       {/* Body */}
       <View style={[styles.body, isWide && styles.bodyWide]}>
         <Text style={styles.h1}>Privacy Policy</Text>
-        <Text style={styles.meta}>Effective date: May 19, 2026</Text>
-        <Text style={styles.meta}>Last updated: May 19, 2026</Text>
 
         <Text style={styles.h2}>What Vaine Collects</Text>
         <Text style={styles.p}>
