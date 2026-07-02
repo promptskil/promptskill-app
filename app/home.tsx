@@ -227,7 +227,10 @@ export default function Home() {
           <View style={[s.heroRow, !isWide && s.heroCol]}>
             <View style={[s.heroLeft, isWide ? s.heroLeftTop : s.heroLeftNarrow]}>
               <Text style={s.h1}>What You Mean Isn't What AI Does.</Text>
-              <Text style={s.lede}>See what you're missing with less back-and-forth.</Text>
+              <Text style={s.lede}>
+                Remove endless back and forth with AI.{"\n"}
+                Turn thoughts into clear AI instructions.
+              </Text>
               <Pressable style={s.cta} onPress={() => router.push("/(auth)/")}>
                 <Text style={s.ctaT}>Try for Free</Text>
               </Pressable>
