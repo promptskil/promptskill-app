@@ -227,7 +227,6 @@ export default function Home() {
           <View style={[s.heroRow, !isWide && s.heroCol]}>
             <View style={[s.heroLeft, isWide ? s.heroLeftTop : s.heroLeftNarrow]}>
               <Text style={[s.lede, s.heroCopy]}>
-                What You Mean Isn't What AI Does.{"\n"}
                 Remove endless back and forth with AI.{"\n"}
                 Turn thoughts into clear AI instructions.
               </Text>
@@ -236,8 +235,8 @@ export default function Home() {
               </Pressable>
             </View>
             <View style={s.heroRight}>
-              <Text style={[s.stackTitle, { opacity: 0 }]}>[ SCREENSHOT / IMAGE — SET 1 ]</Text>
               <View style={[s.heroStackWrap, isWide && s.heroStackShift]}>
+                <Text style={[s.imgTitle, { transform: [{ translateY: isWide ? 83 : 46 }], zIndex: 2 }]}>What You Mean Isn't What AI Does.</Text>
                 <Stack3D screens={set1} wide={isWide} scale={stackScale} />
               </View>
             </View>
