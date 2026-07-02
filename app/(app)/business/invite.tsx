@@ -41,7 +41,7 @@ export default function BusinessInvite() {
       );
       setSuccess(true);
       setTimeout(() => {
-        router.replace("/(app)/business/");
+        router.replace("/(app)/business");
       }, 1500);
     } catch (err) {
       if (err instanceof SessionExpiredError) {
@@ -70,7 +70,7 @@ export default function BusinessInvite() {
     <View style={styles.container}>
       <View style={styles.headerRow}>
         <Pressable
-          onPress={() => router.replace("/(app)/business/")}
+          onPress={() => router.replace("/(app)/business")}
           style={styles.backBtn}
         >
           <Ionicons name="arrow-back" size={24} color="#333" />

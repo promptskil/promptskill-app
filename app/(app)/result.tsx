@@ -124,7 +124,7 @@ export default function Result() {
 
   // --- Navigation ---
   function handleNewPrompt() {
-    router.replace("/(app)/");
+    router.replace("/(app)");
   }
 
   return (

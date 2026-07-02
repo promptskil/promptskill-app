@@ -11,7 +11,7 @@ export default function Onboarding() {
 
   async function handleComplete() {
     await setOnboardingComplete(true);
-    router.replace("/(app)/");
+    router.replace("/(app)");
   }
 
   return (

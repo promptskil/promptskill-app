@@ -116,7 +116,7 @@ export default function Profile() {
     <View style={styles.container}>
       <View style={styles.headerRow}>
         <Pressable
-          onPress={() => (router.canGoBack() ? router.back() : router.replace("/(app)/"))}
+          onPress={() => (router.canGoBack() ? router.back() : router.replace("/(app)"))}
           style={styles.backBtn}
         >
           <Ionicons name="arrow-back" size={24} color="#333" />
