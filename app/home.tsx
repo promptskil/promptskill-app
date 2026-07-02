@@ -226,8 +226,8 @@ export default function Home() {
         <View style={[s.wrap, s.hero]}>
           <View style={[s.heroRow, !isWide && s.heroCol]}>
             <View style={[s.heroLeft, isWide ? s.heroLeftTop : s.heroLeftNarrow]}>
-              <Text style={s.h1}>What You Mean Isn't What AI Does.</Text>
-              <Text style={s.lede}>
+              <Text style={[s.lede, s.heroCopy]}>
+                What You Mean Isn't What AI Does.{"\n"}
                 Remove endless back and forth with AI.{"\n"}
                 Turn thoughts into clear AI instructions.
               </Text>
@@ -368,7 +368,7 @@ const s = StyleSheet.create({
   signIn: { backgroundColor: "#4f46e5", borderRadius: 8, paddingVertical: 8, paddingHorizontal: 14 },
   signInT: { color: "#fff", fontSize: 14, fontWeight: "400", fontFamily: FONT },
 
-  hero: { alignItems: "center", paddingTop: 64, paddingBottom: 56 },
+  hero: { alignItems: "center", paddingTop: 32, paddingBottom: 56 },
   heroRow: { flexDirection: "row", alignItems: "center", width: "100%", gap: 36 },
   heroCol: { flexDirection: "column", gap: 8 },
   heroLeft: { flex: 1, alignItems: "flex-start", zIndex: 2 },
@@ -380,6 +380,7 @@ const s = StyleSheet.create({
   eyebrow: { color: ACCENT, fontSize: 13, fontWeight: "700", letterSpacing: 1, marginBottom: 14 },
   h1: { fontSize: 36, lineHeight: 44, fontWeight: "400", letterSpacing: -0.7, textAlign: "left", color: "#1f2937", maxWidth: 520, marginBottom: 14, fontFamily: FONT },
   lede: { fontSize: 18, lineHeight: 26, color: "#64748b", maxWidth: 480, marginBottom: 28, textAlign: "left", fontFamily: FONT },
+  heroCopy: { color: "#000" },
   cta: { backgroundColor: "#4f46e5", borderRadius: 10, paddingVertical: 14, paddingHorizontal: 26 },
   ctaT: { color: "#fff", fontSize: 16, fontWeight: "400", fontFamily: FONT },
   stackTitle: { color: "#9aa3af", fontSize: 12, fontWeight: "400", letterSpacing: 1, marginTop: 48, fontFamily: FONT },
