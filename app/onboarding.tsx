@@ -18,7 +18,7 @@ export default function Onboarding() {
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to Vaine</Text>
       <Text style={styles.subtitle}>
-        Type what you mean. Vaine structures it. ChatGPT, Claude, Gemini, and Grok execute it. Get what you meant.{"\n\n"}Stop retrying. Start getting what you meant.
+        Turn your thoughts, questions, and ideas into clear AI instructions that ChatGPT, Claude, Gemini, and Grok can execute. No back and forth.
       </Text>
 
       <View style={styles.actions}>
