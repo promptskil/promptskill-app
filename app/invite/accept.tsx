@@ -63,7 +63,7 @@ export default function InviteAccept() {
       await setToken(result.token);
       await setBusinessContext(result.business_id, result.account_type);
       // Employees use the normal Main screen.
-      router.replace("/(app)/");
+      router.replace("/(app)");
     } catch (err) {
       if (err instanceof ApiError) {
         setError(humanError(err.status));

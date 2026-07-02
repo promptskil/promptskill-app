@@ -11,21 +11,29 @@ import {
   StyleSheet,
   ActivityIndicator,
   Image,
+  Platform,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import EmailInput from "../../components/EmailInput";
 import PasswordInput from "../../components/PasswordInput";
 import { apiCall, ApiError, loginPath, onBusinessHost } from "../../services/api";
-import { setToken, setBusinessContext } from "../../storage/storage";
+import {
+  setToken,
+  setBusinessContext,
+  setOnboardingComplete,
+} from "../../storage/storage";
+import { startCheckout } from "../../services/billing";
 
 export default function Login() {
   const router = useRouter();
+  const { verified } = useLocalSearchParams<{ verified?: string }>();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const canSubmit = email.length > 0 && password.length > 0 && !loading;
+  const emailVerified = verified === "1";
 
   const showSignupLink = !onBusinessHost();
 
@@ -43,9 +51,24 @@ export default function Login() {
       });
       await setToken(data.token);
       await setBusinessContext(data.business_id, data.account_type);
-      router.replace("/(app)/");
+      if (emailVerified && !onBusinessHost()) {
+        await setOnboardingComplete(false);
+        if (Platform.OS === "web") {
+          await startCheckout();
+          return;
+        }
+        router.replace("/onboarding");
+        return;
+      }
+      router.replace("/(app)");
     } catch (err) {
-      if (err instanceof ApiError && err.status === 403) {
+      if (
+        err instanceof ApiError &&
+        err.status === 403 &&
+        err.message.includes("email_not_verified")
+      ) {
+        setError("Please verify your email before logging in.");
+      } else if (err instanceof ApiError && err.status === 403) {
         setError("This login is for business accounts. Use the email you were invited with.");
       } else if (err instanceof ApiError && err.status === 401) {
         setError("Incorrect email or password.");
@@ -69,6 +92,10 @@ export default function Login() {
           editable={!loading}
         />
 
+        {emailVerified ? (
+          <Text style={styles.notice}>Email verified. Log in to continue.</Text>
+        ) : null}
+
         {error ? <Text style={styles.error}>{error}</Text> : null}
 
         <Pressable
@@ -91,7 +118,7 @@ export default function Login() {
       {showSignupLink && (
         <Pressable
           style={styles.signupLink}
-          onPress={() => router.push("/(auth)/")}
+          onPress={() => router.push("/(auth)")}
         >
           <Text style={styles.link}>New here? Create an account</Text>
         </Pressable>
@@ -125,6 +152,11 @@ const styles = StyleSheet.create({
   },
   error: {
     color: "#d00",
+    fontSize: 14,
+    textAlign: "center",
+  },
+  notice: {
+    color: "#166534",
     fontSize: 14,
     textAlign: "center",
   },

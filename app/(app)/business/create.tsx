@@ -7,7 +7,7 @@ import { useRouter } from "expo-router";
 export default function BusinessCreateDisabled() {
   const router = useRouter();
   useEffect(() => {
-    router.replace("/(app)/");
+    router.replace("/(app)");
   }, []);
   return <View />;
 }
