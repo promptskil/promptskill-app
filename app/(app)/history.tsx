@@ -134,7 +134,7 @@ export default function History() {
             editable={false}
           />
           <View style={styles.detailActions}>
-            <NewPromptButton onPress={() => router.replace("/(app)/")} />
+            <NewPromptButton onPress={() => router.replace("/(app)")} />
           </View>
         </ScrollView>
       </View>
@@ -145,7 +145,7 @@ export default function History() {
     <View style={styles.container}>
       <View style={styles.headerRow}>
         <Pressable
-          onPress={() => (router.canGoBack() ? router.back() : router.replace("/(app)/"))}
+          onPress={() => (router.canGoBack() ? router.back() : router.replace("/(app)"))}
           style={styles.backBtn}
         >
           <Ionicons name="arrow-back" size={24} color="#333" />

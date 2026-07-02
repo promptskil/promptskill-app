@@ -161,7 +161,7 @@ export default function Main() {
           <View style={styles.headerRight}>
             <HistoryNavButton onPress={handleHistoryNav} />
             {Platform.OS === "web" && accountType === "admin" && (
-              <Pressable onPress={() => router.push("/(app)/business/")}>
+              <Pressable onPress={() => router.push("/(app)/business")}>
                 <Ionicons name="business-outline" size={26} color="#333" />
               </Pressable>
             )}

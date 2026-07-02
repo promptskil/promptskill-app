@@ -56,7 +56,7 @@ export default function BusinessLogin() {
 
       await setToken(data.token);
       await setBusinessContext(data.business_id, data.account_type);
-      router.replace("/(app)/");
+      router.replace("/(app)");
     } catch (err) {
       if (err instanceof ApiError && err.status === 403) {
         setError("This login is for business accounts. Use the email you were invited with.");
