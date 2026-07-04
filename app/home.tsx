@@ -227,7 +227,6 @@ export default function Home() {
           <View style={[s.heroRow, !isWide && s.heroCol]}>
             <View style={[s.heroLeft, isWide ? s.heroLeftTop : s.heroLeftNarrow]}>
               <Text style={[s.lede, s.heroCopy]}>
-                Remove endless back and forth with AI.{"\n"}
                 Turn thoughts into clear AI instructions.
               </Text>
               <Pressable style={s.cta} onPress={() => router.push("/(auth)")}>
