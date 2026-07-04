@@ -61,7 +61,7 @@ export default function BusinessDashboard() {
         return;
       }
       if (err instanceof ApiError && err.status === 404) {
-        router.replace("/(app)/");
+        router.replace("/(app)");
         return;
       }
       if (err instanceof ApiError && err.status === 429) {
@@ -146,7 +146,7 @@ export default function BusinessDashboard() {
       {/* Header */}
       <View style={styles.headerRow}>
         <Pressable
-          onPress={() => (router.canGoBack() ? router.back() : router.replace("/(app)/"))}
+          onPress={() => (router.canGoBack() ? router.back() : router.replace("/(app)"))}
           style={styles.backBtn}
         >
           <Ionicons name="arrow-back" size={24} color="#333" />

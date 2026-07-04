@@ -14,7 +14,14 @@ import { getToken, getOnboardingComplete, clearToken } from "../storage/storage"
 import { apiCall, SessionExpiredError } from "../services/api";
 
 // Public routes — session gate is bypassed for these
-const PUBLIC_ROUTES = ["/privacy", "/business", "/business/login", "/invite/accept", "/reset-password"];
+const PUBLIC_ROUTES = [
+  "/privacy",
+  "/business",
+  "/business/login",
+  "/invite/accept",
+  "/reset-password",
+  "/login",
+];
 
 // Domain-specific routing — hostname maps to landing route
 const BUSINESS_HOSTNAME = "business.vaineai.com";
@@ -78,7 +85,7 @@ export default function RootLayout() {
             // State 4: Token valid + onboarded -> Main (everyone).
             // Admins reach the org panel via the "Manage org" entry on
             // Main (gated on account_type).
-            router.replace("/(app)/");
+            router.replace("/(app)");
             return;
           } catch (error) {
             // State 5/6: Token invalid or expired
@@ -93,7 +100,7 @@ export default function RootLayout() {
         }
       } catch {
         // Fallback -- storage read failure
-        router.replace("/(auth)/");
+        router.replace("/(auth)");
       }
     };
 

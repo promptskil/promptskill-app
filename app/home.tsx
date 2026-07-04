@@ -230,7 +230,7 @@ export default function Home() {
                 Remove endless back and forth with AI.{"\n"}
                 Turn thoughts into clear AI instructions.
               </Text>
-              <Pressable style={s.cta} onPress={() => router.push("/(auth)/")}>
+              <Pressable style={s.cta} onPress={() => router.push("/(auth)")}>
                 <Text style={s.ctaT}>Try for Free</Text>
               </Pressable>
             </View>
@@ -279,7 +279,7 @@ export default function Home() {
         {/* Notice band */}
         <View style={s.band}>
           <View style={s.wrap}>
-            <Pressable style={[s.cta, { alignSelf: "center" }]} onPress={() => router.push("/(auth)/")}>
+            <Pressable style={[s.cta, { alignSelf: "center" }]} onPress={() => router.push("/(auth)")}>
               <Text style={s.ctaT}>GET STARTED</Text>
             </Pressable>
           </View>

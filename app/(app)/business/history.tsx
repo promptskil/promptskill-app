@@ -49,7 +49,7 @@ export default function BusinessHistory() {
 
   const load = useCallback(async () => {
     if (!businessId || Array.isArray(businessId)) {
-      router.replace("/(app)/business/");
+      router.replace("/(app)/business");
       return;
     }
     setLoading(true);
@@ -67,7 +67,7 @@ export default function BusinessHistory() {
         return;
       }
       if (err instanceof ApiError && err.status === 403) {
-        router.replace("/(app)/business/");
+        router.replace("/(app)/business");
         return;
       }
       setError("Failed to load history.");
@@ -126,7 +126,7 @@ export default function BusinessHistory() {
       {/* Header */}
       <View style={styles.headerRow}>
         <Pressable
-          onPress={() => router.replace("/(app)/business/")}
+          onPress={() => router.replace("/(app)/business")}
           style={styles.backBtn}
         >
           <Ionicons name="arrow-back" size={24} color="#333" />

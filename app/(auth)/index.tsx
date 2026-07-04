@@ -1,5 +1,5 @@
 // Screen 0 — Account Creation — Phase 11, Step 11.2
-// POST /auth/signup → token stored → onboarding_complete='false' → Onboarding
+// POST /auth/signup -> email verification required -> Check email
 // Back gesture: DISABLED
 
 import { useState } from "react";
@@ -9,14 +9,11 @@ import {
   Pressable,
   StyleSheet,
   ActivityIndicator,
-  Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
 import EmailInput from "../../components/EmailInput";
 import PasswordInput from "../../components/PasswordInput";
 import { apiCall, ApiError } from "../../services/api";
-import { setToken, setOnboardingComplete } from "../../storage/storage";
-import { startCheckout } from "../../services/billing";
 
 export default function AccountCreation() {
   const router = useRouter();
@@ -24,6 +21,7 @@ export default function AccountCreation() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState("");
 
   const canSubmit = email.length > 0 && password.length > 0 && !loading;
 
@@ -31,17 +29,16 @@ export default function AccountCreation() {
     setError("");
     setLoading(true);
     try {
-      const data = await apiCall<{ token: string }>("POST", "/auth/signup", {
+      const data = await apiCall<{
+        user_id: string;
+        email_verification_required: boolean;
+      }>("POST", "/auth/signup", {
         email,
         password,
       });
-      await setToken(data.token);
-      await setOnboardingComplete(false);
-      if (Platform.OS === "web") {
-        await startCheckout();  // redirect to Stripe; returns to /onboarding
-        return;
+      if (data.email_verification_required) {
+        setSubmittedEmail(email);
       }
-      router.replace("/onboarding");  // mobile: Apple IAP
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.status === 409) {
@@ -61,6 +58,25 @@ export default function AccountCreation() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (submittedEmail) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.header}>Check your email</Text>
+        <Text style={styles.message}>
+          We sent a verification link to {submittedEmail}. Verify your email,
+          then log in to continue.
+        </Text>
+
+        <Pressable
+          style={styles.button}
+          onPress={() => router.push("/(auth)/login")}
+        >
+          <Text style={styles.buttonText}>Go to login</Text>
+        </Pressable>
+      </View>
+    );
   }
 
   return (
@@ -118,6 +134,13 @@ const styles = StyleSheet.create({
     color: "#d00",
     fontSize: 14,
     textAlign: "center",
+  },
+  message: {
+    fontSize: 16,
+    color: "#333",
+    textAlign: "center",
+    marginBottom: 24,
+    lineHeight: 22,
   },
   button: {
     padding: 14,
