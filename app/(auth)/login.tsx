@@ -45,13 +45,14 @@ export default function Login() {
         token: string;
         business_id: string | null;
         account_type: string;
+        checkout_required: boolean;
       }>("POST", loginPath(), {
         email,
         password,
       });
       await setToken(data.token);
       await setBusinessContext(data.business_id, data.account_type);
-      if (emailVerified && !onBusinessHost()) {
+      if (data.checkout_required && !onBusinessHost()) {
         await setOnboardingComplete(false);
         if (Platform.OS === "web") {
           await startCheckout();
@@ -60,6 +61,13 @@ export default function Login() {
         router.replace("/onboarding");
         return;
       }
+
+      if (emailVerified && !onBusinessHost()) {
+        await setOnboardingComplete(false);
+        router.replace("/onboarding");
+        return;
+      }
+
       router.replace("/(app)");
     } catch (err) {
       if (
