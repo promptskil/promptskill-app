@@ -20,10 +20,10 @@ import { apiCall, ApiError, loginPath, onBusinessHost } from "../../services/api
 import {
   setToken,
   setBusinessContext,
-  setOnboardingComplete,
 } from "../../storage/storage";
 import { startCheckout } from "../../services/billing";
 import VerifyCodeForm from "../../components/VerifyCodeForm";
+import { loginAndRoute } from "../../services/session";
 
 export default function Login() {
   const router = useRouter();
@@ -67,17 +67,10 @@ export default function Login() {
       await setToken(data.token);
       await setBusinessContext(data.business_id, data.account_type);
       if (data.checkout_required && !onBusinessHost()) {
-        await setOnboardingComplete(false);
         if (Platform.OS === "web") {
           await startCheckout();
           return;
         }
-        router.replace("/onboarding");
-        return;
-      }
-
-      if (emailVerified && !onBusinessHost()) {
-        await setOnboardingComplete(false);
         router.replace("/onboarding");
         return;
       }
@@ -111,7 +104,9 @@ export default function Login() {
           email={verifySentTo}
           onVerified={() => {
             setVerifySentTo("");
-            handleLogin();
+            loginAndRoute(email, password, router, true).catch(() =>
+              setError("Something went wrong. Please try again."),
+            );
           }}
         />
         <Pressable
