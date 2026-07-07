@@ -10,7 +10,7 @@
 import { useEffect } from "react";
 import { Platform } from "react-native";
 import { Stack, useRouter, usePathname } from "expo-router";
-import { getToken, getOnboardingComplete, clearToken } from "../storage/storage";
+import { getToken, clearToken } from "../storage/storage";
 import { apiCall, SessionExpiredError } from "../services/api";
 
 // Public routes — session gate is bypassed for these
@@ -39,7 +39,6 @@ export default function RootLayout() {
     const initializeSession = async () => {
       try {
         const token = await getToken();
-        const onboarding = await getOnboardingComplete();
 
         const onBusinessHost =
           Platform.OS === "web" &&
@@ -63,7 +62,10 @@ export default function RootLayout() {
         // body carries {valid}); the Bearer header alone yields a 422.
         if (token) {
           try {
-            const { valid } = await apiCall<{ valid: boolean }>(
+            const { valid, checkout_required } = await apiCall<{
+              valid: boolean;
+              checkout_required?: boolean;
+            }>(
               "POST",
               "/auth/validate",
               { token },
@@ -76,8 +78,16 @@ export default function RootLayout() {
               return;
             }
 
-            // State 3: Token valid + onboarding false/absent -> Onboarding
-            if (onboarding === null || onboarding === false) {
+            // Checkout is the hard re-entry gate: an unpaid account can
+            // only go to Stripe — never onboarding, never Main. Onboarding
+            // is a one-time post-verify step (loginAndRoute), not shown here.
+            if (checkout_required && !onBusinessHost) {
+              if (Platform.OS === "web") {
+                const { startCheckout } = await import("../services/billing");
+                await startCheckout();
+                return;
+              }
+
               router.replace("/onboarding");
               return;
             }
