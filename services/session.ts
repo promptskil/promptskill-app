@@ -7,7 +7,7 @@ import { apiCall, loginPath, onBusinessHost } from "./api";
 import {
   setToken,
   setBusinessContext,
-  setOnboardingComplete,
+  getOnboardingComplete,
 } from "../storage/storage";
 import { startCheckout } from "./billing";
 
@@ -33,18 +33,22 @@ export async function loginAndRoute(
   await setToken(data.token);
   await setBusinessContext(data.business_id, data.account_type);
 
-  if (data.checkout_required && !onBusinessHost()) {
-    await setOnboardingComplete(false);
-    if (Platform.OS === "web") {
-      await startCheckout();
-      return;
-    }
+  // Law 1: onboarding is mandatory before payment/Main.
+  const onboarded = await getOnboardingComplete();
+  if (
+    !onBusinessHost() &&
+    (justVerified || onboarded === false || onboarded === null)
+  ) {
     router.replace("/onboarding");
     return;
   }
 
-  if (justVerified && !onBusinessHost()) {
-    await setOnboardingComplete(false);
+  // Law 2: card before Main.
+  if (data.checkout_required && !onBusinessHost()) {
+    if (Platform.OS === "web") {
+      await startCheckout();
+      return;
+    }
     router.replace("/onboarding");
     return;
   }

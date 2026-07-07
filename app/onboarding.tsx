@@ -2,15 +2,32 @@
 // GetStarted or Skip → onboarding_complete='true' → Main
 // onboarding_complete NOT cleared on logout
 
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet, Platform } from "react-native";
 import { useRouter } from "expo-router";
-import { setOnboardingComplete } from "../storage/storage";
+import { setOnboardingComplete, getToken } from "../storage/storage";
+import { apiCall } from "../services/api";
 
 export default function Onboarding() {
   const router = useRouter();
 
   async function handleComplete() {
     await setOnboardingComplete(true);
+    // Law 2: after onboarding, card before Main.
+    try {
+      const token = await getToken();
+      if (token) {
+        const { checkout_required } = await apiCall<{
+          checkout_required?: boolean;
+        }>("POST", "/auth/validate", { token });
+        if (checkout_required && Platform.OS === "web") {
+          const { startCheckout } = await import("../services/billing");
+          await startCheckout();
+          return;
+        }
+      }
+    } catch {
+      // fall through to Main
+    }
     router.replace("/(app)");
   }
 

@@ -24,6 +24,7 @@ import {
 } from "../../storage/storage";
 import { startCheckout } from "../../services/billing";
 import VerifyCodeForm from "../../components/VerifyCodeForm";
+import { loginAndRoute } from "../../services/session";
 
 export default function Login() {
   const router = useRouter();
@@ -111,7 +112,9 @@ export default function Login() {
           email={verifySentTo}
           onVerified={() => {
             setVerifySentTo("");
-            handleLogin();
+            loginAndRoute(email, password, router, true).catch(() =>
+              setError("Something went wrong. Please try again."),
+            );
           }}
         />
         <Pressable

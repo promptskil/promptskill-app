@@ -63,7 +63,10 @@ export default function RootLayout() {
         // body carries {valid}); the Bearer header alone yields a 422.
         if (token) {
           try {
-            const { valid } = await apiCall<{ valid: boolean }>(
+            const { valid, checkout_required } = await apiCall<{
+              valid: boolean;
+              checkout_required?: boolean;
+            }>(
               "POST",
               "/auth/validate",
               { token },
@@ -76,8 +79,20 @@ export default function RootLayout() {
               return;
             }
 
-            // State 3: Token valid + onboarding false/absent -> Onboarding
+            // Law 1: onboarding is mandatory before payment/Main.
             if (onboarding === null || onboarding === false) {
+              router.replace("/onboarding");
+              return;
+            }
+
+            // Law 2: card before Main.
+            if (checkout_required && !onBusinessHost) {
+              if (Platform.OS === "web") {
+                const { startCheckout } = await import("../services/billing");
+                await startCheckout();
+                return;
+              }
+
               router.replace("/onboarding");
               return;
             }
