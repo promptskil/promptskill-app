@@ -7,7 +7,6 @@ import { apiCall, loginPath, onBusinessHost } from "./api";
 import {
   setToken,
   setBusinessContext,
-  setOnboardingComplete,
 } from "../storage/storage";
 import { startCheckout } from "./billing";
 
@@ -33,18 +32,19 @@ export async function loginAndRoute(
   await setToken(data.token);
   await setBusinessContext(data.business_id, data.account_type);
 
-  if (data.checkout_required && !onBusinessHost()) {
-    await setOnboardingComplete(false);
-    if (Platform.OS === "web") {
-      await startCheckout();
-      return;
-    }
+  // Onboarding is a one-time post-verify step only. On re-entry
+  // (justVerified=false) it is skipped — checkout is the gate.
+  if (justVerified && !onBusinessHost()) {
     router.replace("/onboarding");
     return;
   }
 
-  if (justVerified && !onBusinessHost()) {
-    await setOnboardingComplete(false);
+  // Checkout is the hard gate: an unpaid account goes to Stripe, not Main.
+  if (data.checkout_required && !onBusinessHost()) {
+    if (Platform.OS === "web") {
+      await startCheckout();
+      return;
+    }
     router.replace("/onboarding");
     return;
   }
