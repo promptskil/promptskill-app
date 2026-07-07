@@ -12,21 +12,27 @@ export default function Onboarding() {
 
   async function handleComplete() {
     await setOnboardingComplete(true);
-    // Law 2: after onboarding, card before Main.
-    try {
-      const token = await getToken();
-      if (token) {
+    // Web: checkout is the hard gate — fail CLOSED. Never leak into Main
+    // when a card is required or when access can't be confirmed.
+    if (Platform.OS === "web") {
+      try {
+        const token = await getToken();
+        if (!token) {
+          router.replace("/(auth)/login");
+          return;
+        }
         const { checkout_required } = await apiCall<{
           checkout_required?: boolean;
         }>("POST", "/auth/validate", { token });
-        if (checkout_required && Platform.OS === "web") {
+        if (checkout_required) {
           const { startCheckout } = await import("../services/billing");
           await startCheckout();
           return;
         }
+      } catch {
+        router.replace("/(auth)/login");
+        return;
       }
-    } catch {
-      // fall through to Main
     }
     router.replace("/(app)");
   }
