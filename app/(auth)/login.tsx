@@ -23,6 +23,7 @@ import {
   setOnboardingComplete,
 } from "../../storage/storage";
 import { startCheckout } from "../../services/billing";
+import VerifyCodeForm from "../../components/VerifyCodeForm";
 
 export default function Login() {
   const router = useRouter();
@@ -106,14 +107,13 @@ export default function Login() {
     return (
       <View style={styles.container}>
         <Image source={require("../../assets/logo1.png")} style={styles.logo} resizeMode="contain" />
-        <Text style={styles.header}>Check your email</Text>
-        <Text style={styles.notice}>
-          We sent a new verification link to {verifySentTo}. Verify your email,
-          then log in.
-        </Text>
-        <Pressable style={styles.button} onPress={() => sendVerification(verifySentTo)}>
-          <Text style={styles.buttonText}>Resend email</Text>
-        </Pressable>
+        <VerifyCodeForm
+          email={verifySentTo}
+          onVerified={() => {
+            setVerifySentTo("");
+            handleLogin();
+          }}
+        />
         <Pressable
           style={styles.signupLink}
           onPress={() => {
