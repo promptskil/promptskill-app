@@ -31,11 +31,24 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [verifySentTo, setVerifySentTo] = useState("");
 
   const canSubmit = email.length > 0 && password.length > 0 && !loading;
   const emailVerified = verified === "1";
 
   const showSignupLink = !onBusinessHost();
+
+  // Rule 1 (unverified re-entry): re-issue the verification email and hold
+  // the user on the verify view. Server always returns {success:true}, so
+  // transport errors still land on the verify state — never Main.
+  async function sendVerification(target: string) {
+    try {
+      await apiCall("POST", "/auth/resend-verification", { email: target });
+    } catch {
+      // no-op: resend is fire-and-forget by design
+    }
+    setVerifySentTo(target);
+  }
 
   async function handleLogin() {
     setError("");
@@ -75,7 +88,8 @@ export default function Login() {
         err.status === 403 &&
         err.message.includes("email_not_verified")
       ) {
-        setError("Please verify your email before logging in.");
+        await sendVerification(email);
+        return;
       } else if (err instanceof ApiError && err.status === 403) {
         setError("This login is for business accounts. Use the email you were invited with.");
       } else if (err instanceof ApiError && err.status === 401) {
@@ -86,6 +100,31 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (verifySentTo) {
+    return (
+      <View style={styles.container}>
+        <Image source={require("../../assets/logo1.png")} style={styles.logo} resizeMode="contain" />
+        <Text style={styles.header}>Check your email</Text>
+        <Text style={styles.notice}>
+          We sent a new verification link to {verifySentTo}. Verify your email,
+          then log in.
+        </Text>
+        <Pressable style={styles.button} onPress={() => sendVerification(verifySentTo)}>
+          <Text style={styles.buttonText}>Resend email</Text>
+        </Pressable>
+        <Pressable
+          style={styles.signupLink}
+          onPress={() => {
+            setVerifySentTo("");
+            setError("");
+          }}
+        >
+          <Text style={styles.link}>Back to login</Text>
+        </Pressable>
+      </View>
+    );
   }
 
   return (
