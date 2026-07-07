@@ -14,6 +14,8 @@ import { useRouter } from "expo-router";
 import EmailInput from "../../components/EmailInput";
 import PasswordInput from "../../components/PasswordInput";
 import { apiCall, ApiError } from "../../services/api";
+import { loginAndRoute } from "../../services/session";
+import VerifyCodeForm from "../../components/VerifyCodeForm";
 
 export default function AccountCreation() {
   const router = useRouter();
@@ -63,17 +65,21 @@ export default function AccountCreation() {
   if (submittedEmail) {
     return (
       <View style={styles.container}>
-        <Text style={styles.header}>Check your email</Text>
-        <Text style={styles.message}>
-          We sent a verification link to {submittedEmail}. Verify your email,
-          then log in to continue.
-        </Text>
-
+        <VerifyCodeForm
+          email={submittedEmail}
+          onVerified={async () => {
+            try {
+              await loginAndRoute(submittedEmail, password, router, true);
+            } catch {
+              router.push("/(auth)/login?verified=1");
+            }
+          }}
+        />
         <Pressable
-          style={styles.button}
+          style={{ marginTop: 16 }}
           onPress={() => router.push("/(auth)/login")}
         >
-          <Text style={styles.buttonText}>Go to login</Text>
+          <Text style={styles.link}>Back to login</Text>
         </Pressable>
       </View>
     );
