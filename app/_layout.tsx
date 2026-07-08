@@ -116,23 +116,17 @@ export default function RootLayout() {
               return;
             }
 
-            // Checkout is the hard re-entry gate: an unpaid account can
-            // only go to Stripe — never onboarding, never Main. Onboarding
-            // is a one-time post-verify step (loginAndRoute), not shown here.
-            if (checkout_required && !onBusinessHost) {
-              if (Platform.OS === "web") {
-                const { startCheckout } = await import("../services/billing");
-                await startCheckout();
-                return;
-              }
-
-              router.replace("/onboarding");
+            // Checkout gate is WEB only — an unpaid account goes to Stripe.
+            // Mobile payment is handled by Apple (backend 402 + IAP), so iOS
+            // never routes on checkout_required.
+            if (checkout_required && !onBusinessHost && Platform.OS === "web") {
+              const { startCheckout } = await import("../services/billing");
+              await startCheckout();
               return;
             }
 
-            // State 4: Token valid + onboarded -> Main (everyone).
-            // Admins reach the org panel via the "Manage org" entry on
-            // Main (gated on account_type).
+            // Token valid -> Main (everyone). Admins reach the org panel via
+            // the "Manage org" entry on Main (gated on account_type).
             router.replace("/(app)");
             return;
           } catch (error) {
