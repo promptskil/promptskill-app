@@ -39,13 +39,14 @@ export async function loginAndRoute(
     return;
   }
 
-  // Checkout is the hard gate: an unpaid account goes to Stripe, not Main.
-  if (data.checkout_required && !onBusinessHost()) {
-    if (Platform.OS === "web") {
-      await startCheckout();
-      return;
-    }
-    router.replace("/onboarding");
+  // Checkout is the hard gate on WEB only. Mobile payment is handled by
+  // Apple (backend 402 + IAP), so iOS never routes on checkout_required.
+  if (
+    data.checkout_required &&
+    !onBusinessHost() &&
+    Platform.OS === "web"
+  ) {
+    await startCheckout();
     return;
   }
 
