@@ -83,7 +83,7 @@ export default function InviteAccept() {
       <View style={styles.header}>
         <Pressable onPress={() => router.push("/home")}>
           <Image
-            source={require("../../assets/logo.png")}
+            source={require("../../assets/logo1.png")}
             style={styles.logo}
             resizeMode="contain"
           />
