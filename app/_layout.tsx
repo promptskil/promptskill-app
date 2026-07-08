@@ -45,6 +45,44 @@ export default function RootLayout() {
           typeof window !== "undefined" &&
           window.location.hostname === BUSINESS_HOSTNAME;
 
+        // Stripe checkout return (web). Handle before the normal gate so
+        // a cancel escapes to login and a success lands on Main — never
+        // onboarding, never a re-checkout loop.
+        const checkoutParam =
+          Platform.OS === "web" && typeof window !== "undefined"
+            ? new URLSearchParams(window.location.search).get("checkout")
+            : null;
+
+        if (checkoutParam === "cancel") {
+          router.replace("/(auth)/login");
+          return;
+        }
+
+        if (checkoutParam === "success" && token) {
+          // Just paid — poll until the Stripe webhook activates the
+          // subscription, then Main. Loading spinner shows meanwhile.
+          for (let i = 0; i < 15; i++) {
+            try {
+              const res = await apiCall<{
+                valid: boolean;
+                checkout_required?: boolean;
+              }>("POST", "/auth/validate", { token });
+              if (!res.valid) break;
+              if (!res.checkout_required) {
+                router.replace("/(app)");
+                return;
+              }
+            } catch {
+              // transient — keep polling
+            }
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+          }
+          // Webhook didn't settle in time — Main anyway; the /generate
+          // paywall backstops if the subscription isn't active yet.
+          router.replace("/(app)");
+          return;
+        }
+
         // No token: business host → business landing; otherwise
         // Home (web) / Login (iOS). Authenticated users are NOT bounced
         // to the landing (so a reload on the business host stays put).
