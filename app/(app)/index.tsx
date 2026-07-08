@@ -69,6 +69,10 @@ export default function Main() {
     router.push("/(app)/profile");
   }
 
+  function handleGlobeNav() {
+    router.push("/(app)/globe");
+  }
+
   const canGenerate =
     selectedModel.length > 0 && topic.length > 0 && !loading;
 
@@ -159,6 +163,9 @@ export default function Main() {
             resizeMode="contain"
           />
           <View style={styles.headerRight}>
+            <Pressable onPress={handleGlobeNav}>
+              <Ionicons name="globe-outline" size={26} color="#333" />
+            </Pressable>
             <HistoryNavButton onPress={handleHistoryNav} />
             {Platform.OS === "web" && accountType === "admin" && (
               <Pressable onPress={() => router.push("/(app)/business")}>
