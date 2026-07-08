@@ -164,7 +164,11 @@ export default function Main() {
           />
           <View style={styles.headerRight}>
             <Pressable onPress={handleGlobeNav}>
-              <Ionicons name="globe-outline" size={26} color="#333" />
+              <Image
+              source={require("../../assets/globe.png")}
+              style={styles.globeIcon}
+              resizeMode="contain"
+            />
             </Pressable>
             <HistoryNavButton onPress={handleHistoryNav} />
             {Platform.OS === "web" && accountType === "admin" && (
@@ -267,6 +271,10 @@ const styles = StyleSheet.create({
   headerLogo: {
     height: 28,
     width: 90,
+  },
+  globeIcon: {
+    width: 26,
+    height: 26,
   },
   bottom: {
     paddingHorizontal: 16,
