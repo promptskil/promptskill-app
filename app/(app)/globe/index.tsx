@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -57,53 +58,66 @@ export default function GlobeFeed() {
     <View style={styles.root}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Ionicons name="globe-outline" size={18} color="#EDEDED" />
-          <Text style={styles.title}>Globe</Text>
+          <Image
+            source={require("../../../assets/globe.png")}
+            style={styles.headerGlobe}
+            resizeMode="contain"
+          />
+          <Image
+            source={require("../../../assets/logo1.png")}
+            style={styles.headerLogo}
+            resizeMode="contain"
+          />
+          <Text style={styles.title}>ZONE</Text>
         </View>
         <Pressable onPress={() => router.push("/(app)/globe/new")} hitSlop={8}>
           <Ionicons name="add" size={22} color="#B5B5B5" />
         </Pressable>
       </View>
 
-      <View style={styles.searchRow}>
-        <Ionicons name="search" size={15} color="#8A8A8A" />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search problems"
-          placeholderTextColor="#8A8A8A"
-          value={query}
-          onChangeText={setQuery}
-          autoCapitalize="none"
-        />
-      </View>
+      <View style={styles.content}>
+        <View style={styles.searchRow}>
+          <Ionicons name="search" size={15} color="#8A8A8A" />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search information"
+            placeholderTextColor="#8A8A8A"
+            value={query}
+            onChangeText={setQuery}
+            autoCapitalize="none"
+          />
+        </View>
 
-      {loading ? (
-        <ActivityIndicator color="#8A8A8A" style={{ marginTop: 32 }} />
-      ) : (
-        <FlatList
-          data={zones}
-          keyExtractor={(z) => z.id}
-          renderItem={({ item }) => (
-            <Pressable
-              style={styles.row}
-              onPress={() =>
-                router.push({
-                  pathname: "/(app)/globe/[zoneId]",
-                  params: { zoneId: item.id },
-                })
-              }
-            >
-              <Text style={styles.rowTitle} numberOfLines={1}>
-                {item.title}
-              </Text>
-              <Text style={styles.rowTime}>{relativeTime(item.created_at)}</Text>
-            </Pressable>
-          )}
-          ListEmptyComponent={
-            <Text style={styles.empty}>No problems yet.</Text>
-          }
-        />
-      )}
+        {loading ? (
+          <ActivityIndicator color="#8A8A8A" style={{ marginTop: 32 }} />
+        ) : (
+          <FlatList
+            data={zones}
+            keyExtractor={(z) => z.id}
+            renderItem={({ item }) => (
+              <Pressable
+                style={styles.row}
+                onPress={() =>
+                  router.push({
+                    pathname: "/(app)/globe/[zoneId]",
+                    params: { zoneId: item.id },
+                  })
+                }
+              >
+                <Text style={styles.rowTitle} numberOfLines={1}>
+                  {item.title}
+                </Text>
+                <Text style={styles.rowTime}>
+                  {relativeTime(item.created_at)}
+                </Text>
+              </Pressable>
+            )}
+            ListEmptyComponent={
+              <Text style={styles.empty}>No problems yet.</Text>
+            }
+          />
+        )}
+      </View>
     </View>
   );
 }
@@ -117,8 +131,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 12,
   },
-  headerLeft: { flexDirection: "row", alignItems: "center", gap: 7 },
-  title: { fontSize: 15, fontWeight: "500", color: "#EDEDED" },
+  headerLeft: { flexDirection: "row", alignItems: "center", gap: 8 },
+  headerGlobe: { width: 22, height: 22, tintColor: "#EDEDED" },
+  headerLogo: { width: 58, height: 18, tintColor: "#EDEDED" },
+  title: { fontSize: 15, fontWeight: "500", letterSpacing: 0.5, color: "#EDEDED" },
+  content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
   searchRow: {
     flexDirection: "row",
     alignItems: "center",

@@ -87,7 +87,8 @@ export default function NewZone() {
         </Pressable>
         <Text style={styles.headerTitle}>New zone</Text>
       </View>
-      <ScrollView contentContainerStyle={styles.body}>
+      <View style={styles.content}>
+        <ScrollView contentContainerStyle={styles.body}>
         <Text style={styles.stepLabel}>Step 1 · choose a domain</Text>
         <View style={styles.chips}>
           {DOMAINS.map((d) => {
@@ -127,7 +128,8 @@ export default function NewZone() {
         >
           <Text style={styles.buttonText}>Create zone</Text>
         </Pressable>
-      </ScrollView>
+        </ScrollView>
+      </View>
     </View>
   );
 }
@@ -142,6 +144,7 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   headerTitle: { fontSize: 14, fontWeight: "500", color: "#EDEDED" },
+  content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
   body: { padding: 14 },
   stepLabel: {
     fontSize: 11,
