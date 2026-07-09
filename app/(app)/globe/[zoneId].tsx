@@ -54,6 +54,7 @@ export default function GlobeThread() {
   >(null);
   const [editText, setEditText] = useState("");
   const [savingEdit, setSavingEdit] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -196,6 +197,16 @@ export default function GlobeThread() {
     }
   }
 
+  async function hideZone() {
+    setMenuOpen(false);
+    try {
+      await apiCall("POST", `/globe/zones/${zoneId}/hide`);
+      router.back();
+    } catch (err) {
+      if (err instanceof SessionExpiredError) router.replace("/(auth)/login");
+    }
+  }
+
   const isTarget = (postId: string, parentReplyId?: string) =>
     composer?.kind === "reply" &&
     composer.postId === postId &&
@@ -287,7 +298,18 @@ export default function GlobeThread() {
         <Text style={styles.headerTitle} numberOfLines={1}>
           {zoneTitle}
         </Text>
+        <Pressable onPress={() => setMenuOpen((v) => !v)} hitSlop={8}>
+          <Ionicons name="ellipsis-vertical" size={20} color="#B5B5B5" />
+        </Pressable>
       </View>
+      {menuOpen ? (
+        <View style={styles.menu}>
+          <Pressable style={styles.menuItem} onPress={hideZone}>
+            <Ionicons name="eye-off-outline" size={15} color="#EDEDED" />
+            <Text style={styles.menuItemText}>Hide</Text>
+          </Pressable>
+        </View>
+      ) : null}
 
       <View style={styles.content}>
       {composer?.kind === "post" ? (
@@ -395,6 +417,26 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   headerTitle: { flex: 1, fontSize: 14, fontWeight: "500", color: "#EDEDED" },
+  menu: {
+    position: "absolute",
+    top: 88,
+    right: 14,
+    backgroundColor: "#161616",
+    borderWidth: 0.5,
+    borderColor: "#3A3A3A",
+    borderRadius: 8,
+    paddingVertical: 4,
+    zIndex: 20,
+    elevation: 8,
+  },
+  menuItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  menuItemText: { fontSize: 13, color: "#EDEDED" },
   content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
   composerIdle: {
     flexDirection: "row",

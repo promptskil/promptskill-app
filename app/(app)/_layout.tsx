@@ -40,6 +40,10 @@ export default function AppLayout() {
         options={{ gestureEnabled: true }}
       />
       <Stack.Screen
+        name="globe/hidden"
+        options={{ gestureEnabled: true }}
+      />
+      <Stack.Screen
         name="business/index"
         options={{ gestureEnabled: true }}
       />
