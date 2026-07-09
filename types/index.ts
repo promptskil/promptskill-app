@@ -28,3 +28,39 @@ export interface ResultSnapshot {
   selectedModel: string;
   topic: string;
 }
+
+// ─────────────────────── Globe subsystem ─────────────────────────────────
+
+export type GlobeDomain =
+  | "startup"
+  | "ai"
+  | "finance"
+  | "career"
+  | "programming"
+  | "health";
+
+export interface GlobeZone {
+  id: string;
+  title: string;
+  created_at: string;
+}
+
+export interface GlobeReply {
+  id: string;
+  parent_reply_id: string | null;
+  author_username: string;
+  body: string;
+  created_at: string;
+}
+
+export interface GlobePost {
+  id: string;
+  author_username: string;
+  body: string;
+  created_at: string;
+  replies: GlobeReply[]; // flat; nested client-side
+}
+
+export interface GlobeReplyNode extends GlobeReply {
+  children: GlobeReplyNode[];
+}
