@@ -17,6 +17,7 @@ import {
   getGlobeDraft,
   getGlobeUsername,
   setGlobeDraft,
+  setGlobeUsername,
 } from "../../../services/globeDraft";
 import { buildReplyTree, initials, relativeTime } from "../../../utils/globe";
 import type { GlobePost, GlobeReplyNode, GlobeZone } from "../../../types";
@@ -47,6 +48,12 @@ export default function GlobeThread() {
   const [composer, setComposer] = useState<Composer>(null);
   const [text, setText] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [me, setMe] = useState<string | null | undefined>(getGlobeUsername());
+  const [editing, setEditing] = useState<
+    { kind: "post" | "reply"; id: string } | null
+  >(null);
+  const [editText, setEditText] = useState("");
+  const [savingEdit, setSavingEdit] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -83,6 +90,18 @@ export default function GlobeThread() {
       clearGlobeDraft();
     }
   }, [zoneId]);
+
+  // Deep-link safety: ensure "me" is known so Edit can appear.
+  useEffect(() => {
+    if (getGlobeUsername() === undefined) {
+      apiCall<{ username: string | null }>("GET", "/globe/me")
+        .then((r) => {
+          setGlobeUsername(r.username);
+          setMe(r.username);
+        })
+        .catch(() => {});
+    }
+  }, []);
 
   function startPost() {
     if (getGlobeUsername() === null) {
@@ -141,6 +160,42 @@ export default function GlobeThread() {
     }
   }
 
+  function startEdit(kind: "post" | "reply", id: string, body: string) {
+    setEditing({ kind, id });
+    setEditText(body);
+  }
+
+  function cancelEdit() {
+    setEditing(null);
+    setEditText("");
+  }
+
+  async function saveEdit() {
+    const body = editText.trim();
+    if (!body || savingEdit || !editing) return;
+    setSavingEdit(true);
+    try {
+      const path =
+        editing.kind === "post"
+          ? `/globe/posts/${editing.id}`
+          : `/globe/replies/${editing.id}`;
+      await apiCall("PATCH", path, { body });
+      setEditing(null);
+      setEditText("");
+      await load();
+    } catch (err) {
+      if (err instanceof SessionExpiredError) {
+        router.replace("/(auth)/login");
+        return;
+      }
+      // 404 (not yours / gone) or other — drop the editor; refresh shows truth.
+      setEditing(null);
+      await load();
+    } finally {
+      setSavingEdit(false);
+    }
+  }
+
   const isTarget = (postId: string, parentReplyId?: string) =>
     composer?.kind === "reply" &&
     composer.postId === postId &&
@@ -188,6 +243,41 @@ export default function GlobeThread() {
     </View>
   );
 
+  const editAffordance = (kind: "post" | "reply", id: string, body: string) => (
+    <Pressable
+      style={styles.replyAffordance}
+      onPress={() => startEdit(kind, id, body)}
+    >
+      <Ionicons name="pencil-outline" size={12} color="#8A8A8A" />
+      <Text style={styles.replyText}>Edit</Text>
+    </Pressable>
+  );
+
+  const editBar = () => (
+    <View style={styles.composerActive}>
+      <TextInput
+        style={styles.composerInput}
+        value={editText}
+        onChangeText={setEditText}
+        autoFocus
+        multiline
+      />
+      <Pressable
+        onPress={saveEdit}
+        disabled={!editText.trim() || savingEdit}
+        style={[
+          styles.editOk,
+          (!editText.trim() || savingEdit) && styles.sendDisabled,
+        ]}
+      >
+        <Text style={styles.editOkText}>OK</Text>
+      </Pressable>
+      <Pressable onPress={cancelEdit} hitSlop={6} style={styles.closeBtn}>
+        <Text style={styles.cancelText}>Cancel</Text>
+      </Pressable>
+    </View>
+  );
+
   return (
     <View style={styles.root}>
       <View style={styles.header}>
@@ -223,13 +313,21 @@ export default function GlobeThread() {
                     <Text style={styles.time}>{relativeTime(post.created_at)}</Text>
                   </View>
                   <Text style={styles.body}>{post.body}</Text>
-                  <Pressable
-                    style={styles.replyAffordance}
-                    onPress={() => startReply(post.id)}
-                  >
-                    <Ionicons name="chatbubble-outline" size={13} color="#8A8A8A" />
-                    <Text style={styles.replyText}>Reply</Text>
-                  </Pressable>
+                  <View style={styles.affordanceRow}>
+                    <Pressable
+                      style={styles.replyAffordance}
+                      onPress={() => startReply(post.id)}
+                    >
+                      <Ionicons name="chatbubble-outline" size={13} color="#8A8A8A" />
+                      <Text style={styles.replyText}>Reply</Text>
+                    </Pressable>
+                    {post.author_username === me
+                      ? editAffordance("post", post.id, post.body)
+                      : null}
+                  </View>
+                  {editing?.kind === "post" && editing.id === post.id
+                    ? editBar()
+                    : null}
                 </View>
               </View>
               {isTarget(post.id, undefined) ? composerBar("Write a reply") : null}
@@ -250,17 +348,25 @@ export default function GlobeThread() {
                           </Text>
                         </View>
                         <Text style={styles.bodySm}>{node.body}</Text>
-                        <Pressable
-                          style={styles.replyAffordance}
-                          onPress={() => startReply(post.id, node.id)}
-                        >
-                          <Ionicons
-                            name="chatbubble-outline"
-                            size={12}
-                            color="#8A8A8A"
-                          />
-                          <Text style={styles.replyText}>Reply</Text>
-                        </Pressable>
+                        <View style={styles.affordanceRow}>
+                          <Pressable
+                            style={styles.replyAffordance}
+                            onPress={() => startReply(post.id, node.id)}
+                          >
+                            <Ionicons
+                              name="chatbubble-outline"
+                              size={12}
+                              color="#8A8A8A"
+                            />
+                            <Text style={styles.replyText}>Reply</Text>
+                          </Pressable>
+                          {node.author_username === me
+                            ? editAffordance("reply", node.id, node.body)
+                            : null}
+                        </View>
+                        {editing?.kind === "reply" && editing.id === node.id
+                          ? editBar()
+                          : null}
                       </View>
                     </View>
                     {isTarget(post.id, node.id) ? composerBar("Write a reply") : null}
@@ -275,13 +381,6 @@ export default function GlobeThread() {
         </ScrollView>
       )}
       </View>
-      <Pressable
-        style={styles.homeBar}
-        onPress={() => router.replace("/(app)")}
-        hitSlop={8}
-      >
-        <Ionicons name="home-outline" size={22} color="#EDEDED" />
-      </Pressable>
     </View>
   );
 }
@@ -297,13 +396,6 @@ const styles = StyleSheet.create({
   },
   headerTitle: { flex: 1, fontSize: 14, fontWeight: "500", color: "#EDEDED" },
   content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
-  homeBar: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 12,
-    borderTopWidth: 0.5,
-    borderTopColor: "#242424",
-  },
   composerIdle: {
     flexDirection: "row",
     alignItems: "center",
@@ -375,6 +467,17 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   replyText: { fontSize: 11, color: "#8A8A8A" },
+  affordanceRow: { flexDirection: "row", gap: 16, alignItems: "center" },
+  editOk: {
+    paddingHorizontal: 10,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  editOkText: { fontSize: 12, fontWeight: "500", color: "#0A0A0A" },
+  cancelText: { fontSize: 12, color: "#8A8A8A" },
   avatar: {
     backgroundColor: "#1E1E1E",
     alignItems: "center",
