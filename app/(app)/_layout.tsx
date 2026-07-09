@@ -24,7 +24,19 @@ export default function AppLayout() {
         options={{ gestureEnabled: true }}
       />
       <Stack.Screen
-        name="globe"
+        name="globe/index"
+        options={{ gestureEnabled: true }}
+      />
+      <Stack.Screen
+        name="globe/new"
+        options={{ gestureEnabled: true }}
+      />
+      <Stack.Screen
+        name="globe/username"
+        options={{ gestureEnabled: true }}
+      />
+      <Stack.Screen
+        name="globe/[zoneId]"
         options={{ gestureEnabled: true }}
       />
       <Stack.Screen
