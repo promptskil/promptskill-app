@@ -58,16 +58,18 @@ export default function GlobeFeed() {
     <View style={styles.root}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Image
-            source={require("../../../assets/globe.png")}
-            style={styles.headerGlobe}
-            resizeMode="contain"
-          />
-          <Image
-            source={require("../../../assets/logo1.png")}
-            style={styles.headerLogo}
-            resizeMode="contain"
-          />
+          <View style={styles.brandPill}>
+            <Image
+              source={require("../../../assets/globe.png")}
+              style={styles.headerGlobe}
+              resizeMode="contain"
+            />
+            <Image
+              source={require("../../../assets/logo1.png")}
+              style={styles.headerLogo}
+              resizeMode="contain"
+            />
+          </View>
           <Text style={styles.title}>ZONE</Text>
         </View>
         <Pressable onPress={() => router.push("/(app)/globe/new")} hitSlop={8}>
@@ -118,6 +120,13 @@ export default function GlobeFeed() {
           />
         )}
       </View>
+      <Pressable
+        style={styles.homeBar}
+        onPress={() => router.replace("/(app)")}
+        hitSlop={8}
+      >
+        <Ionicons name="home-outline" size={22} color="#EDEDED" />
+      </Pressable>
     </View>
   );
 }
@@ -132,10 +141,26 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   headerLeft: { flexDirection: "row", alignItems: "center", gap: 8 },
-  headerGlobe: { width: 22, height: 22, tintColor: "#EDEDED" },
-  headerLogo: { width: 58, height: 18, tintColor: "#EDEDED" },
+  brandPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  headerGlobe: { width: 20, height: 20 },
+  headerLogo: { width: 54, height: 16 },
   title: { fontSize: 15, fontWeight: "500", letterSpacing: 0.5, color: "#EDEDED" },
   content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
+  homeBar: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    borderTopWidth: 0.5,
+    borderTopColor: "#242424",
+  },
   searchRow: {
     flexDirection: "row",
     alignItems: "center",
