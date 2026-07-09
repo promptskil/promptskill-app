@@ -31,13 +31,8 @@ export interface ResultSnapshot {
 
 // ─────────────────────── Globe subsystem ─────────────────────────────────
 
-export type GlobeDomain =
-  | "startup"
-  | "ai"
-  | "finance"
-  | "career"
-  | "programming"
-  | "health";
+// Domain is open text now (user-extensible); alias kept for the draft type.
+export type GlobeDomain = string;
 
 export interface GlobeZone {
   id: string;

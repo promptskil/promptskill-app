@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Pressable,
   ScrollView,
@@ -17,30 +17,38 @@ import {
   setGlobeDraft,
   setGlobeUsername,
 } from "../../../services/globeDraft";
-import type { GlobeDomain, GlobeZone } from "../../../types";
-
-const DOMAINS: { value: GlobeDomain; label: string }[] = [
-  { value: "startup", label: "Startup" },
-  { value: "ai", label: "AI" },
-  { value: "finance", label: "Finance" },
-  { value: "career", label: "Career" },
-  { value: "programming", label: "Programming" },
-  { value: "health", label: "Health" },
-];
+import type { GlobeZone } from "../../../types";
 
 export default function NewZone() {
   const router = useRouter();
-  const [domain, setDomain] = useState<GlobeDomain>("startup");
+  const [domain, setDomain] = useState("");
   const [title, setTitle] = useState("");
+  const [domains, setDomains] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    apiCall<{ domains: string[] }>("GET", "/globe/domains")
+      .then((r) => setDomains(r.domains))
+      .catch(() => {});
+  }, []);
+
+  // Autocomplete: presets when empty, filtered while typing, hidden on exact match.
+  const suggestions = useMemo(() => {
+    const q = domain.trim().toLowerCase();
+    if (!q) return domains.slice(0, 8);
+    const matches = domains.filter((d) => d.toLowerCase().includes(q));
+    if (matches.length === 1 && matches[0].toLowerCase() === q) return [];
+    return matches.slice(0, 8);
+  }, [domain, domains]);
+
   async function handleCreate() {
-    const clean = title.trim();
-    if (!clean || submitting) return;
+    const cleanTitle = title.trim();
+    const cleanDomain = domain.trim();
+    if (!cleanDomain || !cleanTitle || submitting) return;
     setError("");
     setSubmitting(true);
-    setGlobeDraft({ kind: "zone", domain, title: clean });
+    setGlobeDraft({ kind: "zone", domain: cleanDomain, title: cleanTitle });
     try {
       let username = getGlobeUsername();
       if (username === undefined) {
@@ -56,8 +64,8 @@ export default function NewZone() {
         return;
       }
       const zone = await apiCall<GlobeZone>("POST", "/globe/zones", {
-        domain,
-        title: clean,
+        domain: cleanDomain,
+        title: cleanTitle,
       });
       clearGlobeDraft();
       router.replace({
@@ -79,6 +87,8 @@ export default function NewZone() {
     }
   }
 
+  const canCreate = !!domain.trim() && !!title.trim() && !submitting;
+
   return (
     <View style={styles.root}>
       <View style={styles.header}>
@@ -89,45 +99,46 @@ export default function NewZone() {
       </View>
       <View style={styles.content}>
         <ScrollView contentContainerStyle={styles.body}>
-        <Text style={styles.stepLabel}>Step 1 · choose a domain</Text>
-        <View style={styles.chips}>
-          {DOMAINS.map((d) => {
-            const active = d.value === domain;
-            return (
-              <Pressable
-                key={d.value}
-                onPress={() => setDomain(d.value)}
-                style={[styles.chip, active ? styles.chipActive : styles.chipIdle]}
-              >
-                <Text
-                  style={active ? styles.chipTextActive : styles.chipTextIdle}
+          <Text style={styles.label}>ZONE</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Choose or add a ZONE"
+            placeholderTextColor="#8A8A8A"
+            value={domain}
+            onChangeText={setDomain}
+            autoCapitalize="none"
+            maxLength={50}
+          />
+          {suggestions.length > 0 ? (
+            <View style={styles.suggestions}>
+              {suggestions.map((d) => (
+                <Pressable
+                  key={d}
+                  style={styles.suggestion}
+                  onPress={() => setDomain(d)}
                 >
-                  {d.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-        <Text style={styles.stepLabel}>Step 2 · create the title</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Finding my first SaaS customers"
-          placeholderTextColor="#8A8A8A"
-          value={title}
-          onChangeText={setTitle}
-          maxLength={120}
-        />
-        {error ? <Text style={styles.error}>{error}</Text> : null}
-        <Pressable
-          onPress={handleCreate}
-          disabled={!title.trim() || submitting}
-          style={[
-            styles.button,
-            (!title.trim() || submitting) && styles.buttonDisabled,
-          ]}
-        >
-          <Text style={styles.buttonText}>Create zone</Text>
-        </Pressable>
+                  <Text style={styles.suggestionText}>{d}</Text>
+                </Pressable>
+              ))}
+            </View>
+          ) : null}
+
+          <TextInput
+            style={styles.input}
+            placeholder="Finding my first SaaS customers"
+            placeholderTextColor="#8A8A8A"
+            value={title}
+            onChangeText={setTitle}
+            maxLength={120}
+          />
+          {error ? <Text style={styles.error}>{error}</Text> : null}
+          <Pressable
+            onPress={handleCreate}
+            disabled={!canCreate}
+            style={[styles.button, !canCreate && styles.buttonDisabled]}
+          >
+            <Text style={styles.buttonText}>Create zone</Text>
+          </Pressable>
         </ScrollView>
       </View>
     </View>
@@ -146,20 +157,13 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 14, fontWeight: "500", color: "#EDEDED" },
   content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
   body: { padding: 14 },
-  stepLabel: {
+  label: {
     fontSize: 11,
     letterSpacing: 0.3,
     textTransform: "uppercase",
     color: "#8A8A8A",
     marginBottom: 8,
-    marginTop: 6,
   },
-  chips: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginBottom: 12 },
-  chip: { paddingVertical: 4, paddingHorizontal: 10, borderRadius: 8 },
-  chipActive: { backgroundColor: "#FFFFFF" },
-  chipIdle: { borderWidth: 0.5, borderColor: "#3A3A3A" },
-  chipTextActive: { fontSize: 12, color: "#0A0A0A" },
-  chipTextIdle: { fontSize: 12, color: "#8A8A8A" },
   input: {
     height: 40,
     paddingHorizontal: 10,
@@ -169,8 +173,22 @@ const styles = StyleSheet.create({
     backgroundColor: "#161616",
     color: "#EDEDED",
     fontSize: 13,
+    marginBottom: 12,
+  },
+  suggestions: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6,
     marginBottom: 16,
   },
+  suggestion: {
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    borderWidth: 0.5,
+    borderColor: "#3A3A3A",
+  },
+  suggestionText: { fontSize: 12, color: "#EDEDED" },
   error: { color: "#FF6B6B", fontSize: 12, marginBottom: 10 },
   button: {
     height: 40,
