@@ -199,6 +199,7 @@ export default function GlobeThread() {
         </Text>
       </View>
 
+      <View style={styles.content}>
       {composer?.kind === "post" ? (
         composerBar("Write a post")
       ) : (
@@ -273,6 +274,7 @@ export default function GlobeThread() {
           ) : null}
         </ScrollView>
       )}
+      </View>
     </View>
   );
 }
@@ -287,6 +289,7 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   headerTitle: { flex: 1, fontSize: 14, fontWeight: "500", color: "#EDEDED" },
+  content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
   composerIdle: {
     flexDirection: "row",
     alignItems: "center",
