@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   headerTitle: { fontSize: 14, fontWeight: "500", color: "#EDEDED" },
-  body: { padding: 14 },
+  body: { padding: 14, width: "100%", maxWidth: 680, alignSelf: "center" },
   draftLine: { fontSize: 12.5, lineHeight: 18, color: "#B5B5B5", marginBottom: 16 },
   label: {
     fontSize: 11,
