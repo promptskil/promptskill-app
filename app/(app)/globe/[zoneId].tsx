@@ -55,6 +55,10 @@ export default function GlobeThread() {
   const [editText, setEditText] = useState("");
   const [savingEdit, setSavingEdit] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState<
+    { kind: "post" | "reply"; id: string } | null
+  >(null);
+  const [deleting, setDeleting] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -207,6 +211,37 @@ export default function GlobeThread() {
     }
   }
 
+  function startDelete(kind: "post" | "reply", id: string) {
+    setConfirmDelete({ kind, id });
+  }
+
+  function cancelDelete() {
+    setConfirmDelete(null);
+  }
+
+  async function doDelete() {
+    if (!confirmDelete || deleting) return;
+    setDeleting(true);
+    try {
+      const path =
+        confirmDelete.kind === "post"
+          ? `/globe/posts/${confirmDelete.id}`
+          : `/globe/replies/${confirmDelete.id}`;
+      await apiCall("DELETE", path);
+      setConfirmDelete(null);
+      await load();
+    } catch (err) {
+      if (err instanceof SessionExpiredError) {
+        router.replace("/(auth)/login");
+        return;
+      }
+      setConfirmDelete(null);
+      await load();
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   const isTarget = (postId: string, parentReplyId?: string) =>
     composer?.kind === "reply" &&
     composer.postId === postId &&
@@ -289,6 +324,32 @@ export default function GlobeThread() {
     </View>
   );
 
+  const deleteAffordance = (kind: "post" | "reply", id: string) => (
+    <Pressable
+      style={styles.replyAffordance}
+      onPress={() => startDelete(kind, id)}
+    >
+      <Ionicons name="trash-outline" size={12} color="#8A8A8A" />
+      <Text style={styles.replyText}>Delete</Text>
+    </Pressable>
+  );
+
+  const confirmBar = () => (
+    <View style={styles.confirmRow}>
+      <Text style={styles.confirmText}>Delete this?</Text>
+      <Pressable
+        onPress={doDelete}
+        disabled={deleting}
+        style={[styles.confirmDelete, deleting && styles.sendDisabled]}
+      >
+        <Text style={styles.confirmDeleteText}>Delete</Text>
+      </Pressable>
+      <Pressable onPress={cancelDelete} hitSlop={6}>
+        <Text style={styles.cancelText}>Cancel</Text>
+      </Pressable>
+    </View>
+  );
+
   return (
     <View style={styles.root}>
       <View style={styles.header}>
@@ -346,9 +407,15 @@ export default function GlobeThread() {
                     {post.author_username === me
                       ? editAffordance("post", post.id, post.body)
                       : null}
+                    {post.author_username === me
+                      ? deleteAffordance("post", post.id)
+                      : null}
                   </View>
                   {editing?.kind === "post" && editing.id === post.id
                     ? editBar()
+                    : null}
+                  {confirmDelete?.kind === "post" && confirmDelete.id === post.id
+                    ? confirmBar()
                     : null}
                 </View>
               </View>
@@ -385,9 +452,16 @@ export default function GlobeThread() {
                           {node.author_username === me
                             ? editAffordance("reply", node.id, node.body)
                             : null}
+                          {node.author_username === me
+                            ? deleteAffordance("reply", node.id)
+                            : null}
                         </View>
                         {editing?.kind === "reply" && editing.id === node.id
                           ? editBar()
+                          : null}
+                        {confirmDelete?.kind === "reply" &&
+                        confirmDelete.id === node.id
+                          ? confirmBar()
                           : null}
                       </View>
                     </View>
@@ -510,6 +584,17 @@ const styles = StyleSheet.create({
   },
   replyText: { fontSize: 11, color: "#8A8A8A" },
   affordanceRow: { flexDirection: "row", gap: 16, alignItems: "center" },
+  confirmRow: { flexDirection: "row", alignItems: "center", gap: 12, marginTop: 8 },
+  confirmText: { fontSize: 12, color: "#B5B5B5" },
+  confirmDelete: {
+    paddingHorizontal: 10,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: "#FF6B6B",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  confirmDeleteText: { fontSize: 12, fontWeight: "500", color: "#0A0A0A" },
   editOk: {
     paddingHorizontal: 10,
     height: 28,
