@@ -67,11 +67,6 @@ export default function GlobeFeed() {
         <View style={styles.headerLeft}>
           <View style={styles.brandPill}>
             <Image
-              source={require("../../../assets/globe.png")}
-              style={styles.headerGlobe}
-              resizeMode="contain"
-            />
-            <Image
               source={require("../../../assets/logo1.png")}
               style={styles.headerLogo}
               resizeMode="contain"
@@ -169,7 +164,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
-  headerGlobe: { width: 20, height: 20 },
   headerLogo: { width: 54, height: 16 },
   title: { fontSize: 15, fontWeight: "500", letterSpacing: 0.5, color: "#EDEDED" },
   content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
