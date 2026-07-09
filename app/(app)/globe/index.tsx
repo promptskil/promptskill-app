@@ -9,7 +9,7 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 import { apiCall, SessionExpiredError } from "../../../services/api";
@@ -54,6 +54,13 @@ export default function GlobeFeed() {
     return () => clearTimeout(t);
   }, [query, fetchZones]);
 
+  // Refresh when the feed regains focus (reflects hides/unhides immediately).
+  useFocusEffect(
+    useCallback(() => {
+      fetchZones(query);
+    }, [fetchZones, query]),
+  );
+
   return (
     <View style={styles.root}>
       <View style={styles.header}>
@@ -72,9 +79,20 @@ export default function GlobeFeed() {
           </View>
           <Text style={styles.title}>ZONE</Text>
         </View>
-        <Pressable onPress={() => router.push("/(app)/globe/new")} hitSlop={8}>
-          <Ionicons name="add" size={22} color="#B5B5B5" />
-        </Pressable>
+        <View style={styles.headerRight}>
+          <Pressable
+            onPress={() => router.push("/(app)/globe/hidden")}
+            hitSlop={8}
+          >
+            <Ionicons name="ellipsis-horizontal" size={20} color="#B5B5B5" />
+          </Pressable>
+          <Pressable
+            onPress={() => router.push("/(app)/globe/new")}
+            hitSlop={8}
+          >
+            <Ionicons name="add" size={22} color="#B5B5B5" />
+          </Pressable>
+        </View>
       </View>
 
       <View style={styles.content}>
@@ -141,6 +159,7 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   headerLeft: { flexDirection: "row", alignItems: "center", gap: 8 },
+  headerRight: { flexDirection: "row", alignItems: "center", gap: 14 },
   brandPill: {
     flexDirection: "row",
     alignItems: "center",
