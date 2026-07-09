@@ -113,6 +113,13 @@ export default function CreateUsername() {
           <Text style={styles.buttonText}>OK</Text>
         </Pressable>
       </View>
+      <Pressable
+        style={styles.homeBar}
+        onPress={() => router.replace("/(app)")}
+        hitSlop={8}
+      >
+        <Ionicons name="home-outline" size={22} color="#EDEDED" />
+      </Pressable>
     </View>
   );
 }
@@ -127,7 +134,14 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   headerTitle: { fontSize: 14, fontWeight: "500", color: "#EDEDED" },
-  body: { padding: 14, width: "100%", maxWidth: 680, alignSelf: "center" },
+  body: { flex: 1, padding: 14, width: "100%", maxWidth: 680, alignSelf: "center" },
+  homeBar: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    borderTopWidth: 0.5,
+    borderTopColor: "#242424",
+  },
   draftLine: { fontSize: 12.5, lineHeight: 18, color: "#B5B5B5", marginBottom: 16 },
   label: {
     fontSize: 11,
