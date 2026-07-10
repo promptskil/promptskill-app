@@ -125,7 +125,7 @@ export default function NewZone() {
 
           <TextInput
             style={styles.input}
-            placeholder="Finding my first SaaS customers"
+            placeholder="Title"
             placeholderTextColor="#8A8A8A"
             value={title}
             onChangeText={setTitle}
