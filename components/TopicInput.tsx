@@ -25,7 +25,7 @@ export default function TopicInput({
       style={[styles.input, !editable && styles.disabled]}
       value={topic}
       onChangeText={onChangeText}
-      placeholder="If you define the problem correctly, you have the solution."
+      placeholder="Express your thoughts with Vaine"
       placeholderTextColor="#999"
       multiline
       editable={editable}
