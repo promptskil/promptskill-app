@@ -1,7 +1,10 @@
 // TopicInput (2.2) — Phase 12, Step 12.2
 // Unstructured free text. No character limit.
 
+import { useState } from "react";
 import { TextInput, StyleSheet, Platform } from "react-native";
+
+const MIN_HEIGHT = 48; // single-line start (tight, ChatGPT-style)
 
 interface TopicInputProps {
   topic: string;
@@ -20,16 +23,19 @@ export default function TopicInput({
   onBlur,
   onSubmit,
 }: TopicInputProps) {
+  const [height, setHeight] = useState(MIN_HEIGHT);
   return (
     <TextInput
-      style={[styles.input, !editable && styles.disabled]}
+      style={[styles.input, { height: Math.max(MIN_HEIGHT, height) }, !editable && styles.disabled]}
       value={topic}
       onChangeText={onChangeText}
       placeholder="Express your thoughts with Vaine"
       placeholderTextColor="#999"
       multiline
+      scrollEnabled={false}
       editable={editable}
       textAlignVertical="top"
+      onContentSizeChange={(e) => setHeight(e.nativeEvent.contentSize.height)}
       onFocus={onFocus}
       onBlur={onBlur}
       onKeyPress={(e: any) => {
@@ -56,7 +62,6 @@ const styles = StyleSheet.create({
     paddingRight: 48,
     fontSize: 16,
     backgroundColor: "#fff",
-    minHeight: 80,
   },
   disabled: {
     backgroundColor: "#f0f0f0",
