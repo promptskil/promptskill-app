@@ -30,6 +30,7 @@ export default function TopicInput({
         styles.input,
         { height: Math.max(MIN_HEIGHT, height) },
         Platform.OS === "web" && styles.webNoScroll,
+        Platform.OS === "web" && ({ outlineStyle: "none" } as any),
         !editable && styles.disabled,
       ]}
       value={topic}
