@@ -24,6 +24,7 @@ import ModelInfoCard from "../../components/ModelInfoCard";
 import TopicInput from "../../components/TopicInput";
 import InlineResultItem from "../../components/InlineResultItem";
 import PromptDisplay from "../../components/PromptDisplay";
+import ModelDropdownComposer from "../../components/ModelDropdownComposer";
 import {
   apiCall,
   ApiError,
@@ -259,6 +260,7 @@ export default function Main() {
         {/* Empty area below content — tap to dismiss an empty composer */}
         <Pressable style={styles.tapFiller} onPress={handleBackgroundTap} />
       </ScrollView>
+      <ModelDropdownComposer />
     </KeyboardAvoidingView>
   );
 }
