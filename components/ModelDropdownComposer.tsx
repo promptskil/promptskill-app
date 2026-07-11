@@ -1,22 +1,118 @@
-// ModelDropdownComposer — PLACEHOLDER (not wired to anything).
-// Text field mirrors TopicInput (auto-grow, no internal scroll, tight).
-// Model dropdown lives INSIDE the box. Local state only; send is inert.
+// ModelDropdownComposer — Engine 2 (Frontier Executor).
+// Paste a prompt, pick a model, run it against the real frontier LLM.
+// Independent of the Vaine (top) composer.
 
-import { useState } from "react";
-import { View, Text, TextInput, Pressable, StyleSheet, Platform } from "react-native";
+import { useState, useRef } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  Platform,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
+import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { apiCall, ApiError, SessionExpiredError } from "../services/api";
 
 const MODELS = ["ChatGPT", "Claude Sonnet", "Claude Opus", "Gemini", "Grok"];
-const MIN_HEIGHT = 24; // one line, tight
+const MODEL_KEYS: Record<string, string> = {
+  "ChatGPT": "chatgpt",
+  "Claude Sonnet": "claude-sonnet",
+  "Claude Opus": "claude-opus",
+  "Gemini": "gemini",
+  "Grok": "grok",
+};
+const MIN_HEIGHT = 24;
 
 export default function ModelDropdownComposer() {
+  const router = useRouter();
   const [selected, setSelected] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
   const [height, setHeight] = useState(MIN_HEIGHT);
+  const [loading, setLoading] = useState(false);
+  const [answer, setAnswer] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+
+  const canSend = selected !== null && text.length > 0 && !loading;
+
+  function handleCancel() {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setLoading(false);
+  }
+
+  async function handleRun() {
+    if (selected === null || text.length === 0 || loading) return;
+    setError(null);
+    setAnswer(null);
+    setLoading(true);
+    const controller = new AbortController();
+    abortRef.current = controller;
+    try {
+      const data = await apiCall<{ model: string; answer: string }>(
+        "POST",
+        "/run",
+        { model: MODEL_KEYS[selected], text },
+        controller.signal
+      );
+      setAnswer(data.answer);
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") return;
+      if (err instanceof SessionExpiredError) {
+        router.replace("/(auth)/login");
+        return;
+      }
+      if (err instanceof ApiError) {
+        if (err.status === 429) {
+          setError("Limit reached for this model. Try again later.");
+        } else if (err.status === 502) {
+          setError("The model couldn't complete the request.");
+        } else {
+          setError("Something went wrong. Please try again.");
+        }
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } finally {
+      abortRef.current = null;
+      setLoading(false);
+    }
+  }
 
   return (
     <View style={styles.bar}>
+      {(loading || error || answer !== null) && (
+        <View style={styles.panel}>
+          {loading ? (
+            <View style={styles.panelCenter}>
+              <ActivityIndicator />
+              <Text style={styles.panelHint}>Running {selected}…</Text>
+            </View>
+          ) : error ? (
+            <Text style={styles.error}>{error}</Text>
+          ) : (
+            <>
+              <View style={styles.panelHeader}>
+                <Text style={styles.panelModel}>{selected}</Text>
+                <Pressable onPress={() => setAnswer(null)} hitSlop={8}>
+                  <Ionicons name="close" size={18} color="#888" />
+                </Pressable>
+              </View>
+              <ScrollView style={styles.panelScroll} keyboardShouldPersistTaps="handled">
+                <Text selectable style={styles.answerText}>
+                  {answer}
+                </Text>
+              </ScrollView>
+            </>
+          )}
+        </View>
+      )}
+
       <View style={styles.box}>
         <TextInput
           style={[
@@ -74,7 +170,7 @@ export default function ModelDropdownComposer() {
 
           <View style={styles.spacer} />
 
-          {text.length > 0 && (
+          {text.length > 0 && !loading && (
             <Pressable
               style={styles.clearBtn}
               onPress={() => {
@@ -86,9 +182,19 @@ export default function ModelDropdownComposer() {
               <Ionicons name="close-circle" size={22} color="#bbb" />
             </Pressable>
           )}
-          <Pressable style={styles.sendBtn} onPress={() => {}}>
-            <Ionicons name="arrow-up" size={18} color="#fff" />
-          </Pressable>
+          {loading ? (
+            <Pressable style={styles.sendBtn} onPress={handleCancel}>
+              <Ionicons name="stop" size={14} color="#fff" />
+            </Pressable>
+          ) : (
+            <Pressable
+              style={[styles.sendBtn, !canSend && styles.sendBtnDisabled]}
+              onPress={handleRun}
+              disabled={!canSend}
+            >
+              <Ionicons name="arrow-up" size={18} color="#fff" />
+            </Pressable>
+          )}
         </View>
       </View>
     </View>
@@ -97,6 +203,30 @@ export default function ModelDropdownComposer() {
 
 const styles = StyleSheet.create({
   bar: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 32, backgroundColor: "#fff" },
+  panel: {
+    width: "100%",
+    maxWidth: 680,
+    alignSelf: "center",
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: "#eee",
+    borderRadius: 12,
+    backgroundColor: "#fafafa",
+    padding: 12,
+    maxHeight: 260,
+  },
+  panelCenter: { flexDirection: "row", alignItems: "center", gap: 8, justifyContent: "center" },
+  panelHint: { fontSize: 13, color: "#888" },
+  panelHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 6,
+  },
+  panelModel: { fontSize: 12, color: "#888", fontWeight: "600" },
+  panelScroll: { maxHeight: 210 },
+  answerText: { fontSize: 15, color: "#111", lineHeight: 21 },
+  error: { color: "#d00", fontSize: 14, textAlign: "center" },
   box: {
     width: "100%",
     maxWidth: 680,
@@ -146,5 +276,13 @@ const styles = StyleSheet.create({
   menuText: { fontSize: 14, color: "#333" },
   spacer: { flex: 1 },
   clearBtn: { marginRight: 8 },
-  sendBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: "#000", alignItems: "center", justifyContent: "center" },
+  sendBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#000",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  sendBtnDisabled: { backgroundColor: "#ccc" },
 });
