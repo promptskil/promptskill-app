@@ -33,7 +33,6 @@ export default function TopicInput({
       placeholderTextColor="#999"
       multiline
       scrollEnabled={false}
-      showsVerticalScrollIndicator={false}
       editable={editable}
       textAlignVertical="top"
       onContentSizeChange={(e) => setHeight(e.nativeEvent.contentSize.height)}
