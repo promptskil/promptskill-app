@@ -26,9 +26,23 @@ export default function TopicInput({
   const [height, setHeight] = useState(MIN_HEIGHT);
   return (
     <TextInput
-      style={[styles.input, { height: Math.max(MIN_HEIGHT, height) }, !editable && styles.disabled]}
+      style={[
+        styles.input,
+        { height: Math.max(MIN_HEIGHT, height) },
+        Platform.OS === "web" && styles.webNoScroll,
+        !editable && styles.disabled,
+      ]}
       value={topic}
       onChangeText={onChangeText}
+      onChange={
+        Platform.OS === "web"
+          ? (e: any) => {
+              const el = e.target;
+              el.style.height = "auto"; // reset so it can shrink too
+              setHeight(Math.max(MIN_HEIGHT, el.scrollHeight));
+            }
+          : undefined
+      }
       placeholder="Express your thoughts with Vaine"
       placeholderTextColor="#999"
       multiline
@@ -62,6 +76,9 @@ const styles = StyleSheet.create({
     paddingRight: 48,
     fontSize: 16,
     backgroundColor: "#fff",
+  },
+  webNoScroll: {
+    overflow: "hidden",
   },
   disabled: {
     backgroundColor: "#f0f0f0",
