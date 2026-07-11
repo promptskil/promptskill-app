@@ -7,7 +7,7 @@ import { MODELS, MODEL_LABELS } from "../constants/models";
 import type { Model } from "../types";
 
 interface ModelSelectorProps {
-  selectedModel: Model;
+  selectedModel: Model | null;
   onSelect: (model: Model) => void;
 }
 
