@@ -30,7 +30,7 @@ import {
   businessContextHeader,
 } from "../../services/api";
 import { startCheckout } from "../../services/billing";
-import { getDefaultModel, setDefaultModel, getRole } from "../../storage/storage";
+import { getRole } from "../../storage/storage";
 import type { Model } from "../../types";
 
 interface ResultItem {
@@ -43,21 +43,19 @@ interface ResultItem {
 
 export default function Main() {
   const router = useRouter();
-  const [selectedModel, setSelectedModel] = useState<Model>("claude");
+  const [selectedModel, setSelectedModel] = useState<Model | null>(null);
   const [topic, setTopic] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [topicFocused, setTopicFocused] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+  const scrollRef = useRef<ScrollView>(null);
 
   // Accumulated results — prompt display only
   const [results, setResults] = useState<ResultItem[]>([]);
   const [accountType, setAccountType] = useState<string | null>(null);
 
   useEffect(() => {
-    getDefaultModel().then((model) => {
-      setSelectedModel(model as Model);
-    });
     getRole().then(setAccountType);
   }, []);
 
@@ -74,11 +72,10 @@ export default function Main() {
   }
 
   const canGenerate =
-    selectedModel.length > 0 && topic.length > 0 && !loading;
+    selectedModel !== null && topic.length > 0 && !loading;
 
   function handleModelSelect(model: Model) {
     setSelectedModel(model);
-    setDefaultModel(model);
   }
 
   function handleCancel() {
@@ -88,6 +85,7 @@ export default function Main() {
   }
 
   async function handleGenerate() {
+    if (selectedModel === null) return;
     setError("");
     setLoading(true);
     const controller = new AbortController();
@@ -109,6 +107,7 @@ export default function Main() {
         prompt: data.prompt,
       }]);
       setTopic("");
+      setSelectedModel(null);   // Rule: composer disappears after submit
     } catch (err) {
       // User cancelled — swallow silently
       if (err instanceof Error && err.name === "AbortError") {
@@ -152,6 +151,7 @@ export default function Main() {
     >
       {/* Top — scrollable model selection + accumulated results */}
       <ScrollView
+        ref={scrollRef}
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
@@ -187,6 +187,42 @@ export default function Main() {
           onSelect={handleModelSelect}
         />
 
+        {/* Composer — pops in only after a model is chosen (X-compose style) */}
+        {selectedModel !== null && (
+          <View style={styles.composer}>
+            {error ? <Text style={styles.error}>{error}</Text> : null}
+            <View style={styles.inputWrapper}>
+              <TopicInput
+                topic={topic}
+                onChangeText={setTopic}
+                editable={!loading}
+                onFocus={() => {
+                  setTopicFocused(true);
+                  scrollRef.current?.scrollTo({ y: 0, animated: true });
+                }}
+                onBlur={() => setTopicFocused(false)}
+                onSubmit={() => {
+                  if (canGenerate) handleGenerate();
+                }}
+              />
+              {loading ? (
+                <Pressable style={styles.sendBtn} onPress={handleCancel}>
+                  <Ionicons name="stop" size={14} color="#fff" />
+                </Pressable>
+              ) : (
+                <Pressable
+                  style={[styles.sendBtn, !canGenerate && styles.sendBtnDisabled]}
+                  onPress={handleGenerate}
+                  disabled={!canGenerate}
+                >
+                  <Ionicons name="arrow-up" size={18} color="#fff" />
+                </Pressable>
+              )}
+            </View>
+            <Text style={styles.inputHint}>AI does the work for you.</Text>
+          </View>
+        )}
+
         {/* Accumulated results — topic bubble + prompt + edit actions */}
         {results.map(item => (
           <InlineResultItem
@@ -200,41 +236,10 @@ export default function Main() {
         ))}
 
         {loading && (
-          <PromptDisplay prompt="" loading error={null} model={selectedModel} />
+          <PromptDisplay prompt="" loading error={null} model={selectedModel ?? "claude"} />
         )}
 
       </ScrollView>
-
-      {/* Bottom — pinned input */}
-      <View style={styles.bottom}>
-        {error ? <Text style={styles.error}>{error}</Text> : null}
-        <View style={styles.inputWrapper}>
-          <TopicInput
-            topic={topic}
-            onChangeText={setTopic}
-            editable={!loading}
-            onFocus={() => setTopicFocused(true)}
-            onBlur={() => setTopicFocused(false)}
-            onSubmit={() => {
-              if (canGenerate) handleGenerate();
-            }}
-          />
-          {loading ? (
-            <Pressable style={styles.sendBtn} onPress={handleCancel}>
-              <Ionicons name="stop" size={14} color="#fff" />
-            </Pressable>
-          ) : (
-            <Pressable
-              style={[styles.sendBtn, !canGenerate && styles.sendBtnDisabled]}
-              onPress={handleGenerate}
-              disabled={!canGenerate}
-            >
-              <Ionicons name="arrow-up" size={18} color="#fff" />
-            </Pressable>
-          )}
-        </View>
-        <Text style={styles.inputHint}>AI does the work for you.</Text>
-      </View>
     </KeyboardAvoidingView>
   );
 }
@@ -276,12 +281,9 @@ const styles = StyleSheet.create({
     width: 26,
     height: 26,
   },
-  bottom: {
-    paddingHorizontal: 16,
-    paddingBottom: 32,
-    paddingTop: 8,
-    backgroundColor: "#fff",
+  composer: {
     gap: 8,
+    marginTop: 8,
   },
   inputWrapper: {
     position: "relative",
