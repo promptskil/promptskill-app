@@ -173,6 +173,9 @@ export default function Main() {
             resizeMode="contain"
           />
           <View style={styles.headerRight}>
+            <Pressable onPress={() => {}}>
+              <Ionicons name="document-text-outline" size={26} color="#333" />
+            </Pressable>
             <Pressable onPress={handleGlobeNav}>
               <Image
               source={require("../../assets/globe.png")}
