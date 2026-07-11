@@ -74,6 +74,18 @@ export default function ModelDropdownComposer() {
 
           <View style={styles.spacer} />
 
+          {text.length > 0 && (
+            <Pressable
+              style={styles.clearBtn}
+              onPress={() => {
+                setText("");
+                setHeight(MIN_HEIGHT);
+              }}
+              hitSlop={8}
+            >
+              <Ionicons name="close-circle" size={22} color="#bbb" />
+            </Pressable>
+          )}
           <Pressable style={styles.sendBtn} onPress={() => {}}>
             <Ionicons name="arrow-up" size={18} color="#fff" />
           </Pressable>
@@ -133,5 +145,6 @@ const styles = StyleSheet.create({
   menuItem: { paddingVertical: 10, paddingHorizontal: 14 },
   menuText: { fontSize: 14, color: "#333" },
   spacer: { flex: 1 },
+  clearBtn: { marginRight: 8 },
   sendBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: "#000", alignItems: "center", justifyContent: "center" },
 });
