@@ -23,6 +23,7 @@ export default function ModelDropdownComposer() {
             styles.input,
             { height: Math.max(MIN_HEIGHT, height) },
             Platform.OS === "web" && styles.webNoScroll,
+            Platform.OS === "web" && ({ outlineStyle: "none" } as any),
           ]}
           value={text}
           onChangeText={setText}
