@@ -205,6 +205,15 @@ export default function Main() {
                   if (canGenerate) handleGenerate();
                 }}
               />
+              {topic.length > 0 && !loading && (
+                <Pressable
+                  style={styles.clearBtn}
+                  onPress={() => setTopic("")}
+                  hitSlop={8}
+                >
+                  <Ionicons name="close-circle" size={22} color="#bbb" />
+                </Pressable>
+              )}
               {loading ? (
                 <Pressable style={styles.sendBtn} onPress={handleCancel}>
                   <Ionicons name="stop" size={14} color="#fff" />
@@ -219,7 +228,6 @@ export default function Main() {
                 </Pressable>
               )}
             </View>
-            <Text style={styles.inputHint}>AI does the work for you.</Text>
           </View>
         )}
 
@@ -305,15 +313,14 @@ const styles = StyleSheet.create({
   sendBtnDisabled: {
     backgroundColor: "#ccc",
   },
+  clearBtn: {
+    position: "absolute",
+    right: 46,
+    bottom: 13,
+  },
   error: {
     color: "#d00",
     fontSize: 14,
     textAlign: "center",
-  },
-  inputHint: {
-    fontSize: 12,
-    color: "#aaa",
-    textAlign: "center",
-    fontWeight: "300",
   },
 });
