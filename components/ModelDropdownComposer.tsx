@@ -156,6 +156,16 @@ export default function ModelDropdownComposer() {
           scrollEnabled={false}
           textAlignVertical="top"
           onContentSizeChange={(e) => setHeight(e.nativeEvent.contentSize.height)}
+          onKeyPress={(e: any) => {
+            if (
+              Platform.OS === "web" &&
+              e?.nativeEvent?.key === "Enter" &&
+              !e?.nativeEvent?.shiftKey
+            ) {
+              e.preventDefault?.();
+              if (canSend) handleRun();
+            }
+          }}
         />
 
         <View style={styles.controlRow}>
