@@ -2,7 +2,7 @@
 // Paste a prompt, pick a model, run it against the real frontier LLM.
 // Independent of the Vaine (top) composer.
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -12,13 +12,12 @@ import {
   Platform,
   ScrollView,
   Dimensions,
-  Animated,
-  Easing,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import Markdown from "react-native-markdown-display";
 import { apiCall, ApiError, SessionExpiredError } from "../services/api";
+import Spinner from "./Spinner";
 
 const MODELS = ["ChatGPT", "Claude Sonnet", "Claude Opus", "Gemini", "Grok"];
 const MODEL_KEYS: Record<string, string> = {
@@ -30,31 +29,6 @@ const MODEL_KEYS: Record<string, string> = {
 };
 const MIN_HEIGHT = 24;
 const EXPANDED_H = Math.round(Dimensions.get("window").height * 0.7);
-
-function Spinner() {
-  const spin = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    const loop = Animated.loop(
-      Animated.timing(spin, {
-        toValue: 1,
-        duration: 900,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [spin]);
-  const rotate = spin.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "360deg"],
-  });
-  return (
-    <Animated.View style={{ transform: [{ rotate }] }}>
-      <Ionicons name="sync" size={18} color="#555" />
-    </Animated.View>
-  );
-}
 
 export default function ModelDropdownComposer() {
   const router = useRouter();
