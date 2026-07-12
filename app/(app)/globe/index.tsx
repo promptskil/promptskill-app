@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   headerLogo: { width: 54, height: 16 },
-  title: { fontSize: 15, fontWeight: "500", letterSpacing: 0.5, color: "#1A1A1A" },
+  title: { fontSize: 15, fontWeight: "400", letterSpacing: 0.5, color: "#1A1A1A" },
   content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
   homeBar: {
     alignItems: "center",
