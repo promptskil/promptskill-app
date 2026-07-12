@@ -24,6 +24,18 @@ export default function Menu() {
             style={styles.logo}
             resizeMode="contain"
           />
+          <View style={styles.topIcons}>
+            <Pressable onPress={() => {}} hitSlop={8}>
+              <Ionicons name="document-text-outline" size={26} color="#333" />
+            </Pressable>
+            <Pressable onPress={() => router.push("/(app)/globe")} hitSlop={8}>
+              <Image
+                source={require("../../assets/globe.png")}
+                style={styles.globeIcon}
+                resizeMode="contain"
+              />
+            </Pressable>
+          </View>
         </View>
 
         <View style={styles.middle}>
@@ -61,13 +73,24 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 249, 240, 0.35)",
   },
   content: { flex: 1 },
-  topHeader: { paddingTop: 60, paddingHorizontal: 24, paddingBottom: 12 },
+  topHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    paddingTop: 60,
+    paddingHorizontal: 24,
+    paddingBottom: 12,
+  },
+  topIcons: { flexDirection: "row", alignItems: "center", gap: 12 },
+  globeIcon: { width: 26, height: 26 },
   logo: { height: 32, width: 110 },
   middle: { flex: 1 },
   heading: {
     fontSize: 22,
     fontWeight: "700",
     paddingHorizontal: 24,
+    marginTop: 40,
     marginBottom: 12,
   },
   footer: {
