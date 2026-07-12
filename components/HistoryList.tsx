@@ -7,7 +7,6 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import PromptList from "./PromptList";
 import InlineResultItem from "./InlineResultItem";
-import NewPromptButton from "./NewPromptButton";
 import { apiCall, SessionExpiredError } from "../services/api";
 import type { Model } from "../types";
 
@@ -28,9 +27,15 @@ interface HistoryResponse {
 
 interface HistoryListProps {
   listHeader?: ReactElement;
+  contentPaddingTop?: number;
+  contentPaddingBottom?: number;
 }
 
-export default function HistoryList({ listHeader }: HistoryListProps) {
+export default function HistoryList({
+  listHeader,
+  contentPaddingTop,
+  contentPaddingBottom,
+}: HistoryListProps) {
   const router = useRouter();
   const [historyItems, setHistoryItems] = useState<PromptRecord[]>([]);
   const [total, setTotal] = useState(0);
@@ -130,9 +135,6 @@ export default function HistoryList({ listHeader }: HistoryListProps) {
           animate={false}
           editable={false}
         />
-        <View style={styles.detailActions}>
-          <NewPromptButton onPress={() => router.replace("/(app)")} />
-        </View>
       </ScrollView>
     );
   }
@@ -145,6 +147,8 @@ export default function HistoryList({ listHeader }: HistoryListProps) {
       onItemSelect={handleItemSelect}
       onItemDelete={handleItemDelete}
       listHeader={listHeader}
+      contentPaddingTop={contentPaddingTop}
+      contentPaddingBottom={contentPaddingBottom}
     />
   );
 }
@@ -163,5 +167,4 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   topicBubbleText: { fontSize: 16, color: "#111", lineHeight: 26 },
-  detailActions: { alignItems: "center", marginTop: 24 },
 });

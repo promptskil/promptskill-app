@@ -1,5 +1,5 @@
-// Menu screen — left drawer (frosted glass) over Main; main shows on the right.
-// White top header (logo + note/globe), History scrolls, FAB footer.
+// Menu screen — left drawer. Glass floating header/footer; history scrolls
+// the full height underneath them, visible through the frosted panel.
 
 import { View, Image, Text, Pressable, StyleSheet } from "react-native";
 import { BlurView } from "expo-blur";
@@ -18,38 +18,40 @@ export default function Menu() {
         <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
         <View style={styles.warmTint} />
 
-        <View style={styles.content}>
-          <View style={styles.topHeader}>
-            <Image
-              source={require("../../assets/logo1.png")}
-              style={styles.logo}
-              resizeMode="contain"
-            />
-          </View>
+        <View style={styles.list}>
+          <HistoryList
+            listHeader={header}
+            contentPaddingTop={110}
+            contentPaddingBottom={100}
+          />
+        </View>
 
-          <View style={styles.middle}>
-            <HistoryList listHeader={header} />
-          </View>
+        <View style={styles.topHeader} pointerEvents="box-none">
+          <Image
+            source={require("../../assets/logo1.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>
 
-          <View style={styles.footer}>
-            <Pressable
-              onPress={() =>
-                router.navigate({
-                  pathname: "/(app)",
-                  params: { compose: "claude" },
-                })
-              }
-              style={[styles.fab, styles.fabPlus]}
-            >
-              <Ionicons name="add" size={28} color="#fff" />
-            </Pressable>
-            <Pressable
-              onPress={() => router.push("/(app)/settings")}
-              style={[styles.fab, styles.fabSettings]}
-            >
-              <Ionicons name="settings-outline" size={26} color="#333" />
-            </Pressable>
-          </View>
+        <View style={styles.footer} pointerEvents="box-none">
+          <Pressable
+            onPress={() =>
+              router.navigate({
+                pathname: "/(app)",
+                params: { compose: "claude" },
+              })
+            }
+            style={[styles.fab, styles.fabPlus]}
+          >
+            <Ionicons name="add" size={28} color="#fff" />
+          </Pressable>
+          <Pressable
+            onPress={() => router.push("/(app)/settings")}
+            style={[styles.fab, styles.fabSettings]}
+          >
+            <Ionicons name="settings-outline" size={26} color="#333" />
+          </Pressable>
         </View>
       </View>
 
@@ -66,18 +68,19 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(255, 249, 240, 0.35)",
   },
-  content: { flex: 1 },
+  list: { flex: 1 },
   topHeader: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#fff",
     paddingTop: 60,
     paddingHorizontal: 24,
     paddingBottom: 12,
   },
   logo: { height: 32, width: 110 },
-  middle: { flex: 1 },
   heading: {
     fontSize: 22,
     fontWeight: "400",
@@ -88,6 +91,9 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   footer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
     flexDirection: "row",
     gap: 16,
     paddingHorizontal: 24,
