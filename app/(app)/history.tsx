@@ -1,7 +1,7 @@
 // Screen 4 — History. Header scrolls with the list (no freeze pane).
 // Entry from Main → back to Main. Back gesture: ENABLED
 
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import HistoryList from "../../components/HistoryList";
@@ -26,6 +26,19 @@ export default function History() {
   return (
     <View style={styles.container}>
       <HistoryList listHeader={header} />
+      {Platform.OS !== "web" && (
+        <Pressable
+          onPress={() =>
+            router.navigate({
+              pathname: "/(app)",
+              params: { compose: "claude" },
+            })
+          }
+          style={styles.fab}
+        >
+          <Ionicons name="add" size={28} color="#fff" />
+        </Pressable>
+      )}
     </View>
   );
 }
@@ -49,5 +62,21 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 22,
     fontWeight: "700",
+  },
+  fab: {
+    position: "absolute",
+    right: 24,
+    bottom: 32,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: "#4F46E5",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 4,
   },
 });
