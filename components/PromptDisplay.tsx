@@ -12,10 +12,10 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  ActivityIndicator,
   Pressable,
 } from "react-native";
 import Markdown from "react-native-markdown-display";
+import Spinner from "./Spinner";
 import { MODEL_LABELS } from "../constants/models";
 import type { Model } from "../types";
 
@@ -84,7 +84,7 @@ export default function PromptDisplay({
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4F46E5" />
+        <Spinner size={28} color="#4F46E5" />
         <Text style={styles.loadingText}>Generating...</Text>
       </View>
     );
