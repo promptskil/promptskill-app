@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingBottom: 12,
   },
-  headerTitle: { fontSize: 14, fontWeight: "500", color: "#1A1A1A" },
+  headerTitle: { fontSize: 14, fontWeight: "400", color: "#1A1A1A" },
   body: { padding: 14, width: "100%", maxWidth: 680, alignSelf: "center" },
   draftLine: { fontSize: 12.5, lineHeight: 18, color: "#444444", marginBottom: 16 },
   label: {
@@ -157,5 +157,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   buttonDisabled: { opacity: 0.4 },
-  buttonText: { fontSize: 13, fontWeight: "500", color: "#FFFFFF" },
+  buttonText: { fontSize: 13, fontWeight: "400", color: "#FFFFFF" },
 });

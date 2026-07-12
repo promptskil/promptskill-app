@@ -67,7 +67,7 @@ export default function GlobeFeed() {
         <View style={styles.headerLeft}>
           <View style={styles.brandPill}>
             <Image
-              source={require("../../../assets/logo1.png")}
+              source={require("../../../assets/logo-vaine.png")}
               style={styles.headerLogo}
               resizeMode="contain"
             />
@@ -159,20 +159,25 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "#1A1A1A",
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
   },
   headerLogo: { width: 54, height: 16 },
-  title: { fontSize: 15, fontWeight: "500", letterSpacing: 0.5, color: "#1A1A1A" },
+  title: { fontSize: 15, fontWeight: "400", letterSpacing: 0.5, color: "#1A1A1A" },
   content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
   homeBar: {
+    position: "absolute",
+    left: 24,
+    bottom: 32,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 12,
-    borderTopWidth: 0.5,
-    borderTopColor: "#EEEEEE",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 4,
   },
   searchRow: {
     flexDirection: "row",

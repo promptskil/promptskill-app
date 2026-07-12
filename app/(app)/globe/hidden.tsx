@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingBottom: 12,
   },
-  headerTitle: { fontSize: 14, fontWeight: "500", color: "#1A1A1A" },
+  headerTitle: { fontSize: 14, fontWeight: "400", color: "#1A1A1A" },
   content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
   row: {
     flexDirection: "row",
