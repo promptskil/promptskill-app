@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     paddingVertical: 14,
-    paddingLeft: 14,
+    paddingLeft: 24,
     paddingRight: 72,
   },
   topic: {

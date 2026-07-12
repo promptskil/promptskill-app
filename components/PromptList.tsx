@@ -27,6 +27,8 @@ interface PromptListProps {
   }) => void;
   onItemDelete: (id: string) => void;
   listHeader?: ReactElement;
+  contentPaddingTop?: number;
+  contentPaddingBottom?: number;
 }
 
 export default function PromptList({
@@ -36,6 +38,8 @@ export default function PromptList({
   onItemSelect,
   onItemDelete,
   listHeader,
+  contentPaddingTop,
+  contentPaddingBottom,
 }: PromptListProps) {
   const hasMore = total > historyItems.length;
 
@@ -59,6 +63,10 @@ export default function PromptList({
       onEndReachedThreshold={0.5}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={listHeader}
+      contentContainerStyle={{
+        paddingTop: contentPaddingTop,
+        paddingBottom: contentPaddingBottom,
+      }}
       ListEmptyComponent={
         <View style={styles.empty}>
           <Text style={styles.emptyText}>No histories yet</Text>
