@@ -12,6 +12,7 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -26,6 +27,7 @@ const MODEL_KEYS: Record<string, string> = {
   "Grok": "grok",
 };
 const MIN_HEIGHT = 24;
+const EXPANDED_H = Math.round(Dimensions.get("window").height * 0.7);
 
 export default function ModelDropdownComposer() {
   const router = useRouter();
@@ -36,6 +38,7 @@ export default function ModelDropdownComposer() {
   const [loading, setLoading] = useState(false);
   const [answer, setAnswer] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
   const canSend = selected !== null && text.length > 0 && !loading;
@@ -87,7 +90,7 @@ export default function ModelDropdownComposer() {
   return (
     <View style={styles.bar}>
       {(loading || error || answer !== null) && (
-        <View style={styles.panel}>
+        <View style={[styles.panel, expanded && { maxHeight: EXPANDED_H }]}>
           {loading ? (
             <View style={styles.panelCenter}>
               <ActivityIndicator />
@@ -99,11 +102,25 @@ export default function ModelDropdownComposer() {
             <>
               <View style={styles.panelHeader}>
                 <Text style={styles.panelModel}>{selected}</Text>
-                <Pressable onPress={() => setAnswer(null)} hitSlop={8}>
-                  <Ionicons name="close" size={18} color="#888" />
-                </Pressable>
+                <View style={styles.panelActions}>
+                  <Pressable onPress={() => setExpanded((e) => !e)} hitSlop={8}>
+                    <Ionicons name={expanded ? "contract" : "expand"} size={16} color="#888" />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setAnswer(null);
+                      setExpanded(false);
+                    }}
+                    hitSlop={8}
+                  >
+                    <Ionicons name="close" size={18} color="#888" />
+                  </Pressable>
+                </View>
               </View>
-              <ScrollView style={styles.panelScroll} keyboardShouldPersistTaps="handled">
+              <ScrollView
+                style={[styles.panelScroll, expanded && { maxHeight: EXPANDED_H - 50 }]}
+                keyboardShouldPersistTaps="handled"
+              >
                 <Text selectable style={styles.answerText}>
                   {answer}
                 </Text>
@@ -223,6 +240,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 6,
   },
+  panelActions: { flexDirection: "row", alignItems: "center", gap: 14 },
   panelModel: { fontSize: 12, color: "#888", fontWeight: "600" },
   panelScroll: { maxHeight: 210 },
   answerText: { fontSize: 15, color: "#111", lineHeight: 21 },
@@ -231,8 +249,6 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 680,
     alignSelf: "center",
-    borderWidth: 1,
-    borderColor: "#ccc",
     borderRadius: 12,
     backgroundColor: "#fff",
     paddingHorizontal: 12,
@@ -247,8 +263,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    borderWidth: 1,
-    borderColor: "#ddd",
     borderRadius: 14,
     paddingVertical: 6,
     paddingHorizontal: 8,
