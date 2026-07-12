@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
-  input: { fontSize: 16, padding: 0, color: "#000" },
+  input: { fontSize: 16, padding: 0, color: "#1A1A1A", letterSpacing: 0 },
   webNoScroll: { overflow: "hidden" },
   controlRow: { flexDirection: "row", alignItems: "center", marginTop: 6 },
   dropdownWrap: { position: "relative" },
