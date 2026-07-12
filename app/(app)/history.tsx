@@ -1,164 +1,27 @@
-// Screen 4 — History — Phase 13, Step 13.2
-// GET /history?limit=20&offset=N, pagination, soft delete.
-// Entry from Main → back to Main.
-// Back gesture: ENABLED
+// Screen 4 — History. Header + shared HistoryList (list + in-place detail).
+// Entry from Main → back to Main. Back gesture: ENABLED
 
-import { useState, useEffect, useCallback } from "react";
-import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import PromptList from "../../components/PromptList";
-import InlineResultItem from "../../components/InlineResultItem";
-import NewPromptButton from "../../components/NewPromptButton";
-import { apiCall, SessionExpiredError } from "../../services/api";
-import type { Model } from "../../types";
-interface PromptRecord {
-  prompt_id: string;
-  model: string;
-  topic: string;
-  prompt_text: string;
-  feedback_vote: "up" | "down" | null;
-  created_at: string;
-}
-
-interface HistoryResponse {
-  items: PromptRecord[];
-  total: number;
-  offset: number;
-}
+import HistoryList from "../../components/HistoryList";
 
 export default function History() {
   const router = useRouter();
-  const [historyItems, setHistoryItems] = useState<PromptRecord[]>([]);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState<{
-    id: string;
-    model: string;
-    topic: string;
-    prompt_text: string;
-    feedback_vote: "up" | "down" | null;
-  } | null>(null);
-
-  const fetchHistory = useCallback(
-    async (pageNum: number) => {
-      try {
-        const data = await apiCall<HistoryResponse>(
-          "GET",
-          `/history?limit=20&offset=${pageNum * 20}`
-        );
-        if (pageNum === 0) {
-          setHistoryItems(data.items);
-        } else {
-          setHistoryItems((prev) => [...prev, ...data.items]);
-        }
-        setTotal(data.total);
-        setPage(pageNum);
-      } catch (err) {
-        if (err instanceof SessionExpiredError) {
-          router.replace("/(auth)/login");
-        }
-      } finally {
-        setLoading(false);
-      }
-    },
-    [router]
-  );
-
-  useEffect(() => {
-    fetchHistory(0);
-  }, [fetchHistory]);
-
-  function handleLoadMore() {
-    if (total > historyItems.length) {
-      fetchHistory(page + 1);
-    }
-  }
-
-  function handleItemSelect(record: {
-    id: string;
-    model: string;
-    topic: string;
-    prompt_text: string;
-    feedback_vote: "up" | "down" | null;
-  }) {
-    // In-memory detail — no navigation, no params (matches the extension).
-    // The prompt never leaves memory, so it can't be truncated/lost.
-    setSelected(record);
-  }
-
-  async function handleItemDelete(id: string) {
-    try {
-      await apiCall("PATCH", `/prompts/${id}/delete`);
-      setHistoryItems((prev) => prev.filter((item) => item.prompt_id !== id));
-      setTotal((prev) => prev - 1);
-    } catch (err) {
-      if (err instanceof SessionExpiredError) {
-        router.replace("/(auth)/login");
-      }
-    }
-  }
-
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.loading}>Loading...</Text>
-      </View>
-    );
-  }
-
-  if (selected) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.headerRow}>
-          <Pressable onPress={() => setSelected(null)} style={styles.backBtn}>
-            <Ionicons name="arrow-back" size={24} color="#333" />
-          </Pressable>
-          <Text style={styles.header}>History</Text>
-        </View>
-        <ScrollView contentContainerStyle={styles.detailContent}>
-          {selected.topic.length > 0 && (
-            <View style={styles.topicBubble}>
-              <Text style={styles.topicBubbleText} selectable>
-                {selected.topic}
-              </Text>
-            </View>
-          )}
-          <InlineResultItem
-            topic={selected.topic}
-            model={selected.model as Model}
-            promptId={selected.id}
-            initialPrompt={selected.prompt_text}
-            animate={false}
-            editable={false}
-          />
-          <View style={styles.detailActions}>
-            <NewPromptButton onPress={() => router.replace("/(app)")} />
-          </View>
-        </ScrollView>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
         <Pressable
-          onPress={() => (router.canGoBack() ? router.back() : router.replace("/(app)"))}
+          onPress={() =>
+            router.canGoBack() ? router.back() : router.replace("/(app)")
+          }
           style={styles.backBtn}
         >
           <Ionicons name="arrow-back" size={24} color="#333" />
         </Pressable>
         <Text style={styles.header}>History</Text>
       </View>
-      <PromptList
-        historyItems={historyItems}
-        total={total}
-        onLoadMore={handleLoadMore}
-        onItemSelect={handleItemSelect}
-        onItemDelete={handleItemDelete}
-      />
+      <HistoryList />
     </View>
   );
 }
@@ -182,32 +45,5 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 22,
     fontWeight: "700",
-  },
-  loading: {
-    fontSize: 16,
-    color: "#999",
-    textAlign: "center",
-    marginTop: 32,
-  },
-  detailContent: {
-    padding: 24,
-  },
-  topicBubble: {
-    width: "100%",
-    maxWidth: 680,
-    alignSelf: "center",
-    backgroundColor: "#f8f9fa",
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 12,
-  },
-  topicBubbleText: {
-    fontSize: 16,
-    color: "#111",
-    lineHeight: 26,
-  },
-  detailActions: {
-    alignItems: "center",
-    marginTop: 24,
   },
 });
