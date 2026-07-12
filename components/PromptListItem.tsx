@@ -57,7 +57,8 @@ const styles = StyleSheet.create({
   },
   topic: {
     fontSize: 16,
-    fontWeight: "500",
-    color: "#333",
+    fontWeight: "400",
+    letterSpacing: 0,
+    color: "#1A1A1A",
   },
 });
