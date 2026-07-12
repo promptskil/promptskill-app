@@ -76,6 +76,8 @@ const styles = StyleSheet.create({
     padding: 14,
     paddingRight: 48,
     fontSize: 16,
+    letterSpacing: 0,
+    color: "#1A1A1A",
     backgroundColor: "#fff",
     shadowColor: "#000",
     shadowOpacity: 0.06,
