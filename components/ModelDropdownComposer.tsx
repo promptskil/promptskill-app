@@ -65,6 +65,8 @@ export default function ModelDropdownComposer() {
         controller.signal
       );
       setAnswer(data.answer);
+      setText("");
+      setHeight(MIN_HEIGHT);
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") return;
       if (err instanceof SessionExpiredError) {
