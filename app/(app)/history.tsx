@@ -1,4 +1,4 @@
-// Screen 4 — History. Header + shared HistoryList (list + in-place detail).
+// Screen 4 — History. Header scrolls with the list (no freeze pane).
 // Entry from Main → back to Main. Back gesture: ENABLED
 
 import { View, Text, Pressable, StyleSheet } from "react-native";
@@ -8,20 +8,24 @@ import HistoryList from "../../components/HistoryList";
 
 export default function History() {
   const router = useRouter();
+
+  const header = (
+    <View style={styles.headerRow}>
+      <Pressable
+        onPress={() =>
+          router.canGoBack() ? router.back() : router.replace("/(app)")
+        }
+        style={styles.backBtn}
+      >
+        <Ionicons name="arrow-back" size={24} color="#333" />
+      </Pressable>
+      <Text style={styles.header}>History</Text>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
-      <View style={styles.headerRow}>
-        <Pressable
-          onPress={() =>
-            router.canGoBack() ? router.back() : router.replace("/(app)")
-          }
-          style={styles.backBtn}
-        >
-          <Ionicons name="arrow-back" size={24} color="#333" />
-        </Pressable>
-        <Text style={styles.header}>History</Text>
-      </View>
-      <HistoryList />
+      <HistoryList listHeader={header} />
     </View>
   );
 }

@@ -1,7 +1,7 @@
 // HistoryList — fetches and renders the user's prompt history (scrollable list
 // + in-place detail). Shared by the standalone History screen and the menu.
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, ReactElement } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -26,7 +26,11 @@ interface HistoryResponse {
   offset: number;
 }
 
-export default function HistoryList() {
+interface HistoryListProps {
+  listHeader?: ReactElement;
+}
+
+export default function HistoryList({ listHeader }: HistoryListProps) {
   const router = useRouter();
   const [historyItems, setHistoryItems] = useState<PromptRecord[]>([]);
   const [total, setTotal] = useState(0);
@@ -140,6 +144,7 @@ export default function HistoryList() {
       onLoadMore={handleLoadMore}
       onItemSelect={handleItemSelect}
       onItemDelete={handleItemDelete}
+      listHeader={listHeader}
     />
   );
 }
