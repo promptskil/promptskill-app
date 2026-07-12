@@ -19,11 +19,10 @@ import Markdown from "react-native-markdown-display";
 import { apiCall, ApiError, SessionExpiredError } from "../services/api";
 import Spinner from "./Spinner";
 
-const MODELS = ["ChatGPT", "Claude Sonnet", "Claude Opus", "Gemini", "Grok"];
+const MODELS = ["ChatGPT 5.5", "Claude Sonnet", "Gemini", "Grok"];
 const MODEL_KEYS: Record<string, string> = {
-  "ChatGPT": "chatgpt",
+  "ChatGPT 5.5": "chatgpt",
   "Claude Sonnet": "claude-sonnet",
-  "Claude Opus": "claude-opus",
   "Gemini": "gemini",
   "Grok": "grok",
 };
@@ -288,8 +287,6 @@ const styles = StyleSheet.create({
     left: 0,
     minWidth: 160,
     backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#ccc",
     borderRadius: 12,
     paddingVertical: 4,
     shadowColor: "#000",
