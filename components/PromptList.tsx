@@ -57,6 +57,7 @@ export default function PromptList({
       )}
       onEndReached={hasMore ? onLoadMore : undefined}
       onEndReachedThreshold={0.5}
+      showsVerticalScrollIndicator={false}
       ListHeaderComponent={listHeader}
       ListEmptyComponent={
         <View style={styles.empty}>
