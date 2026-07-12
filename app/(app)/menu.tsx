@@ -22,17 +22,26 @@ export default function Menu() {
         <Pressable onPress={() => router.push("/(app)/history")} hitSlop={8}>
           <Ionicons name="time-outline" size={30} color="#333" />
         </Pressable>
-        <Pressable onPress={() => router.push("/(app)/profile")} hitSlop={8}>
-          <Ionicons name="person-circle-outline" size={32} color="#333" />
-        </Pressable>
       </View>
+
+      <View style={styles.spacer} />
+
+      <Pressable
+        onPress={() => router.push("/(app)/settings")}
+        style={styles.settings}
+        hitSlop={8}
+      >
+        <Ionicons name="settings-outline" size={28} color="#333" />
+      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#fff", paddingTop: 60, paddingHorizontal: 24 },
+  root: { flex: 1, backgroundColor: "#fff", paddingTop: 60, paddingBottom: 40, paddingHorizontal: 24 },
   back: { alignSelf: "flex-start", marginBottom: 24 },
   logo: { height: 32, width: 110, marginBottom: 40 },
   items: { gap: 28 },
+  spacer: { flex: 1 },
+  settings: { alignSelf: "flex-start" },
 });
