@@ -27,7 +27,7 @@ export default function AppLayout() {
         name="menu"
         options={{
           presentation: "transparentModal",
-          animation: "fade",
+          animation: "slide_from_left",
           gestureEnabled: true,
         }}
       />
