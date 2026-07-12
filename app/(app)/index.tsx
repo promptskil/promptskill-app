@@ -15,7 +15,7 @@ import {
   Platform,
   Image,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import ModelSelector from "../../components/ModelSelector";
 import ModelInfoCard from "../../components/ModelInfoCard";
@@ -55,9 +55,17 @@ export default function Main() {
   const [results, setResults] = useState<ResultItem[]>([]);
   const [accountType, setAccountType] = useState<string | null>(null);
 
+  const { compose } = useLocalSearchParams<{ compose?: string }>();
+
   useEffect(() => {
     getRole().then(setAccountType);
   }, []);
+
+  useEffect(() => {
+    if (compose) {
+      setSelectedModel(compose as Model);
+    }
+  }, [compose]);
 
   function handleMenuNav() {
     router.push("/(app)/menu");
