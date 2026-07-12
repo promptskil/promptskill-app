@@ -119,7 +119,7 @@ export default function ModelDropdownComposer() {
   return (
     <View style={styles.bar}>
       {(loading || error || answer !== null) && (
-        <View style={[styles.panel, loading && styles.panelBare, expanded && { maxHeight: EXPANDED_H }]}>
+        <View style={[styles.panel, (loading || answer !== null) && styles.panelBare, expanded && { maxHeight: EXPANDED_H }]}>
           {loading ? (
             <View style={styles.panelCenter}>
               <Spinner />
