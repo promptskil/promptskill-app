@@ -1,5 +1,5 @@
 // Menu screen — opened from the Main hamburger.
-// No freeze pane: logo, +/settings, and "History" all scroll with the list.
+// Pinned logo (top) + pinned FAB footer (bottom); History scrolls between.
 
 import { View, Image, Text, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
@@ -9,14 +9,23 @@ import HistoryList from "../../components/HistoryList";
 export default function Menu() {
   const router = useRouter();
 
-  const header = (
-    <View style={styles.header}>
-      <Image
-        source={require("../../assets/logo1.png")}
-        style={styles.logo}
-        resizeMode="contain"
-      />
-      <View style={styles.iconRow}>
+  const header = <Text style={styles.heading}>History</Text>;
+
+  return (
+    <View style={styles.root}>
+      <View style={styles.topHeader}>
+        <Image
+          source={require("../../assets/logo1.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+      </View>
+
+      <View style={styles.middle}>
+        <HistoryList listHeader={header} />
+      </View>
+
+      <View style={styles.footer}>
         <Pressable
           onPress={() =>
             router.navigate({
@@ -24,34 +33,51 @@ export default function Menu() {
               params: { compose: "claude" },
             })
           }
-          hitSlop={8}
+          style={[styles.fab, styles.fabPlus]}
         >
-          <Ionicons name="add" size={32} color="#333" />
+          <Ionicons name="add" size={28} color="#fff" />
         </Pressable>
-        <Pressable onPress={() => router.push("/(app)/settings")} hitSlop={8}>
-          <Ionicons name="settings-outline" size={28} color="#333" />
+        <Pressable
+          onPress={() => router.push("/(app)/settings")}
+          style={[styles.fab, styles.fabSettings]}
+        >
+          <Ionicons name="settings-outline" size={26} color="#333" />
         </Pressable>
       </View>
-      <Text style={styles.heading}>History</Text>
-    </View>
-  );
-
-  return (
-    <View style={styles.root}>
-      <HistoryList listHeader={header} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#fff", paddingTop: 60 },
-  header: { paddingHorizontal: 24, marginBottom: 8 },
-  logo: { height: 32, width: 110, marginBottom: 16 },
-  iconRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 20,
-    marginBottom: 16,
+  root: { flex: 1, backgroundColor: "#fff" },
+  topHeader: { paddingTop: 60, paddingHorizontal: 24, paddingBottom: 12 },
+  logo: { height: 32, width: 110 },
+  middle: { flex: 1 },
+  heading: {
+    fontSize: 22,
+    fontWeight: "700",
+    paddingHorizontal: 24,
+    marginBottom: 12,
   },
-  heading: { fontSize: 22, fontWeight: "700" },
+  footer: {
+    flexDirection: "row",
+    gap: 16,
+    paddingHorizontal: 24,
+    paddingTop: 12,
+    paddingBottom: 32,
+  },
+  fab: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 4,
+  },
+  fabPlus: { backgroundColor: "#4F46E5" },
+  fabSettings: { backgroundColor: "#fff" },
 });
