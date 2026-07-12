@@ -79,24 +79,24 @@ export default function GlobeFeed() {
             onPress={() => router.push("/(app)/globe/hidden")}
             hitSlop={8}
           >
-            <Ionicons name="ellipsis-horizontal" size={20} color="#B5B5B5" />
+            <Ionicons name="ellipsis-horizontal" size={20} color="#444444" />
           </Pressable>
           <Pressable
             onPress={() => router.push("/(app)/globe/new")}
             hitSlop={8}
           >
-            <Ionicons name="add" size={22} color="#B5B5B5" />
+            <Ionicons name="add" size={22} color="#444444" />
           </Pressable>
         </View>
       </View>
 
       <View style={styles.content}>
         <View style={styles.searchRow}>
-          <Ionicons name="search" size={15} color="#8A8A8A" />
+          <Ionicons name="search" size={15} color="#666666" />
           <TextInput
             style={styles.searchInput}
             placeholder="Search information"
-            placeholderTextColor="#8A8A8A"
+            placeholderTextColor="#666666"
             value={query}
             onChangeText={setQuery}
             autoCapitalize="none"
@@ -104,7 +104,7 @@ export default function GlobeFeed() {
         </View>
 
         {loading ? (
-          <ActivityIndicator color="#8A8A8A" style={{ marginTop: 32 }} />
+          <ActivityIndicator color="#666666" style={{ marginTop: 32 }} />
         ) : (
           <FlatList
             data={zones}
@@ -138,14 +138,14 @@ export default function GlobeFeed() {
         onPress={() => router.replace("/(app)")}
         hitSlop={8}
       >
-        <Ionicons name="home-outline" size={22} color="#EDEDED" />
+        <Ionicons name="home-outline" size={22} color="#1A1A1A" />
       </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#0A0A0A", paddingTop: 60 },
+  root: { flex: 1, backgroundColor: "#FFFFFF", paddingTop: 60 },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -159,20 +159,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#1A1A1A",
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
   headerLogo: { width: 54, height: 16 },
-  title: { fontSize: 15, fontWeight: "500", letterSpacing: 0.5, color: "#EDEDED" },
+  title: { fontSize: 15, fontWeight: "500", letterSpacing: 0.5, color: "#1A1A1A" },
   content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
   homeBar: {
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 12,
     borderTopWidth: 0.5,
-    borderTopColor: "#242424",
+    borderTopColor: "#EEEEEE",
   },
   searchRow: {
     flexDirection: "row",
@@ -183,10 +183,10 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     paddingHorizontal: 10,
     borderWidth: 0.5,
-    borderColor: "#242424",
+    borderColor: "#EEEEEE",
     borderRadius: 8,
   },
-  searchInput: { flex: 1, color: "#EDEDED", fontSize: 13, padding: 0 },
+  searchInput: { flex: 1, color: "#1A1A1A", fontSize: 13, padding: 0 },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -194,9 +194,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
     borderBottomWidth: 0.5,
-    borderBottomColor: "#242424",
+    borderBottomColor: "#EEEEEE",
   },
-  rowTitle: { flex: 1, fontSize: 13.5, color: "#EDEDED", marginRight: 8 },
-  rowTime: { fontSize: 11, color: "#8A8A8A" },
-  empty: { color: "#8A8A8A", textAlign: "center", marginTop: 32, fontSize: 13 },
+  rowTitle: { flex: 1, fontSize: 13.5, color: "#1A1A1A", marginRight: 8 },
+  rowTime: { fontSize: 11, color: "#666666" },
+  empty: { color: "#666666", textAlign: "center", marginTop: 32, fontSize: 13 },
 });
