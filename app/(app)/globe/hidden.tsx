@@ -49,13 +49,13 @@ export default function GlobeHidden() {
     <View style={styles.root}>
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} hitSlop={8}>
-          <Ionicons name="arrow-back" size={22} color="#B5B5B5" />
+          <Ionicons name="arrow-back" size={22} color="#444444" />
         </Pressable>
         <Text style={styles.headerTitle}>Hidden</Text>
       </View>
       <View style={styles.content}>
         {loading ? (
-          <ActivityIndicator color="#8A8A8A" style={{ marginTop: 32 }} />
+          <ActivityIndicator color="#666666" style={{ marginTop: 32 }} />
         ) : (
           <FlatList
             data={zones}
@@ -84,7 +84,7 @@ export default function GlobeHidden() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#0A0A0A", paddingTop: 60 },
+  root: { flex: 1, backgroundColor: "#FFFFFF", paddingTop: 60 },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingBottom: 12,
   },
-  headerTitle: { fontSize: 14, fontWeight: "500", color: "#EDEDED" },
+  headerTitle: { fontSize: 14, fontWeight: "500", color: "#1A1A1A" },
   content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
   row: {
     flexDirection: "row",
@@ -101,16 +101,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
     borderBottomWidth: 0.5,
-    borderBottomColor: "#242424",
+    borderBottomColor: "#EEEEEE",
   },
-  rowTitle: { flex: 1, fontSize: 13.5, color: "#EDEDED", marginRight: 12 },
+  rowTitle: { flex: 1, fontSize: 13.5, color: "#1A1A1A", marginRight: 12 },
   unhideBtn: {
     paddingVertical: 4,
     paddingHorizontal: 10,
     borderRadius: 8,
     borderWidth: 0.5,
-    borderColor: "#3A3A3A",
+    borderColor: "#DDDDDD",
   },
-  unhideText: { fontSize: 12, color: "#EDEDED" },
-  empty: { color: "#8A8A8A", textAlign: "center", marginTop: 32, fontSize: 13 },
+  unhideText: { fontSize: 12, color: "#1A1A1A" },
+  empty: { color: "#666666", textAlign: "center", marginTop: 32, fontSize: 13 },
 });
