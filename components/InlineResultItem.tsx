@@ -11,7 +11,6 @@ import { Ionicons } from "@expo/vector-icons";
 import PromptDisplay from "./PromptDisplay";
 import CopyPromptButton from "./CopyPromptButton";
 import ThumbsFeedback from "./ThumbsFeedback";
-import ModelLaunchChips from "./ModelLaunchChips";
 import {
   apiCall,
   ApiError,
@@ -163,7 +162,6 @@ export default function InlineResultItem({
                   onDeselect={() => setVote(null)}
                 />
               </View>
-              <ModelLaunchChips generatedBy={model} />
             </>
           )}
         </>
