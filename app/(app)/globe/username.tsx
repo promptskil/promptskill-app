@@ -85,7 +85,7 @@ export default function CreateUsername() {
     <View style={styles.root}>
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} hitSlop={8}>
-          <Ionicons name="arrow-back" size={22} color="#B5B5B5" />
+          <Ionicons name="arrow-back" size={22} color="#444444" />
         </Pressable>
         <Text style={styles.headerTitle}>Create username</Text>
       </View>
@@ -95,7 +95,7 @@ export default function CreateUsername() {
         <TextInput
           style={styles.input}
           placeholder="jordan_dev"
-          placeholderTextColor="#8A8A8A"
+          placeholderTextColor="#666666"
           value={username}
           onChangeText={setUsername}
           autoCapitalize="none"
@@ -118,7 +118,7 @@ export default function CreateUsername() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#0A0A0A", paddingTop: 60 },
+  root: { flex: 1, backgroundColor: "#FFFFFF", paddingTop: 60 },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -126,36 +126,36 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingBottom: 12,
   },
-  headerTitle: { fontSize: 14, fontWeight: "500", color: "#EDEDED" },
+  headerTitle: { fontSize: 14, fontWeight: "500", color: "#1A1A1A" },
   body: { padding: 14, width: "100%", maxWidth: 680, alignSelf: "center" },
-  draftLine: { fontSize: 12.5, lineHeight: 18, color: "#B5B5B5", marginBottom: 16 },
+  draftLine: { fontSize: 12.5, lineHeight: 18, color: "#444444", marginBottom: 16 },
   label: {
     fontSize: 11,
     letterSpacing: 0.3,
     textTransform: "uppercase",
-    color: "#8A8A8A",
+    color: "#666666",
     marginBottom: 8,
   },
   input: {
     height: 40,
     paddingHorizontal: 10,
     borderWidth: 0.5,
-    borderColor: "#3A3A3A",
+    borderColor: "#DDDDDD",
     borderRadius: 8,
-    backgroundColor: "#161616",
-    color: "#EDEDED",
+    backgroundColor: "#F5F5F5",
+    color: "#1A1A1A",
     fontSize: 13,
     marginBottom: 8,
   },
-  hint: { fontSize: 11.5, color: "#8A8A8A", marginBottom: 18 },
+  hint: { fontSize: 11.5, color: "#666666", marginBottom: 18 },
   errorHint: { fontSize: 11.5, color: "#FF6B6B", marginBottom: 18 },
   button: {
     height: 40,
     borderRadius: 8,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#1A1A1A",
     alignItems: "center",
     justifyContent: "center",
   },
   buttonDisabled: { opacity: 0.4 },
-  buttonText: { fontSize: 13, fontWeight: "500", color: "#0A0A0A" },
+  buttonText: { fontSize: 13, fontWeight: "500", color: "#FFFFFF" },
 });
