@@ -1,5 +1,5 @@
-// Menu screen — frosted-glass transparent modal over Main.
-// Pinned logo (top) + pinned FAB footer (bottom); History scrolls between.
+// Menu screen — left drawer (frosted glass) over Main; main shows on the right.
+// White top header (logo + note/globe), History scrolls, FAB footer.
 
 import { View, Image, Text, Pressable, StyleSheet } from "react-native";
 import { BlurView } from "expo-blur";
@@ -14,60 +14,66 @@ export default function Menu() {
 
   return (
     <View style={styles.root}>
-      <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
-      <View style={styles.warmTint} />
+      <View style={styles.panel}>
+        <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
+        <View style={styles.warmTint} />
 
-      <View style={styles.content}>
-        <View style={styles.topHeader}>
-          <Image
-            source={require("../../assets/logo1.png")}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-          <View style={styles.topIcons}>
-            <Pressable onPress={() => {}} hitSlop={8}>
-              <Ionicons name="document-text-outline" size={26} color="#333" />
+        <View style={styles.content}>
+          <View style={styles.topHeader}>
+            <Image
+              source={require("../../assets/logo1.png")}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <View style={styles.topIcons}>
+              <Pressable onPress={() => {}} hitSlop={8}>
+                <Ionicons name="document-text-outline" size={26} color="#333" />
+              </Pressable>
+              <Pressable onPress={() => router.push("/(app)/globe")} hitSlop={8}>
+                <Image
+                  source={require("../../assets/globe.png")}
+                  style={styles.globeIcon}
+                  resizeMode="contain"
+                />
+              </Pressable>
+            </View>
+          </View>
+
+          <View style={styles.middle}>
+            <HistoryList listHeader={header} />
+          </View>
+
+          <View style={styles.footer}>
+            <Pressable
+              onPress={() =>
+                router.navigate({
+                  pathname: "/(app)",
+                  params: { compose: "claude" },
+                })
+              }
+              style={[styles.fab, styles.fabPlus]}
+            >
+              <Ionicons name="add" size={28} color="#fff" />
             </Pressable>
-            <Pressable onPress={() => router.push("/(app)/globe")} hitSlop={8}>
-              <Image
-                source={require("../../assets/globe.png")}
-                style={styles.globeIcon}
-                resizeMode="contain"
-              />
+            <Pressable
+              onPress={() => router.push("/(app)/settings")}
+              style={[styles.fab, styles.fabSettings]}
+            >
+              <Ionicons name="settings-outline" size={26} color="#333" />
             </Pressable>
           </View>
         </View>
-
-        <View style={styles.middle}>
-          <HistoryList listHeader={header} />
-        </View>
-
-        <View style={styles.footer}>
-          <Pressable
-            onPress={() =>
-              router.navigate({
-                pathname: "/(app)",
-                params: { compose: "claude" },
-              })
-            }
-            style={[styles.fab, styles.fabPlus]}
-          >
-            <Ionicons name="add" size={28} color="#fff" />
-          </Pressable>
-          <Pressable
-            onPress={() => router.push("/(app)/settings")}
-            style={[styles.fab, styles.fabSettings]}
-          >
-            <Ionicons name="settings-outline" size={26} color="#333" />
-          </Pressable>
-        </View>
       </View>
+
+      <Pressable style={styles.scrim} onPress={() => router.back()} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "transparent" },
+  root: { flex: 1, flexDirection: "row", backgroundColor: "transparent" },
+  panel: { width: "80%", maxWidth: 340 },
+  scrim: { flex: 1 },
   warmTint: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(255, 249, 240, 0.35)",
