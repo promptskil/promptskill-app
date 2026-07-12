@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     maxWidth: 680,
     alignSelf: "center",
     paddingHorizontal: 16,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "transparent",
     borderRadius: 8,
     padding: 16,
   },
