@@ -1,6 +1,7 @@
 // PromptList (4.1) — Phase 13, Step 13.1
 // FlatList with pagination. Scroll end + more → loadMore.
 
+import { ReactElement } from "react";
 import { FlatList, Text, StyleSheet, View } from "react-native";
 import PromptListItem from "./PromptListItem";
 
@@ -25,6 +26,7 @@ interface PromptListProps {
     feedback_vote: "up" | "down" | null;
   }) => void;
   onItemDelete: (id: string) => void;
+  listHeader?: ReactElement;
 }
 
 export default function PromptList({
@@ -33,6 +35,7 @@ export default function PromptList({
   onLoadMore,
   onItemSelect,
   onItemDelete,
+  listHeader,
 }: PromptListProps) {
   const hasMore = total > historyItems.length;
 
@@ -54,6 +57,7 @@ export default function PromptList({
       )}
       onEndReached={hasMore ? onLoadMore : undefined}
       onEndReachedThreshold={0.5}
+      ListHeaderComponent={listHeader}
       ListEmptyComponent={
         <View style={styles.empty}>
           <Text style={styles.emptyText}>No histories yet</Text>
