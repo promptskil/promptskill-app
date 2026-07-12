@@ -24,6 +24,10 @@ export default function AppLayout() {
         options={{ gestureEnabled: true }}
       />
       <Stack.Screen
+        name="menu"
+        options={{ gestureEnabled: true }}
+      />
+      <Stack.Screen
         name="globe/index"
         options={{ gestureEnabled: true }}
       />
