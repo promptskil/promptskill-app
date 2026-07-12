@@ -1,6 +1,5 @@
-// PromptListItem (4.2) — Phase 13, Step 13.1
-// Dual interaction: body tap → load to Result, ✕ tap → soft delete.
-// No regeneration on tap — loads existing record.
+// PromptListItem (4.2) — history row. Shows only the topic; tap → load record.
+// Date, model, feedback, and delete are intentionally hidden.
 
 import { View, Text, Pressable, StyleSheet } from "react-native";
 
@@ -27,16 +26,8 @@ export default function PromptListItem({
   topic,
   prompt_text,
   feedback_vote,
-  created_at,
   onSelect,
-  onDelete,
 }: PromptListItemProps) {
-  const date = new Date(created_at);
-  const dateStr = date.toLocaleDateString();
-
-  const feedbackIcon =
-    feedback_vote === "up" ? "👍" : feedback_vote === "down" ? "👎" : "";
-
   return (
     <View style={styles.container}>
       <Pressable
@@ -48,17 +39,6 @@ export default function PromptListItem({
         <Text style={styles.topic} numberOfLines={1}>
           {topic}
         </Text>
-        <View style={styles.meta}>
-          <Text style={styles.model}>{model}</Text>
-          <Text style={styles.date}>{dateStr}</Text>
-          {feedbackIcon ? (
-            <Text style={styles.feedback}>{feedbackIcon}</Text>
-          ) : null}
-        </View>
-      </Pressable>
-
-      <Pressable style={styles.deleteButton} onPress={() => onDelete(id)}>
-        <Text style={styles.deleteText}>✕</Text>
       </Pressable>
     </View>
   );
@@ -71,36 +51,13 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
-    padding: 14,
+    paddingVertical: 14,
+    paddingLeft: 14,
+    paddingRight: 72,
   },
   topic: {
     fontSize: 16,
     fontWeight: "500",
     color: "#333",
-    marginBottom: 4,
-  },
-  meta: {
-    flexDirection: "row",
-    gap: 8,
-    alignItems: "center",
-  },
-  model: {
-    fontSize: 12,
-    color: "#666",
-    textTransform: "capitalize",
-  },
-  date: {
-    fontSize: 12,
-    color: "#999",
-  },
-  feedback: {
-    fontSize: 14,
-  },
-  deleteButton: {
-    padding: 14,
-  },
-  deleteText: {
-    fontSize: 18,
-    color: "#999",
   },
 });
