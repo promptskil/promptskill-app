@@ -25,7 +25,11 @@ export default function AppLayout() {
       />
       <Stack.Screen
         name="menu"
-        options={{ gestureEnabled: true }}
+        options={{
+          presentation: "transparentModal",
+          animation: "fade",
+          gestureEnabled: true,
+        }}
       />
       <Stack.Screen
         name="settings"
