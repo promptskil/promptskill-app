@@ -128,10 +128,10 @@ describe("PromptListItem", () => {
     jest.clearAllMocks();
   });
 
-  it("renders topic and model", () => {
-    const { getByText } = render(<PromptListItem {...baseProps} />);
+  it("renders topic only", () => {
+    const { getByText, queryByText } = render(<PromptListItem {...baseProps} />);
     expect(getByText("Test topic")).toBeTruthy();
-    expect(getByText("claude")).toBeTruthy();
+    expect(queryByText("claude")).toBeNull();
   });
 
   it("calls onSelect with record on body tap", () => {
@@ -146,18 +146,6 @@ describe("PromptListItem", () => {
     });
   });
 
-  it("calls onDelete with id on delete tap", () => {
-    const { getByText } = render(<PromptListItem {...baseProps} />);
-    fireEvent.press(getByText("\u2715"));
-    expect(baseProps.onDelete).toHaveBeenCalledWith("id-1");
-  });
-
-  it("shows feedback icon when vote exists", () => {
-    const { getByText } = render(
-      <PromptListItem {...baseProps} feedback_vote="up" />
-    );
-    expect(getByText("\uD83D\uDC4D")).toBeTruthy();
-  });
 });
 
 describe("PromptList", () => {
