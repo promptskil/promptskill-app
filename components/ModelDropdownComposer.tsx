@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import Markdown from "react-native-markdown-display";
 import { apiCall, ApiError, SessionExpiredError } from "../services/api";
 
 const MODELS = ["ChatGPT", "Claude Sonnet", "Claude Opus", "Gemini", "Grok"];
@@ -121,9 +122,7 @@ export default function ModelDropdownComposer() {
                 style={[styles.panelScroll, expanded && { maxHeight: EXPANDED_H - 50 }]}
                 keyboardShouldPersistTaps="handled"
               >
-                <Text selectable style={styles.answerText}>
-                  {answer}
-                </Text>
+                <Markdown style={mdStyles}>{answer}</Markdown>
               </ScrollView>
             </>
           )}
@@ -243,7 +242,6 @@ const styles = StyleSheet.create({
   panelActions: { flexDirection: "row", alignItems: "center", gap: 14 },
   panelModel: { fontSize: 12, color: "#888", fontWeight: "600" },
   panelScroll: { maxHeight: 210 },
-  answerText: { fontSize: 15, color: "#111", lineHeight: 21 },
   error: { color: "#d00", fontSize: 14, textAlign: "center" },
   box: {
     width: "100%",
@@ -300,3 +298,14 @@ const styles = StyleSheet.create({
   },
   sendBtnDisabled: { backgroundColor: "#ccc" },
 });
+
+const mdStyles = {
+  body: { fontSize: 15, lineHeight: 21, color: "#111" },
+  heading1: { fontWeight: "700" as const, fontSize: 15, marginTop: 10, marginBottom: 6 },
+  heading2: { fontWeight: "700" as const, fontSize: 15, marginTop: 10, marginBottom: 6 },
+  strong: { fontWeight: "700" as const },
+  bullet_list: { paddingLeft: 18, marginBottom: 8 },
+  ordered_list: { paddingLeft: 18, marginBottom: 8 },
+  list_item: { fontSize: 15, lineHeight: 21, color: "#111" },
+  paragraph: { marginTop: 0, marginBottom: 8 },
+};
