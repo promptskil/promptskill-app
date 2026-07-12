@@ -185,6 +185,12 @@ export default function Main() {
           </View>
         </View>
 
+        <Image
+          source={require("../../assets/logo1.png")}
+          style={styles.centerLogo}
+          resizeMode="contain"
+        />
+
         <ModelSelector
           selectedModel={selectedModel}
           onSelect={handleModelSelect}
@@ -297,6 +303,12 @@ const styles = StyleSheet.create({
   globeIcon: {
     width: 26,
     height: 26,
+  },
+  centerLogo: {
+    height: 32,
+    width: 110,
+    alignSelf: "center",
+    marginBottom: 8,
   },
   composer: {
     gap: 8,
