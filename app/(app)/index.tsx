@@ -14,7 +14,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
-  Keyboard,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -73,19 +72,11 @@ export default function Main() {
     router.push("/(app)/globe");
   }
 
-  function handleBackgroundTap() {
-    Keyboard.dismiss();
-    // Empty composer + tap on empty space → close it (model deselects)
-    if (selectedModel !== null && topic.length === 0) {
-      setSelectedModel(null);
-    }
-  }
-
   const canGenerate =
     selectedModel !== null && topic.length > 0 && !loading;
 
   function handleModelSelect(model: Model) {
-    setSelectedModel(model);
+    setSelectedModel((prev) => (prev === model ? null : model));
   }
 
   function handleCancel() {
@@ -260,8 +251,6 @@ export default function Main() {
           <PromptDisplay prompt="" loading error={null} model={selectedModel ?? "claude"} />
         )}
 
-        {/* Empty area below content — tap to dismiss an empty composer */}
-        <Pressable style={styles.tapFiller} onPress={handleBackgroundTap} />
       </ScrollView>
       <ModelDropdownComposer />
     </KeyboardAvoidingView>
@@ -334,10 +323,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 46,
     bottom: 13,
-  },
-  tapFiller: {
-    flexGrow: 1,
-    minHeight: 120,
   },
   error: {
     color: "#d00",
