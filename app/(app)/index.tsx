@@ -18,7 +18,6 @@ import {
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import ModelSelector from "../../components/ModelSelector";
-import HistoryNavButton from "../../components/HistoryNavButton";
 import ModelInfoCard from "../../components/ModelInfoCard";
 import TopicInput from "../../components/TopicInput";
 import InlineResultItem from "../../components/InlineResultItem";
@@ -60,12 +59,8 @@ export default function Main() {
     getRole().then(setAccountType);
   }, []);
 
-  function handleHistoryNav() {
-    router.push("/(app)/history");
-  }
-
-  function handleProfileNav() {
-    router.push("/(app)/profile");
+  function handleMenuNav() {
+    router.push("/(app)/menu");
   }
 
   function handleGlobeNav() {
@@ -158,11 +153,11 @@ export default function Main() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Image
-            source={require("../../assets/logo1.png")}
-            style={styles.headerLogo}
-            resizeMode="contain"
-          />
+          <Pressable onPress={handleMenuNav} style={styles.menuBtn} hitSlop={8}>
+            <View style={[styles.menuBar, { width: 22 }]} />
+            <View style={[styles.menuBar, { width: 16 }]} />
+            <View style={[styles.menuBar, { width: 10 }]} />
+          </Pressable>
           <View style={styles.headerRight}>
             <Pressable onPress={() => {}}>
               <Ionicons name="document-text-outline" size={26} color="#333" />
@@ -174,15 +169,11 @@ export default function Main() {
               resizeMode="contain"
             />
             </Pressable>
-            <HistoryNavButton onPress={handleHistoryNav} />
             {Platform.OS === "web" && accountType === "admin" && (
               <Pressable onPress={() => router.push("/(app)/business")}>
                 <Ionicons name="business-outline" size={26} color="#333" />
               </Pressable>
             )}
-            <Pressable onPress={handleProfileNav}>
-              <Ionicons name="person-circle-outline" size={28} color="#333" />
-            </Pressable>
           </View>
         </View>
 
@@ -287,9 +278,13 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "700",
   },
-  headerLogo: {
-    height: 28,
-    width: 90,
+  menuBtn: {
+    gap: 4,
+  },
+  menuBar: {
+    height: 2,
+    borderRadius: 1,
+    backgroundColor: "#333",
   },
   globeIcon: {
     width: 26,
