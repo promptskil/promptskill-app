@@ -254,7 +254,7 @@ export default function GlobeThread() {
         value={text}
         onChangeText={setText}
         placeholder={placeholder}
-        placeholderTextColor="#8A8A8A"
+        placeholderTextColor="#666666"
         autoFocus
         multiline
       />
@@ -263,7 +263,7 @@ export default function GlobeThread() {
         disabled={!text.trim() || submitting}
         style={[styles.sendBtn, (!text.trim() || submitting) && styles.sendDisabled]}
       >
-        <Ionicons name="arrow-up" size={15} color="#0A0A0A" />
+        <Ionicons name="arrow-up" size={15} color="#FFFFFF" />
       </Pressable>
       <Pressable
         onPress={() => {
@@ -273,7 +273,7 @@ export default function GlobeThread() {
         hitSlop={8}
         style={styles.closeBtn}
       >
-        <Ionicons name="close" size={16} color="#8A8A8A" />
+        <Ionicons name="close" size={16} color="#666666" />
       </Pressable>
     </View>
   );
@@ -294,7 +294,7 @@ export default function GlobeThread() {
       style={styles.replyAffordance}
       onPress={() => startEdit(kind, id, body)}
     >
-      <Ionicons name="pencil-outline" size={12} color="#8A8A8A" />
+      <Ionicons name="pencil-outline" size={12} color="#666666" />
       <Text style={styles.replyText}>Edit</Text>
     </Pressable>
   );
@@ -329,7 +329,7 @@ export default function GlobeThread() {
       style={styles.replyAffordance}
       onPress={() => startDelete(kind, id)}
     >
-      <Ionicons name="trash-outline" size={12} color="#8A8A8A" />
+      <Ionicons name="trash-outline" size={12} color="#666666" />
       <Text style={styles.replyText}>Delete</Text>
     </Pressable>
   );
@@ -354,19 +354,19 @@ export default function GlobeThread() {
     <View style={styles.root}>
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} hitSlop={8}>
-          <Ionicons name="arrow-back" size={22} color="#B5B5B5" />
+          <Ionicons name="arrow-back" size={22} color="#444444" />
         </Pressable>
         <Text style={styles.headerTitle} numberOfLines={1}>
           {zoneTitle}
         </Text>
         <Pressable onPress={() => setMenuOpen((v) => !v)} hitSlop={8}>
-          <Ionicons name="ellipsis-vertical" size={20} color="#B5B5B5" />
+          <Ionicons name="ellipsis-vertical" size={20} color="#444444" />
         </Pressable>
       </View>
       {menuOpen ? (
         <View style={styles.menu}>
           <Pressable style={styles.menuItem} onPress={hideZone}>
-            <Ionicons name="eye-off-outline" size={15} color="#EDEDED" />
+            <Ionicons name="eye-off-outline" size={15} color="#1A1A1A" />
             <Text style={styles.menuItemText}>Hide</Text>
           </Pressable>
         </View>
@@ -377,13 +377,13 @@ export default function GlobeThread() {
         composerBar("Write a post")
       ) : (
         <Pressable style={styles.composerIdle} onPress={startPost}>
-          <Ionicons name="pencil" size={15} color="#8A8A8A" />
+          <Ionicons name="pencil" size={15} color="#666666" />
           <Text style={styles.composerIdleText}>Write a post</Text>
         </Pressable>
       )}
 
       {loading ? (
-        <ActivityIndicator color="#8A8A8A" style={{ marginTop: 32 }} />
+        <ActivityIndicator color="#666666" style={{ marginTop: 32 }} />
       ) : (
         <ScrollView contentContainerStyle={styles.scroll}>
           {posts.map((post) => (
@@ -401,7 +401,7 @@ export default function GlobeThread() {
                       style={styles.replyAffordance}
                       onPress={() => startReply(post.id)}
                     >
-                      <Ionicons name="chatbubble-outline" size={13} color="#8A8A8A" />
+                      <Ionicons name="chatbubble-outline" size={13} color="#666666" />
                       <Text style={styles.replyText}>Reply</Text>
                     </Pressable>
                     {post.author_username === me
@@ -445,7 +445,7 @@ export default function GlobeThread() {
                             <Ionicons
                               name="chatbubble-outline"
                               size={12}
-                              color="#8A8A8A"
+                              color="#666666"
                             />
                             <Text style={styles.replyText}>Reply</Text>
                           </Pressable>
@@ -482,7 +482,7 @@ export default function GlobeThread() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#0A0A0A", paddingTop: 60 },
+  root: { flex: 1, backgroundColor: "#FFFFFF", paddingTop: 60 },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -490,14 +490,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingBottom: 12,
   },
-  headerTitle: { flex: 1, fontSize: 14, fontWeight: "500", color: "#EDEDED" },
+  headerTitle: { flex: 1, fontSize: 14, fontWeight: "500", color: "#1A1A1A" },
   menu: {
     position: "absolute",
     top: 88,
     right: 14,
-    backgroundColor: "#161616",
+    backgroundColor: "#F5F5F5",
     borderWidth: 0.5,
-    borderColor: "#3A3A3A",
+    borderColor: "#DDDDDD",
     borderRadius: 8,
     paddingVertical: 4,
     zIndex: 20,
@@ -510,7 +510,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
-  menuItemText: { fontSize: 13, color: "#EDEDED" },
+  menuItemText: { fontSize: 13, color: "#1A1A1A" },
   content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
   composerIdle: {
     flexDirection: "row",
@@ -521,10 +521,10 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     paddingHorizontal: 10,
     borderWidth: 0.5,
-    borderColor: "#242424",
+    borderColor: "#EEEEEE",
     borderRadius: 8,
   },
-  composerIdleText: { color: "#8A8A8A", fontSize: 13 },
+  composerIdleText: { color: "#666666", fontSize: 13 },
   composerActive: {
     flexDirection: "row",
     alignItems: "flex-end",
@@ -534,13 +534,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderWidth: 0.5,
-    borderColor: "#3A3A3A",
+    borderColor: "#DDDDDD",
     borderRadius: 8,
-    backgroundColor: "#161616",
+    backgroundColor: "#F5F5F5",
   },
   composerInput: {
     flex: 1,
-    color: "#EDEDED",
+    color: "#1A1A1A",
     fontSize: 13,
     maxHeight: 120,
     padding: 0,
@@ -549,7 +549,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#1A1A1A",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -560,32 +560,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
     borderBottomWidth: 0.5,
-    borderBottomColor: "#242424",
+    borderBottomColor: "#EEEEEE",
   },
   reply: {
     marginTop: 10,
     paddingLeft: 10,
     borderLeftWidth: 1.5,
-    borderLeftColor: "#242424",
+    borderLeftColor: "#EEEEEE",
   },
   row: { flexDirection: "row", gap: 8 },
   rowBody: { flex: 1, minWidth: 0 },
   metaRow: { flexDirection: "row", alignItems: "baseline", gap: 6 },
-  name: { fontSize: 12.5, fontWeight: "500", color: "#EDEDED" },
-  nameSm: { fontSize: 12, fontWeight: "500", color: "#EDEDED" },
-  time: { fontSize: 11, color: "#8A8A8A" },
-  body: { fontSize: 12.5, lineHeight: 18, color: "#EDEDED", marginTop: 3 },
-  bodySm: { fontSize: 12, lineHeight: 17, color: "#EDEDED", marginTop: 2 },
+  name: { fontSize: 12.5, fontWeight: "500", color: "#1A1A1A" },
+  nameSm: { fontSize: 12, fontWeight: "500", color: "#1A1A1A" },
+  time: { fontSize: 11, color: "#666666" },
+  body: { fontSize: 12.5, lineHeight: 18, color: "#1A1A1A", marginTop: 3 },
+  bodySm: { fontSize: 12, lineHeight: 17, color: "#1A1A1A", marginTop: 2 },
   replyAffordance: {
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
     marginTop: 8,
   },
-  replyText: { fontSize: 11, color: "#8A8A8A" },
+  replyText: { fontSize: 11, color: "#666666" },
   affordanceRow: { flexDirection: "row", gap: 16, alignItems: "center" },
   confirmRow: { flexDirection: "row", alignItems: "center", gap: 12, marginTop: 8 },
-  confirmText: { fontSize: 12, color: "#B5B5B5" },
+  confirmText: { fontSize: 12, color: "#444444" },
   confirmDelete: {
     paddingHorizontal: 10,
     height: 26,
@@ -594,23 +594,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  confirmDeleteText: { fontSize: 12, fontWeight: "500", color: "#0A0A0A" },
+  confirmDeleteText: { fontSize: 12, fontWeight: "500", color: "#FFFFFF" },
   editOk: {
     paddingHorizontal: 10,
     height: 28,
     borderRadius: 14,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#1A1A1A",
     alignItems: "center",
     justifyContent: "center",
   },
-  editOkText: { fontSize: 12, fontWeight: "500", color: "#0A0A0A" },
-  cancelText: { fontSize: 12, color: "#8A8A8A" },
+  editOkText: { fontSize: 12, fontWeight: "500", color: "#FFFFFF" },
+  cancelText: { fontSize: 12, color: "#666666" },
   avatar: {
-    backgroundColor: "#1E1E1E",
+    backgroundColor: "#E5E5E5",
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
   },
-  avatarText: { fontSize: 9.5, fontWeight: "600", color: "#EDEDED" },
-  empty: { color: "#8A8A8A", textAlign: "center", marginTop: 32, fontSize: 13 },
+  avatarText: { fontSize: 9.5, fontWeight: "600", color: "#1A1A1A" },
+  empty: { color: "#666666", textAlign: "center", marginTop: 32, fontSize: 13 },
 });

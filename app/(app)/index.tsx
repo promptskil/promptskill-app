@@ -161,11 +161,18 @@ export default function Main() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Pressable onPress={handleMenuNav} style={styles.menuBtn} hitSlop={8}>
-            <View style={[styles.menuBar, { width: 22 }]} />
-            <View style={[styles.menuBar, { width: 16 }]} />
-            <View style={[styles.menuBar, { width: 10 }]} />
-          </Pressable>
+          <View style={styles.leftCol}>
+            <Image
+              source={require("../../assets/logo-vaine.png")}
+              style={styles.topLogo}
+              resizeMode="contain"
+            />
+            <Pressable onPress={handleMenuNav} style={styles.menuBtn} hitSlop={8}>
+              <View style={[styles.menuBar, { width: 22 }]} />
+              <View style={[styles.menuBar, { width: 16 }]} />
+              <View style={[styles.menuBar, { width: 10 }]} />
+            </Pressable>
+          </View>
           <View style={styles.headerRight}>
             <Pressable onPress={() => {}}>
               <Ionicons name="document-text-outline" size={26} color="#333" />
@@ -184,12 +191,6 @@ export default function Main() {
             )}
           </View>
         </View>
-
-        <Image
-          source={require("../../assets/logo1.png")}
-          style={styles.centerLogo}
-          resizeMode="contain"
-        />
 
         <ModelSelector
           selectedModel={selectedModel}
@@ -280,8 +281,16 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
     marginBottom: 8,
+  },
+  leftCol: {
+    alignItems: "flex-start",
+    gap: 8,
+  },
+  topLogo: {
+    height: 22,
+    width: 76,
   },
   headerRight: {
     flexDirection: "row",
@@ -303,12 +312,6 @@ const styles = StyleSheet.create({
   globeIcon: {
     width: 26,
     height: 26,
-  },
-  centerLogo: {
-    height: 32,
-    width: 110,
-    alignSelf: "center",
-    marginBottom: 8,
   },
   composer: {
     gap: 8,
