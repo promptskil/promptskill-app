@@ -1,7 +1,7 @@
-// Menu screen — left drawer. Glass floating header/footer; history scrolls
-// the full height underneath them, visible through the frosted panel.
+// Menu screen — left drawer. Glass footer (settings only); history scrolls
+// the full height underneath, visible through the frosted panel.
 
-import { View, Image, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,31 +21,12 @@ export default function Menu() {
         <View style={styles.list}>
           <HistoryList
             listHeader={header}
-            contentPaddingTop={110}
+            contentPaddingTop={60}
             contentPaddingBottom={100}
           />
         </View>
 
-        <View style={styles.topHeader} pointerEvents="box-none">
-          <Image
-            source={require("../../assets/logo1.png")}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-        </View>
-
         <View style={styles.footer} pointerEvents="box-none">
-          <Pressable
-            onPress={() =>
-              router.navigate({
-                pathname: "/(app)",
-                params: { compose: "claude" },
-              })
-            }
-            style={[styles.fab, styles.fabPlus]}
-          >
-            <Ionicons name="add" size={28} color="#fff" />
-          </Pressable>
           <Pressable
             onPress={() => router.push("/(app)/settings")}
             style={[styles.fab, styles.fabSettings]}
@@ -69,18 +50,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 249, 240, 0.35)",
   },
   list: { flex: 1 },
-  topHeader: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingTop: 60,
-    paddingHorizontal: 24,
-    paddingBottom: 12,
-  },
-  logo: { height: 32, width: 110 },
   heading: {
     fontSize: 22,
     fontWeight: "400",
@@ -112,6 +81,5 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 4,
   },
-  fabPlus: { backgroundColor: "#4F46E5" },
   fabSettings: { backgroundColor: "#fff" },
 });
