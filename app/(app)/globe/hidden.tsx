@@ -1,3 +1,6 @@
+// Hidden zones — left drawer (same behavior as the main-screen menu).
+// Frosted panel slides in over the globe feed; the feed stays visible behind.
+
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -7,8 +10,8 @@ import {
   Text,
   View,
 } from "react-native";
+import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 
 import { apiCall, SessionExpiredError } from "../../../services/api";
 import type { GlobeZone } from "../../../types";
@@ -47,61 +50,71 @@ export default function GlobeHidden() {
 
   return (
     <View style={styles.root}>
-      <View style={styles.header}>
-        <Pressable onPress={() => router.back()} hitSlop={8}>
-          <Ionicons name="arrow-back" size={22} color="#444444" />
-        </Pressable>
-        <Text style={styles.headerTitle}>Hidden</Text>
+      <View style={styles.panel}>
+        <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
+        <View style={styles.warmTint} />
+
+        <Text style={styles.heading}>Hidden</Text>
+        <View style={styles.list}>
+          {loading ? (
+            <ActivityIndicator color="#666666" style={{ marginTop: 32 }} />
+          ) : (
+            <FlatList
+              data={zones}
+              keyExtractor={(z) => z.id}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => (
+                <View style={styles.row}>
+                  <Text style={styles.rowTitle} numberOfLines={1}>
+                    {item.title}
+                  </Text>
+                  <Pressable
+                    style={styles.unhideBtn}
+                    onPress={() => unhide(item.id)}
+                  >
+                    <Text style={styles.unhideText}>Unhide</Text>
+                  </Pressable>
+                </View>
+              )}
+              ListEmptyComponent={
+                <Text style={styles.empty}>Nothing hidden.</Text>
+              }
+            />
+          )}
+        </View>
       </View>
-      <View style={styles.content}>
-        {loading ? (
-          <ActivityIndicator color="#666666" style={{ marginTop: 32 }} />
-        ) : (
-          <FlatList
-            data={zones}
-            keyExtractor={(z) => z.id}
-            renderItem={({ item }) => (
-              <View style={styles.row}>
-                <Text style={styles.rowTitle} numberOfLines={1}>
-                  {item.title}
-                </Text>
-                <Pressable
-                  style={styles.unhideBtn}
-                  onPress={() => unhide(item.id)}
-                >
-                  <Text style={styles.unhideText}>Unhide</Text>
-                </Pressable>
-              </View>
-            )}
-            ListEmptyComponent={
-              <Text style={styles.empty}>Nothing hidden.</Text>
-            }
-          />
-        )}
-      </View>
+
+      <Pressable style={styles.scrim} onPress={() => router.back()} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#FFFFFF", paddingTop: 60 },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    paddingHorizontal: 14,
-    paddingBottom: 12,
+  root: { flex: 1, flexDirection: "row", backgroundColor: "transparent" },
+  panel: { width: "80%", maxWidth: 340, paddingTop: 60 },
+  scrim: { flex: 1 },
+  warmTint: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(255, 249, 240, 0.35)",
   },
-  headerTitle: { fontSize: 14, fontWeight: "400", color: "#1A1A1A" },
-  content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
+  heading: {
+    fontSize: 22,
+    fontWeight: "400",
+    letterSpacing: 0,
+    color: "#1A1A1A",
+    paddingHorizontal: 24,
+    marginTop: 40,
+    marginBottom: 12,
+  },
+  list: { flex: 1 },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 14,
+    paddingHorizontal: 24,
     paddingVertical: 12,
     borderBottomWidth: 0.5,
-    borderBottomColor: "#EEEEEE",
+    borderBottomColor: "rgba(0,0,0,0.08)",
   },
   rowTitle: { flex: 1, fontSize: 13.5, color: "#1A1A1A", marginRight: 12 },
   unhideBtn: {
