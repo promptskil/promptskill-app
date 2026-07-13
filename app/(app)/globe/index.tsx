@@ -3,11 +3,9 @@ import {
   ActivityIndicator,
   FlatList,
   Image,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -16,31 +14,34 @@ import { Ionicons } from "@expo/vector-icons";
 import { apiCall, SessionExpiredError } from "../../../services/api";
 import { setGlobeUsername } from "../../../services/globeDraft";
 import { relativeTime } from "../../../utils/globe";
-import type { GlobeZone } from "../../../types";
+
+interface FeedItem {
+  post_id: string;
+  zone_id: string;
+  zone_title: string;
+  author_username: string;
+  body: string;
+  created_at: string;
+}
 
 export default function GlobeFeed() {
   const router = useRouter();
-  const [zones, setZones] = useState<GlobeZone[]>([]);
-  const [query, setQuery] = useState("");
+  const [feed, setFeed] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchZones = useCallback(
-    async (q: string) => {
-      try {
-        const qs = q.trim() ? `&q=${encodeURIComponent(q.trim())}` : "";
-        const data = await apiCall<{ zones: GlobeZone[] }>(
-          "GET",
-          `/globe/zones?limit=20&offset=0${qs}`,
-        );
-        setZones(data.zones);
-      } catch (err) {
-        if (err instanceof SessionExpiredError) router.replace("/(auth)/login");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [router],
-  );
+  const fetchFeed = useCallback(async () => {
+    try {
+      const data = await apiCall<{ items: FeedItem[] }>(
+        "GET",
+        "/globe/feed?limit=20&offset=0",
+      );
+      setFeed(data.items);
+    } catch (err) {
+      if (err instanceof SessionExpiredError) router.replace("/(auth)/login");
+    } finally {
+      setLoading(false);
+    }
+  }, [router]);
 
   // Cache "me" once on entry — drives the tap-to-type gate downstream.
   useEffect(() => {
@@ -49,17 +50,11 @@ export default function GlobeFeed() {
       .catch(() => {});
   }, []);
 
-  // Debounced search.
-  useEffect(() => {
-    const t = setTimeout(() => fetchZones(query), 250);
-    return () => clearTimeout(t);
-  }, [query, fetchZones]);
-
-  // Refresh when the feed regains focus (reflects hides/unhides immediately).
+  // Refresh when the feed regains focus.
   useFocusEffect(
     useCallback(() => {
-      fetchZones(query);
-    }, [fetchZones, query]),
+      fetchFeed();
+    }, [fetchFeed]),
   );
 
   return (
@@ -82,47 +77,36 @@ export default function GlobeFeed() {
       </View>
 
       <View style={styles.content}>
-        <View style={styles.searchRow}>
-          <Ionicons name="search" size={15} color="#666666" />
-          <TextInput
-            style={[
-              styles.searchInput,
-              Platform.OS === "web" && ({ outlineStyle: "none" } as any),
-            ]}
-            placeholder="Search information"
-            placeholderTextColor="#666666"
-            value={query}
-            onChangeText={setQuery}
-            autoCapitalize="none"
-          />
-        </View>
-
         {loading ? (
           <ActivityIndicator color="#666666" style={{ marginTop: 32 }} />
         ) : (
           <FlatList
-            data={zones}
-            keyExtractor={(z) => z.id}
+            data={feed}
+            keyExtractor={(p) => p.post_id}
+            showsVerticalScrollIndicator={false}
             renderItem={({ item }) => (
               <Pressable
-                style={styles.row}
+                style={styles.post}
                 onPress={() =>
                   router.push({
                     pathname: "/(app)/globe/[zoneId]",
-                    params: { zoneId: item.id },
+                    params: { zoneId: item.zone_id },
                   })
                 }
               >
-                <Text style={styles.rowTitle} numberOfLines={1}>
-                  {item.title}
+                <Text style={styles.postZone} numberOfLines={1}>
+                  {item.zone_title}
                 </Text>
-                <Text style={styles.rowTime}>
-                  {relativeTime(item.created_at)}
+                <Text style={styles.postBody} numberOfLines={4}>
+                  {item.body}
+                </Text>
+                <Text style={styles.postMeta}>
+                  @{item.author_username} · {relativeTime(item.created_at)}
                 </Text>
               </Pressable>
             )}
             ListEmptyComponent={
-              <Text style={styles.empty}>No problems yet.</Text>
+              <Text style={styles.empty}>No posts yet.</Text>
             }
           />
         )}
@@ -200,6 +184,10 @@ const styles = StyleSheet.create({
   },
   rowTitle: { flex: 1, fontSize: 13.5, color: "#1A1A1A", marginRight: 8 },
   rowTime: { fontSize: 11, color: "#666666" },
+  post: { paddingHorizontal: 14, paddingVertical: 12 },
+  postZone: { fontSize: 12, fontWeight: "700", color: "#1A1A1A" },
+  postBody: { fontSize: 14, lineHeight: 20, color: "#1A1A1A", marginTop: 4 },
+  postMeta: { fontSize: 11, color: "#666666", marginTop: 6 },
   empty: { color: "#666666", textAlign: "center", marginTop: 32, fontSize: 13 },
   newFab: {
     position: "absolute",
