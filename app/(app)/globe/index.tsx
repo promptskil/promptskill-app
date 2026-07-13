@@ -65,14 +65,12 @@ export default function GlobeFeed() {
   return (
     <View style={styles.root}>
       <Image
-        source={require("../../../assets/logo-vaine.png")}
-        style={styles.topLogo}
+        source={require("../../../assets/zone.png")}
+        style={styles.zoneLogo}
         resizeMode="contain"
       />
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Text style={styles.title}>ZONE</Text>
-        </View>
+        <View style={styles.headerLeft} />
         <View style={styles.headerRight}>
           <Pressable
             onPress={() => router.push("/(app)/globe/hidden")}
@@ -163,7 +161,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   headerLogo: { width: 54, height: 16 },
-  topLogo: { width: 76, height: 22, marginLeft: 16, marginBottom: 12 },
+  zoneLogo: { width: 86, height: 40, marginLeft: 16, marginBottom: 8 },
   title: { fontSize: 15, fontWeight: "700", letterSpacing: 0.5, color: "#1A1A1A" },
   content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
   homeBar: {
