@@ -160,19 +160,17 @@ export default function Main() {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
+        <Image
+          source={require("../../assets/logo-vaine.png")}
+          style={styles.topLogo}
+          resizeMode="contain"
+        />
         <View style={styles.header}>
-          <View style={styles.leftCol}>
-            <Image
-              source={require("../../assets/logo-vaine.png")}
-              style={styles.topLogo}
-              resizeMode="contain"
-            />
-            <Pressable onPress={handleMenuNav} style={styles.menuBtn} hitSlop={8}>
-              <View style={[styles.menuBar, { width: 22 }]} />
-              <View style={[styles.menuBar, { width: 16 }]} />
-              <View style={[styles.menuBar, { width: 10 }]} />
-            </Pressable>
-          </View>
+          <Pressable onPress={handleMenuNav} style={styles.menuBtn} hitSlop={8}>
+            <View style={[styles.menuBar, { width: 22 }]} />
+            <View style={[styles.menuBar, { width: 16 }]} />
+            <View style={[styles.menuBar, { width: 10 }]} />
+          </Pressable>
           <View style={styles.headerRight}>
             <Pressable onPress={() => {}}>
               <Ionicons name="document-text-outline" size={26} color="#333" />
@@ -281,16 +279,13 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start",
+    alignItems: "center",
     marginBottom: 8,
-  },
-  leftCol: {
-    alignItems: "flex-start",
-    gap: 24,
   },
   topLogo: {
     height: 22,
     width: 76,
+    marginBottom: 12,
   },
   headerRight: {
     flexDirection: "row",
