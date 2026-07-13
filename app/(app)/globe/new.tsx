@@ -7,7 +7,7 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 import { apiCall, ApiError, SessionExpiredError } from "../../../services/api";
@@ -21,6 +21,7 @@ import type { GlobeZone } from "../../../types";
 
 export default function NewZone() {
   const router = useRouter();
+  const { body: draftBody } = useLocalSearchParams<{ body?: string }>();
   const [domain, setDomain] = useState("");
   const [title, setTitle] = useState("");
   const [domains, setDomains] = useState<string[]>([]);
@@ -67,6 +68,11 @@ export default function NewZone() {
         domain: cleanDomain,
         title: cleanTitle,
       });
+      if (draftBody && draftBody.trim()) {
+        await apiCall("POST", `/globe/zones/${zone.id}/posts`, {
+          body: draftBody.trim(),
+        });
+      }
       clearGlobeDraft();
       router.replace({
         pathname: "/(app)/globe/[zoneId]",
@@ -95,7 +101,9 @@ export default function NewZone() {
         <Pressable onPress={() => router.back()} hitSlop={8}>
           <Ionicons name="arrow-back" size={22} color="#444444" />
         </Pressable>
-        <Text style={styles.headerTitle}>New zone</Text>
+        <Text style={styles.headerTitle}>
+          {draftBody ? "Choose a zone" : "New zone"}
+        </Text>
       </View>
       <View style={styles.content}>
         <ScrollView contentContainerStyle={styles.body}>
@@ -137,7 +145,9 @@ export default function NewZone() {
             disabled={!canCreate}
             style={[styles.button, !canCreate && styles.buttonDisabled]}
           >
-            <Text style={styles.buttonText}>Create zone</Text>
+            <Text style={styles.buttonText}>
+              {draftBody ? "Post" : "Create zone"}
+            </Text>
           </Pressable>
         </ScrollView>
       </View>

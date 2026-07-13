@@ -3,9 +3,11 @@ import {
   ActivityIndicator,
   FlatList,
   Image,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -27,6 +29,7 @@ interface FeedItem {
 export default function GlobeFeed() {
   const router = useRouter();
   const [feed, setFeed] = useState<FeedItem[]>([]);
+  const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
   const fetchFeed = useCallback(async () => {
@@ -57,6 +60,14 @@ export default function GlobeFeed() {
     }, [fetchFeed]),
   );
 
+  const shown = query.trim()
+    ? feed.filter((p) =>
+        `${p.zone_title} ${p.body} ${p.author_username}`
+          .toLowerCase()
+          .includes(query.trim().toLowerCase()),
+      )
+    : feed;
+
   return (
     <View style={styles.root}>
       <Image
@@ -77,11 +88,26 @@ export default function GlobeFeed() {
       </View>
 
       <View style={styles.content}>
+        <View style={styles.searchRow}>
+          <Ionicons name="search" size={15} color="#666666" />
+          <TextInput
+            style={[
+              styles.searchInput,
+              Platform.OS === "web" && ({ outlineStyle: "none" } as any),
+            ]}
+            placeholder="Search"
+            placeholderTextColor="#666666"
+            value={query}
+            onChangeText={setQuery}
+            autoCapitalize="none"
+          />
+        </View>
+
         {loading ? (
           <ActivityIndicator color="#666666" style={{ marginTop: 32 }} />
         ) : (
           <FlatList
-            data={feed}
+            data={shown}
             keyExtractor={(p) => p.post_id}
             showsVerticalScrollIndicator={false}
             renderItem={({ item }) => (
@@ -94,15 +120,26 @@ export default function GlobeFeed() {
                   })
                 }
               >
-                <Text style={styles.postZone} numberOfLines={1}>
-                  {item.zone_title}
-                </Text>
+                <View style={styles.postTop}>
+                  <Text style={styles.postZone} numberOfLines={1}>
+                    {item.zone_title}
+                  </Text>
+                  <Text style={styles.postUser}>@{item.author_username}</Text>
+                  <Text style={styles.postTime}>
+                    {relativeTime(item.created_at)}
+                  </Text>
+                </View>
                 <Text style={styles.postBody} numberOfLines={4}>
                   {item.body}
                 </Text>
-                <Text style={styles.postMeta}>
-                  @{item.author_username} · {relativeTime(item.created_at)}
-                </Text>
+                <View style={styles.postActions}>
+                  <Ionicons
+                    name="chatbubble-outline"
+                    size={16}
+                    color="#666666"
+                  />
+                  <Ionicons name="create-outline" size={16} color="#666666" />
+                </View>
               </Pressable>
             )}
             ListEmptyComponent={
@@ -120,7 +157,7 @@ export default function GlobeFeed() {
       </Pressable>
       <Pressable
         style={styles.newFab}
-        onPress={() => router.push("/(app)/globe/new")}
+        onPress={() => router.push("/(app)/globe/compose")}
       >
         <Ionicons name="add" size={28} color="#1A1A1A" />
       </Pressable>
@@ -185,9 +222,12 @@ const styles = StyleSheet.create({
   rowTitle: { flex: 1, fontSize: 13.5, color: "#1A1A1A", marginRight: 8 },
   rowTime: { fontSize: 11, color: "#666666" },
   post: { paddingHorizontal: 14, paddingVertical: 12 },
-  postZone: { fontSize: 12, fontWeight: "700", color: "#1A1A1A" },
+  postTop: { flexDirection: "row", alignItems: "center", gap: 6 },
+  postZone: { flex: 1, fontSize: 12, fontWeight: "700", color: "#1A1A1A" },
+  postUser: { fontSize: 11, color: "#666666" },
+  postTime: { fontSize: 11, color: "#666666" },
   postBody: { fontSize: 14, lineHeight: 20, color: "#1A1A1A", marginTop: 4 },
-  postMeta: { fontSize: 11, color: "#666666", marginTop: 6 },
+  postActions: { flexDirection: "row", gap: 20, marginTop: 8 },
   empty: { color: "#666666", textAlign: "center", marginTop: 32, fontSize: 13 },
   newFab: {
     position: "absolute",
