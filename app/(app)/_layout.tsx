@@ -44,6 +44,10 @@ export default function AppLayout() {
         options={{ gestureEnabled: true }}
       />
       <Stack.Screen
+        name="globe/compose"
+        options={{ gestureEnabled: true }}
+      />
+      <Stack.Screen
         name="globe/username"
         options={{ gestureEnabled: true }}
       />
