@@ -193,7 +193,7 @@ export default function GlobeFeed() {
       </View>
       <Pressable
         style={styles.homeBar}
-        onPress={() => router.replace("/(app)")}
+        onPress={() => router.back()}
         hitSlop={8}
       >
         <Ionicons name="home-outline" size={22} color="#1A1A1A" />
