@@ -63,15 +63,13 @@ export default function GlobeFeed() {
 
   return (
     <View style={styles.root}>
+      <Image
+        source={require("../../../assets/logo-vaine.png")}
+        style={styles.topLogo}
+        resizeMode="contain"
+      />
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <View style={styles.brandPill}>
-            <Image
-              source={require("../../../assets/logo-vaine.png")}
-              style={styles.headerLogo}
-              resizeMode="contain"
-            />
-          </View>
           <Text style={styles.title}>ZONE</Text>
         </View>
         <View style={styles.headerRight}>
@@ -161,6 +159,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   headerLogo: { width: 54, height: 16 },
+  topLogo: { width: 76, height: 22, marginLeft: 16, marginBottom: 12 },
   title: { fontSize: 15, fontWeight: "400", letterSpacing: 0.5, color: "#1A1A1A" },
   content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
   homeBar: {
