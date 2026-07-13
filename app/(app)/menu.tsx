@@ -1,7 +1,7 @@
 // Menu screen — left drawer. Glass footer (settings only); history scrolls
 // the full height underneath, visible through the frosted panel.
 
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Image, Text, Pressable, StyleSheet } from "react-native";
 import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,8 +21,16 @@ export default function Menu() {
         <View style={styles.list}>
           <HistoryList
             listHeader={header}
-            contentPaddingTop={60}
+            contentPaddingTop={110}
             contentPaddingBottom={100}
+          />
+        </View>
+
+        <View style={styles.topLogoWrap} pointerEvents="box-none">
+          <Image
+            source={require("../../assets/logo-vaine.png")}
+            style={styles.topLogo}
+            resizeMode="contain"
           />
         </View>
 
@@ -50,6 +58,12 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 249, 240, 0.35)",
   },
   list: { flex: 1 },
+  topLogoWrap: {
+    position: "absolute",
+    top: 60,
+    left: 24,
+  },
+  topLogo: { height: 22, width: 78 },
   heading: {
     fontSize: 22,
     fontWeight: "400",

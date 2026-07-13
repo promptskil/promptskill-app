@@ -490,7 +490,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingBottom: 12,
   },
-  headerTitle: { flex: 1, fontSize: 14, fontWeight: "500", color: "#1A1A1A" },
+  headerTitle: { flex: 1, fontSize: 14, fontWeight: "400", color: "#1A1A1A" },
   menu: {
     position: "absolute",
     top: 88,
@@ -571,8 +571,8 @@ const styles = StyleSheet.create({
   row: { flexDirection: "row", gap: 8 },
   rowBody: { flex: 1, minWidth: 0 },
   metaRow: { flexDirection: "row", alignItems: "baseline", gap: 6 },
-  name: { fontSize: 12.5, fontWeight: "500", color: "#1A1A1A" },
-  nameSm: { fontSize: 12, fontWeight: "500", color: "#1A1A1A" },
+  name: { fontSize: 12.5, fontWeight: "400", color: "#1A1A1A" },
+  nameSm: { fontSize: 12, fontWeight: "400", color: "#1A1A1A" },
   time: { fontSize: 11, color: "#666666" },
   body: { fontSize: 12.5, lineHeight: 18, color: "#1A1A1A", marginTop: 3 },
   bodySm: { fontSize: 12, lineHeight: 17, color: "#1A1A1A", marginTop: 2 },
@@ -594,7 +594,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  confirmDeleteText: { fontSize: 12, fontWeight: "500", color: "#FFFFFF" },
+  confirmDeleteText: { fontSize: 12, fontWeight: "400", color: "#FFFFFF" },
   editOk: {
     paddingHorizontal: 10,
     height: 28,
@@ -603,7 +603,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  editOkText: { fontSize: 12, fontWeight: "500", color: "#FFFFFF" },
+  editOkText: { fontSize: 12, fontWeight: "400", color: "#FFFFFF" },
   cancelText: { fontSize: 12, color: "#666666" },
   avatar: {
     backgroundColor: "#E5E5E5",
@@ -611,6 +611,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexShrink: 0,
   },
-  avatarText: { fontSize: 9.5, fontWeight: "600", color: "#1A1A1A" },
+  avatarText: { fontSize: 9.5, fontWeight: "400", color: "#1A1A1A" },
   empty: { color: "#666666", textAlign: "center", marginTop: 32, fontSize: 13 },
 });
