@@ -21,6 +21,7 @@ interface FeedItem {
   post_id: string;
   zone_id: string;
   zone_title: string;
+  zone_domain: string;
   author_username: string;
   body: string;
   created_at: string;
@@ -46,6 +47,16 @@ export default function GlobeFeed() {
     }
   }, [router]);
 
+  // Delete → move the zone to hidden; drop its posts from the feed locally.
+  async function hideZone(zoneId: string) {
+    try {
+      await apiCall("POST", `/globe/zones/${zoneId}/hide`);
+      setFeed((prev) => prev.filter((p) => p.zone_id !== zoneId));
+    } catch (err) {
+      if (err instanceof SessionExpiredError) router.replace("/(auth)/login");
+    }
+  }
+
   // Cache "me" once on entry — drives the tap-to-type gate downstream.
   useEffect(() => {
     apiCall<{ username: string | null }>("GET", "/globe/me")
@@ -62,7 +73,7 @@ export default function GlobeFeed() {
 
   const shown = query.trim()
     ? feed.filter((p) =>
-        `${p.zone_title} ${p.body} ${p.author_username}`
+        `${p.zone_title} ${p.zone_domain} ${p.body} ${p.author_username}`
           .toLowerCase()
           .includes(query.trim().toLowerCase()),
       )
@@ -121,24 +132,56 @@ export default function GlobeFeed() {
                 }
               >
                 <View style={styles.postTop}>
-                  <Text style={styles.postZone} numberOfLines={1}>
+                  <Text style={styles.postTitle} numberOfLines={1}>
                     {item.zone_title}
                   </Text>
                   <Text style={styles.postUser}>@{item.author_username}</Text>
                   <Text style={styles.postTime}>
-                    {relativeTime(item.created_at)}
+                    · {relativeTime(item.created_at)}
+                  </Text>
+                </View>
+                <View style={styles.zoneBubble}>
+                  <Text style={styles.zoneBubbleText}>
+                    Zone: {item.zone_domain}
                   </Text>
                 </View>
                 <Text style={styles.postBody} numberOfLines={4}>
                   {item.body}
                 </Text>
                 <View style={styles.postActions}>
-                  <Ionicons
-                    name="chatbubble-outline"
-                    size={16}
-                    color="#666666"
-                  />
-                  <Ionicons name="create-outline" size={16} color="#666666" />
+                  <Pressable
+                    onPress={() =>
+                      router.push({
+                        pathname: "/(app)/globe/[zoneId]",
+                        params: { zoneId: item.zone_id },
+                      })
+                    }
+                    hitSlop={8}
+                  >
+                    <Ionicons
+                      name="chatbubble-outline"
+                      size={16}
+                      color="#666666"
+                    />
+                  </Pressable>
+                  <Pressable
+                    onPress={() =>
+                      router.push({
+                        pathname: "/(app)/globe/[zoneId]",
+                        params: { zoneId: item.zone_id },
+                      })
+                    }
+                    hitSlop={8}
+                  >
+                    <Ionicons
+                      name="create-outline"
+                      size={16}
+                      color="#666666"
+                    />
+                  </Pressable>
+                  <Pressable onPress={() => hideZone(item.zone_id)} hitSlop={8}>
+                    <Ionicons name="trash-outline" size={16} color="#666666" />
+                  </Pressable>
                 </View>
               </Pressable>
             )}
@@ -207,9 +250,10 @@ const styles = StyleSheet.create({
     gap: 8,
     height: 34,
     marginHorizontal: 12,
-    marginBottom: 4,
+    marginBottom: 10,
     paddingHorizontal: 10,
     borderRadius: 8,
+    backgroundColor: "#EDE6D8",
   },
   searchInput: { flex: 1, color: "#1A1A1A", fontSize: 13, padding: 0 },
   row: {
@@ -221,13 +265,35 @@ const styles = StyleSheet.create({
   },
   rowTitle: { flex: 1, fontSize: 13.5, color: "#1A1A1A", marginRight: 8 },
   rowTime: { fontSize: 11, color: "#666666" },
-  post: { paddingHorizontal: 14, paddingVertical: 12 },
-  postTop: { flexDirection: "row", alignItems: "center", gap: 6 },
-  postZone: { flex: 1, fontSize: 12, fontWeight: "700", color: "#1A1A1A" },
+  post: {
+    marginHorizontal: 12,
+    marginBottom: 10,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#EDE6D8",
+    borderRadius: 10,
+    backgroundColor: "#FFFFFF",
+  },
+  postTop: { flexDirection: "row", alignItems: "baseline", gap: 8 },
+  postTitle: {
+    flexShrink: 1,
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#1A1A1A",
+  },
   postUser: { fontSize: 11, color: "#666666" },
   postTime: { fontSize: 11, color: "#666666" },
-  postBody: { fontSize: 14, lineHeight: 20, color: "#1A1A1A", marginTop: 4 },
-  postActions: { flexDirection: "row", gap: 20, marginTop: 8 },
+  zoneBubble: {
+    alignSelf: "flex-start",
+    backgroundColor: "#E7F0FF",
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    marginTop: 6,
+  },
+  zoneBubbleText: { fontSize: 11, fontWeight: "700", color: "#2563EB" },
+  postBody: { fontSize: 14, lineHeight: 20, color: "#1A1A1A", marginTop: 8 },
+  postActions: { flexDirection: "row", gap: 20, marginTop: 10 },
   empty: { color: "#666666", textAlign: "center", marginTop: 32, fontSize: 13 },
   newFab: {
     position: "absolute",
