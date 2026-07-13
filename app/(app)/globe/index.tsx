@@ -81,12 +81,6 @@ export default function GlobeFeed() {
           >
             <Ionicons name="ellipsis-horizontal" size={20} color="#444444" />
           </Pressable>
-          <Pressable
-            onPress={() => router.push("/(app)/globe/new")}
-            hitSlop={8}
-          >
-            <Ionicons name="add" size={22} color="#444444" />
-          </Pressable>
         </View>
       </View>
 
@@ -139,6 +133,12 @@ export default function GlobeFeed() {
         hitSlop={8}
       >
         <Ionicons name="home-outline" size={22} color="#1A1A1A" />
+      </Pressable>
+      <Pressable
+        style={styles.newFab}
+        onPress={() => router.push("/(app)/globe/new")}
+      >
+        <Ionicons name="add" size={28} color="#1A1A1A" />
       </Pressable>
     </View>
   );
@@ -198,10 +198,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 14,
     paddingVertical: 12,
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#EEEEEE",
   },
   rowTitle: { flex: 1, fontSize: 13.5, color: "#1A1A1A", marginRight: 8 },
   rowTime: { fontSize: 11, color: "#666666" },
   empty: { color: "#666666", textAlign: "center", marginTop: 32, fontSize: 13 },
+  newFab: {
+    position: "absolute",
+    right: 24,
+    bottom: 32,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 4,
+  },
 });

@@ -294,7 +294,7 @@ export default function GlobeThread() {
       style={styles.replyAffordance}
       onPress={() => startEdit(kind, id, body)}
     >
-      <Ionicons name="pencil-outline" size={12} color="#666666" />
+      <Ionicons name="create-outline" size={12} color="#666666" />
       <Text style={styles.replyText}>Edit</Text>
     </Pressable>
   );
@@ -477,12 +477,32 @@ export default function GlobeThread() {
         </ScrollView>
       )}
       </View>
+
+      <Pressable style={styles.writeFab} onPress={startPost}>
+        <Ionicons name="create-outline" size={26} color="#1A1A1A" />
+      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: "#FFFFFF", paddingTop: 60 },
+  writeFab: {
+    position: "absolute",
+    right: 24,
+    bottom: 32,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 4,
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",
