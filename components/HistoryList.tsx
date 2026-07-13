@@ -112,7 +112,12 @@ export default function HistoryList({
 
   if (selected) {
     return (
-      <ScrollView contentContainerStyle={styles.detailContent}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.detailContent,
+          { paddingTop: contentPaddingTop },
+        ]}
+      >
         <Pressable
           onPress={() => setSelected(null)}
           style={styles.detailBack}
