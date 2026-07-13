@@ -167,8 +167,6 @@ const styles = StyleSheet.create({
   input: {
     height: 40,
     paddingHorizontal: 10,
-    borderWidth: 0.5,
-    borderColor: "#DDDDDD",
     borderRadius: 8,
     backgroundColor: "#F5F5F5",
     color: "#1A1A1A",
@@ -185,8 +183,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 10,
     borderRadius: 8,
-    borderWidth: 0.5,
-    borderColor: "#DDDDDD",
+    backgroundColor: "#F5F5F5",
   },
   suggestionText: { fontSize: 12, color: "#1A1A1A" },
   error: { color: "#FF6B6B", fontSize: 12, marginBottom: 10 },
