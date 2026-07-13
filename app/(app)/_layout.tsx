@@ -37,7 +37,11 @@ export default function AppLayout() {
       />
       <Stack.Screen
         name="globe/index"
-        options={{ gestureEnabled: true }}
+        options={{
+          presentation: "transparentModal",
+          animation: "slide_from_left",
+          gestureEnabled: true,
+        }}
       />
       <Stack.Screen
         name="globe/new"
@@ -57,7 +61,11 @@ export default function AppLayout() {
       />
       <Stack.Screen
         name="globe/hidden"
-        options={{ gestureEnabled: true }}
+        options={{
+          presentation: "transparentModal",
+          animation: "slide_from_left",
+          gestureEnabled: true,
+        }}
       />
       <Stack.Screen
         name="business/index"
