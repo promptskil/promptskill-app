@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   FlatList,
   Image,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -86,7 +87,10 @@ export default function GlobeFeed() {
         <View style={styles.searchRow}>
           <Ionicons name="search" size={15} color="#666666" />
           <TextInput
-            style={styles.searchInput}
+            style={[
+              styles.searchInput,
+              Platform.OS === "web" && ({ outlineStyle: "none" } as any),
+            ]}
             placeholder="Search information"
             placeholderTextColor="#666666"
             value={query}
@@ -160,7 +164,7 @@ const styles = StyleSheet.create({
   },
   headerLogo: { width: 54, height: 16 },
   topLogo: { width: 76, height: 22, marginLeft: 16, marginBottom: 12 },
-  title: { fontSize: 15, fontWeight: "400", letterSpacing: 0.5, color: "#1A1A1A" },
+  title: { fontSize: 15, fontWeight: "700", letterSpacing: 0.5, color: "#1A1A1A" },
   content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
   homeBar: {
     position: "absolute",
@@ -186,8 +190,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
     marginBottom: 4,
     paddingHorizontal: 10,
-    borderWidth: 0.5,
-    borderColor: "#EEEEEE",
     borderRadius: 8,
   },
   searchInput: { flex: 1, color: "#1A1A1A", fontSize: 13, padding: 0 },

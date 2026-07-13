@@ -377,7 +377,6 @@ export default function GlobeThread() {
         composerBar("Write a post")
       ) : (
         <Pressable style={styles.composerIdle} onPress={startPost}>
-          <Ionicons name="pencil" size={15} color="#666666" />
           <Text style={styles.composerIdleText}>Write a post</Text>
         </Pressable>
       )}
@@ -534,15 +533,13 @@ const styles = StyleSheet.create({
   content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
   composerIdle: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     gap: 8,
-    height: 34,
+    minHeight: 80,
     marginHorizontal: 12,
     marginBottom: 6,
-    paddingHorizontal: 10,
-    borderWidth: 0.5,
-    borderColor: "#EEEEEE",
-    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
   },
   composerIdleText: { color: "#666666", fontSize: 13 },
   composerActive: {
@@ -551,18 +548,17 @@ const styles = StyleSheet.create({
     gap: 8,
     marginHorizontal: 12,
     marginBottom: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderWidth: 0.5,
-    borderColor: "#DDDDDD",
+    paddingHorizontal: 12,
+    paddingVertical: 12,
     borderRadius: 8,
     backgroundColor: "#F5F5F5",
   },
   composerInput: {
     flex: 1,
     color: "#1A1A1A",
-    fontSize: 13,
-    maxHeight: 120,
+    fontSize: 16,
+    minHeight: 80,
+    maxHeight: 200,
     padding: 0,
   },
   sendBtn: {
@@ -579,8 +575,6 @@ const styles = StyleSheet.create({
   post: {
     paddingHorizontal: 14,
     paddingVertical: 12,
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#EEEEEE",
   },
   reply: {
     marginTop: 10,
