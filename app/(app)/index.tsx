@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
   },
   leftCol: {
     alignItems: "flex-start",
-    gap: 8,
+    gap: 24,
   },
   topLogo: {
     height: 22,

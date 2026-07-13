@@ -28,12 +28,7 @@ export default function History() {
       <HistoryList listHeader={header} />
       {Platform.OS !== "web" && (
         <Pressable
-          onPress={() =>
-            router.navigate({
-              pathname: "/(app)",
-              params: { compose: "claude" },
-            })
-          }
+          onPress={() => router.navigate("/(app)")}
           style={styles.fab}
         >
           <Ionicons name="add" size={28} color="#fff" />
