@@ -44,6 +44,7 @@ export default function GlobeThread() {
   const router = useRouter();
   const { zoneId } = useLocalSearchParams<{ zoneId: string }>();
   const [zoneTitle, setZoneTitle] = useState("");
+  const [zoneDomain, setZoneDomain] = useState("");
   const [posts, setPosts] = useState<GlobePost[]>([]);
   const [loading, setLoading] = useState(true);
   const [composer, setComposer] = useState<Composer>(null);
@@ -68,6 +69,7 @@ export default function GlobeThread() {
         `/globe/zones/${zoneId}/posts?limit=50&offset=0`,
       );
       setZoneTitle(data.zone.title);
+      setZoneDomain(data.zone.domain);
       setPosts(data.posts);
     } catch (err) {
       if (err instanceof SessionExpiredError) {
@@ -394,37 +396,44 @@ export default function GlobeThread() {
         <ScrollView contentContainerStyle={styles.scroll}>
           {posts.map((post) => (
             <View key={post.id} style={styles.post}>
-              <View style={styles.row}>
-                {avatar(post.author_username, 26)}
-                <View style={styles.rowBody}>
-                  <View style={styles.metaRow}>
-                    <Text style={styles.name}>{post.author_username}</Text>
-                    <Text style={styles.time}>{relativeTime(post.created_at)}</Text>
-                  </View>
-                  <Text style={styles.body}>{post.body}</Text>
-                  <View style={styles.affordanceRow}>
-                    <Pressable
-                      style={styles.replyAffordance}
-                      onPress={() => startReply(post.id)}
-                    >
-                      <Ionicons name="chatbubble-outline" size={13} color="#666666" />
-                      <Text style={styles.replyText}>Reply</Text>
-                    </Pressable>
-                    {post.author_username === me
-                      ? editAffordance("post", post.id, post.body)
-                      : null}
-                    {post.author_username === me
-                      ? deleteAffordance("post", post.id)
-                      : null}
-                  </View>
-                  {editing?.kind === "post" && editing.id === post.id
-                    ? editBar()
-                    : null}
-                  {confirmDelete?.kind === "post" && confirmDelete.id === post.id
-                    ? confirmBar()
-                    : null}
-                </View>
+              <View style={styles.postTop}>
+                <Text style={styles.postTitle} numberOfLines={1}>
+                  {zoneTitle}
+                </Text>
+                <Text style={styles.postUser}>@{post.author_username}</Text>
+                <Text style={styles.postTime}>
+                  · {relativeTime(post.created_at)}
+                </Text>
               </View>
+              <View style={styles.zoneBubble}>
+                <Text style={styles.zoneBubbleText}>Zone: {zoneDomain}</Text>
+              </View>
+              <Text style={styles.postBody}>{post.body}</Text>
+              <View style={styles.affordanceRow}>
+                <Pressable
+                  style={styles.replyAffordance}
+                  onPress={() => startReply(post.id)}
+                >
+                  <Ionicons
+                    name="chatbubble-outline"
+                    size={13}
+                    color="#666666"
+                  />
+                  <Text style={styles.replyText}>Reply</Text>
+                </Pressable>
+                {post.author_username === me
+                  ? editAffordance("post", post.id, post.body)
+                  : null}
+                {post.author_username === me
+                  ? deleteAffordance("post", post.id)
+                  : null}
+              </View>
+              {editing?.kind === "post" && editing.id === post.id
+                ? editBar()
+                : null}
+              {confirmDelete?.kind === "post" && confirmDelete.id === post.id
+                ? confirmBar()
+                : null}
               {isTarget(post.id, undefined) ? composerBar("Write a reply") : null}
 
               {flatten(buildReplyTree(post.replies)).map(({ node, depth }) => (
@@ -547,6 +556,8 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     paddingHorizontal: 12,
     paddingVertical: 12,
+    borderRadius: 8,
+    backgroundColor: "#EDE6D8",
   },
   composerIdleText: { color: "#666666", fontSize: 13 },
   composerActive: {
@@ -558,7 +569,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 12,
     borderRadius: 8,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#EDE6D8",
   },
   composerInput: {
     flex: 1,
@@ -580,9 +591,33 @@ const styles = StyleSheet.create({
   closeBtn: { padding: 2 },
   scroll: { paddingBottom: 40 },
   post: {
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    marginHorizontal: 12,
+    marginBottom: 10,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#EDE6D8",
+    borderRadius: 10,
+    backgroundColor: "#FFFFFF",
   },
+  postTop: { flexDirection: "row", alignItems: "baseline", gap: 8 },
+  postTitle: {
+    flexShrink: 1,
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#1A1A1A",
+  },
+  postUser: { fontSize: 11, color: "#666666" },
+  postTime: { fontSize: 11, color: "#666666" },
+  zoneBubble: {
+    alignSelf: "flex-start",
+    backgroundColor: "#E7F0FF",
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    marginTop: 6,
+  },
+  zoneBubbleText: { fontSize: 11, fontWeight: "700", color: "#2563EB" },
+  postBody: { fontSize: 14, lineHeight: 20, color: "#1A1A1A", marginTop: 8 },
   reply: {
     marginTop: 10,
     paddingLeft: 10,
