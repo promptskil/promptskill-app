@@ -36,6 +36,7 @@ export type GlobeDomain = string;
 
 export interface GlobeZone {
   id: string;
+  domain: string;
   title: string;
   created_at: string;
 }
