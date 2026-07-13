@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -250,7 +251,10 @@ export default function GlobeThread() {
   const composerBar = (placeholder: string) => (
     <View style={styles.composerActive}>
       <TextInput
-        style={styles.composerInput}
+        style={[
+          styles.composerInput,
+          Platform.OS === "web" && ({ outlineStyle: "none" } as any),
+        ]}
         value={text}
         onChangeText={setText}
         placeholder={placeholder}
@@ -302,7 +306,10 @@ export default function GlobeThread() {
   const editBar = () => (
     <View style={styles.composerActive}>
       <TextInput
-        style={styles.composerInput}
+        style={[
+          styles.composerInput,
+          Platform.OS === "web" && ({ outlineStyle: "none" } as any),
+        ]}
         value={editText}
         onChangeText={setEditText}
         autoFocus
