@@ -98,7 +98,7 @@ export default function NewZone() {
         });
       }
       clearGlobeDraft();
-      router.dismissTo("/(app)/globe");
+      router.dismissTo("/(app)");
     } catch (err) {
       if (err instanceof SessionExpiredError) {
         router.replace("/(auth)/login");

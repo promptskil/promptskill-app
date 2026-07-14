@@ -36,14 +36,6 @@ export default function AppLayout() {
         options={{ gestureEnabled: true }}
       />
       <Stack.Screen
-        name="globe/index"
-        options={{
-          presentation: "transparentModal",
-          animation: "slide_from_right",
-          gestureEnabled: false,
-        }}
-      />
-      <Stack.Screen
         name="globe/new"
         options={{
           presentation: "transparentModal",

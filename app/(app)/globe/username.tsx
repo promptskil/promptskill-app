@@ -22,7 +22,7 @@ export default function CreateUsername() {
   const draft = getGlobeDraft();
 
   useEffect(() => {
-    if (!draft) router.replace("/(app)/globe"); // only reachable mid-flow
+    if (!draft) router.replace("/(app)"); // only reachable mid-flow
   }, [draft, router]);
 
   const draftLine =
@@ -71,7 +71,7 @@ export default function CreateUsername() {
           });
         }
         clearGlobeDraft();
-        router.dismissTo("/(app)/globe");
+        router.dismissTo("/(app)");
       } else if (d?.kind === "compose") {
         // Return to the thread; the thread opens the composer (draft kept).
         router.replace({
@@ -79,7 +79,7 @@ export default function CreateUsername() {
           params: { zoneId: d.zoneId },
         });
       } else {
-        router.replace("/(app)/globe");
+        router.replace("/(app)");
       }
     } catch (err) {
       if (err instanceof SessionExpiredError) {

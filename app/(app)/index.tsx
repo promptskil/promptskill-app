@@ -23,6 +23,7 @@ import TopicInput from "../../components/TopicInput";
 import InlineResultItem from "../../components/InlineResultItem";
 import PromptDisplay from "../../components/PromptDisplay";
 import ModelDropdownComposer from "../../components/ModelDropdownComposer";
+import GlobeFeedPanel from "../../components/GlobeFeedPanel";
 import {
   apiCall,
   ApiError,
@@ -54,6 +55,7 @@ export default function Main() {
   // Accumulated results — prompt display only
   const [results, setResults] = useState<ResultItem[]>([]);
   const [accountType, setAccountType] = useState<string | null>(null);
+  const [globeOpen, setGlobeOpen] = useState(false);
 
   const { compose } = useLocalSearchParams<{ compose?: string }>();
 
@@ -72,7 +74,7 @@ export default function Main() {
   }
 
   function handleGlobeNav() {
-    router.push("/(app)/globe");
+    setGlobeOpen((v) => !v);
   }
 
   const canGenerate =
@@ -252,6 +254,11 @@ export default function Main() {
 
       </ScrollView>
       <ModelDropdownComposer />
+      {globeOpen && (
+        <View style={styles.globeOverlay}>
+          <GlobeFeedPanel onClose={() => setGlobeOpen(false)} />
+        </View>
+      )}
     </KeyboardAvoidingView>
   );
 }
@@ -260,6 +267,14 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  globeOverlay: {
+    position: "absolute",
+    top: 96,
+    right: 0,
+    bottom: 0,
+    width: "62%",
+    maxWidth: 360,
   },
   scroll: {
     flex: 1,
