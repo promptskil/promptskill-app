@@ -40,7 +40,7 @@ export default function AppLayout() {
         options={{
           presentation: "transparentModal",
           animation: "slide_from_right",
-          gestureEnabled: true,
+          gestureEnabled: false,
         }}
       />
       <Stack.Screen
