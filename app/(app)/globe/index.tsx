@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
 
 import { apiCall, SessionExpiredError } from "../../../services/api";
 import { setGlobeUsername } from "../../../services/globeDraft";
@@ -120,7 +121,11 @@ export default function GlobeFeed() {
   return (
     <View style={styles.root}>
       <View style={styles.panel}>
-        <Text style={styles.pageTitle}>Share with Others</Text>
+        <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
+        <View style={styles.warmTint} />
+
+        <Text style={styles.heading}>Share with others</Text>
+        <Text style={styles.subheading}>Find solutions together</Text>
 
         <View style={styles.toolRow}>
           <View style={styles.searchRow}>
@@ -219,11 +224,11 @@ export default function GlobeFeed() {
         )}
 
         <Pressable
-          style={styles.homeBar}
+          style={styles.editBubble}
           onPress={() => router.back()}
           hitSlop={8}
         >
-          <Ionicons name="home-outline" size={22} color="#1A1A1A" />
+          <Ionicons name="create-outline" size={18} color="#FFFFFF" />
         </Pressable>
         <Pressable
           style={styles.newFab}
@@ -240,17 +245,26 @@ export default function GlobeFeed() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, flexDirection: "row-reverse", backgroundColor: "transparent" },
-  panel: { width: "80%", maxWidth: 360, backgroundColor: "#FFFFFF", paddingTop: 60 },
+  panel: { width: "80%", maxWidth: 360, paddingTop: 60, overflow: "hidden" },
   scrim: { flex: 1 },
   feed: { flex: 1 },
-  pageTitle: {
-    fontSize: 32,
-    fontWeight: "800",
-    fontStyle: "italic",
-    letterSpacing: 0.5,
+  warmTint: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(255, 249, 240, 0.35)",
+  },
+  heading: {
+    fontSize: 22,
+    fontWeight: "400",
     color: "#1A1A1A",
-    textAlign: "center",
-    marginBottom: 16,
+    paddingHorizontal: 24,
+    marginTop: 24,
+  },
+  subheading: {
+    fontSize: 13,
+    color: "#666666",
+    paddingHorizontal: 24,
+    marginTop: 2,
+    marginBottom: 14,
   },
   toolRow: {
     flexDirection: "row",
@@ -301,14 +315,14 @@ const styles = StyleSheet.create({
   postBody: { fontSize: 14, lineHeight: 20, color: "#1A1A1A", marginTop: 8 },
   postActions: { flexDirection: "row", gap: 20, marginTop: 10 },
   empty: { color: "#666666", textAlign: "center", marginTop: 32, fontSize: 13 },
-  homeBar: {
+  editBubble: {
     position: "absolute",
     left: 24,
     bottom: 32,
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: "#fff",
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#1A1A1A",
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",

@@ -160,11 +160,6 @@ export default function Main() {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <Image
-          source={require("../../assets/logo-vaine.png")}
-          style={styles.topLogo}
-          resizeMode="contain"
-        />
         <View style={styles.header}>
           <Pressable onPress={handleMenuNav} style={styles.menuBtn} hitSlop={8}>
             <View style={[styles.menuBar, { width: 22 }]} />
