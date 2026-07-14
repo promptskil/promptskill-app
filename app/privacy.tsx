@@ -333,7 +333,7 @@ export default function Privacy() {
       contentContainerStyle={styles.scrollContent}
     >
       <View style={styles.header}>
-        <Pressable onPress={() => router.push("/home")}>
+        <Pressable onPress={() => router.push("/(auth)/login")}>
           <Image
             source={require("../assets/logo1.png")}
             style={styles.logo}
