@@ -71,7 +71,7 @@ export default function CreateUsername() {
           });
         }
         clearGlobeDraft();
-        router.navigate("/(app)/globe");
+        router.dismissTo("/(app)/globe");
       } else if (d?.kind === "compose") {
         // Return to the thread; the thread opens the composer (draft kept).
         router.replace({
