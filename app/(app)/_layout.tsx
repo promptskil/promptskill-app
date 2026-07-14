@@ -49,7 +49,11 @@ export default function AppLayout() {
       />
       <Stack.Screen
         name="globe/compose"
-        options={{ gestureEnabled: true }}
+        options={{
+          presentation: "transparentModal",
+          animation: "slide_from_bottom",
+          gestureEnabled: true,
+        }}
       />
       <Stack.Screen
         name="globe/username"

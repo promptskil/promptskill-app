@@ -71,10 +71,7 @@ export default function CreateUsername() {
           });
         }
         clearGlobeDraft();
-        router.replace({
-          pathname: "/(app)/globe/[zoneId]",
-          params: { zoneId: zone.id },
-        });
+        router.navigate("/(app)/globe");
       } else if (d?.kind === "compose") {
         // Return to the thread; the thread opens the composer (draft kept).
         router.replace({

@@ -1,17 +1,16 @@
-// Globe compose — write a post first, then choose/create a zone to post into.
-// "Post" carries the drafted body to globe/new, which creates the zone + post.
+// Globe compose — small bottom sheet over the feed (feed stays visible behind).
+// Write a post, then "Post" carries the body to globe/new (choose/create zone).
 
 import { useState } from "react";
 import {
-  View,
-  Text,
-  Pressable,
-  TextInput,
-  StyleSheet,
   Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 
 export default function GlobeCompose() {
   const router = useRouter();
@@ -27,13 +26,10 @@ export default function GlobeCompose() {
 
   return (
     <View style={styles.root}>
-      <View style={styles.header}>
-        <Pressable onPress={() => router.back()} hitSlop={8}>
-          <Ionicons name="arrow-back" size={22} color="#444444" />
-        </Pressable>
-        <Text style={styles.headerTitle}>Write a post</Text>
-      </View>
-      <View style={styles.content}>
+      <Pressable style={styles.scrim} onPress={() => router.back()} />
+      <View style={styles.sheet}>
+        <View style={styles.handle} />
+        <Text style={styles.title}>Write a post</Text>
         <TextInput
           style={[
             styles.input,
@@ -60,27 +56,37 @@ export default function GlobeCompose() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#FFFFFF", paddingTop: 60 },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    paddingHorizontal: 14,
-    paddingBottom: 12,
-  },
-  headerTitle: { fontSize: 14, fontWeight: "400", color: "#1A1A1A" },
-  content: {
+  root: {
     flex: 1,
-    width: "100%",
-    maxWidth: 680,
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.15)",
+  },
+  scrim: { ...StyleSheet.absoluteFillObject },
+  sheet: {
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    paddingHorizontal: 18,
+    paddingTop: 10,
+    paddingBottom: 28,
+    maxHeight: "55%",
+  },
+  handle: {
     alignSelf: "center",
-    paddingHorizontal: 14,
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: "#DDDDDD",
+    marginBottom: 12,
   },
+  title: { fontSize: 15, fontWeight: "600", color: "#1A1A1A", marginBottom: 10 },
   input: {
-    flex: 1,
+    minHeight: 90,
+    maxHeight: 200,
     fontSize: 16,
     color: "#1A1A1A",
-    paddingTop: 8,
+    paddingTop: 4,
+    marginBottom: 14,
   },
   postBtn: {
     height: 44,
@@ -88,7 +94,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#1A1A1A",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 24,
   },
   postBtnDisabled: { opacity: 0.4 },
   postBtnText: { color: "#FFFFFF", fontSize: 14, fontWeight: "700" },

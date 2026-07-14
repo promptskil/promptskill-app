@@ -94,10 +94,7 @@ export default function NewZone() {
         });
       }
       clearGlobeDraft();
-      router.replace({
-        pathname: "/(app)/globe/[zoneId]",
-        params: { zoneId: zone.id },
-      });
+      router.navigate("/(app)/globe");
     } catch (err) {
       if (err instanceof SessionExpiredError) {
         router.replace("/(auth)/login");
