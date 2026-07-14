@@ -17,6 +17,7 @@ import {
   setGlobeDraft,
   setGlobeUsername,
 } from "../../../services/globeDraft";
+import { prependCachedPost } from "../../../services/globeFeedStore";
 import type { GlobeZone } from "../../../types";
 
 export default function NewZone() {
@@ -69,8 +70,22 @@ export default function NewZone() {
         title: cleanTitle,
       });
       if (draftBody && draftBody.trim()) {
-        await apiCall("POST", `/globe/zones/${zone.id}/posts`, {
+        const post = await apiCall<{
+          id: string;
+          author_username: string;
+          body: string;
+          created_at: string;
+        }>("POST", `/globe/zones/${zone.id}/posts`, {
           body: draftBody.trim(),
+        });
+        prependCachedPost({
+          post_id: post.id,
+          zone_id: zone.id,
+          zone_title: zone.title,
+          zone_domain: zone.domain,
+          author_username: post.author_username,
+          body: post.body,
+          created_at: post.created_at,
         });
       }
       clearGlobeDraft();
