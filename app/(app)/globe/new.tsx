@@ -1,5 +1,10 @@
+// Choose-a-zone — bottom sheet (same size/footprint as the write-a-post sheet),
+// confined to the globe drawer column. Zone picker + title; on Post it creates
+// the zone (+ post from the compose draft) and returns to the feed.
+
 import { useEffect, useMemo, useState } from "react";
 import {
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -8,7 +13,6 @@ import {
   View,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 
 import { apiCall, ApiError, SessionExpiredError } from "../../../services/api";
 import {
@@ -114,76 +118,99 @@ export default function NewZone() {
 
   return (
     <View style={styles.root}>
-      <View style={styles.header}>
-        <Pressable onPress={() => router.back()} hitSlop={8}>
-          <Ionicons name="arrow-back" size={22} color="#444444" />
-        </Pressable>
-        <Text style={styles.headerTitle}>
-          {draftBody ? "Choose a zone" : "New zone"}
-        </Text>
-      </View>
-      <View style={styles.content}>
-        <ScrollView contentContainerStyle={styles.body}>
-          <Text style={styles.label}>ZONE</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Choose or add a ZONE"
-            placeholderTextColor="#666666"
-            value={domain}
-            onChangeText={setDomain}
-            autoCapitalize="none"
-            maxLength={50}
-          />
-          {suggestions.length > 0 ? (
-            <View style={styles.suggestions}>
-              {suggestions.map((d) => (
-                <Pressable
-                  key={d}
-                  style={styles.suggestion}
-                  onPress={() => setDomain(d)}
-                >
-                  <Text style={styles.suggestionText}>{d}</Text>
-                </Pressable>
-              ))}
-            </View>
-          ) : null}
-
-          <TextInput
-            style={styles.input}
-            placeholder="Title"
-            placeholderTextColor="#666666"
-            value={title}
-            onChangeText={setTitle}
-            maxLength={120}
-          />
-          {error ? <Text style={styles.error}>{error}</Text> : null}
-          <Pressable
-            onPress={handleCreate}
-            disabled={!canCreate}
-            style={[styles.button, !canCreate && styles.buttonDisabled]}
+      <Pressable style={styles.scrim} onPress={() => router.back()} />
+      <View style={styles.column}>
+        <View style={styles.sheet}>
+          <View style={styles.handle} />
+          <Text style={styles.title}>
+            {draftBody ? "Choose a zone" : "New zone"}
+          </Text>
+          <ScrollView
+            contentContainerStyle={styles.body}
+            keyboardShouldPersistTaps="handled"
           >
-            <Text style={styles.buttonText}>
-              {draftBody ? "Post" : "Create zone"}
-            </Text>
-          </Pressable>
-        </ScrollView>
+            <Text style={styles.label}>ZONE</Text>
+            <TextInput
+              style={[
+                styles.input,
+                Platform.OS === "web" && ({ outlineStyle: "none" } as any),
+              ]}
+              placeholder="Choose or add a ZONE"
+              placeholderTextColor="#666666"
+              value={domain}
+              onChangeText={setDomain}
+              autoCapitalize="none"
+              maxLength={50}
+            />
+            {suggestions.length > 0 ? (
+              <View style={styles.suggestions}>
+                {suggestions.map((d) => (
+                  <Pressable
+                    key={d}
+                    style={styles.suggestion}
+                    onPress={() => setDomain(d)}
+                  >
+                    <Text style={styles.suggestionText}>{d}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            ) : null}
+
+            <TextInput
+              style={[
+                styles.input,
+                Platform.OS === "web" && ({ outlineStyle: "none" } as any),
+              ]}
+              placeholder="Title"
+              placeholderTextColor="#666666"
+              value={title}
+              onChangeText={setTitle}
+              maxLength={120}
+            />
+            {error ? <Text style={styles.error}>{error}</Text> : null}
+            <Pressable
+              onPress={handleCreate}
+              disabled={!canCreate}
+              style={[styles.button, !canCreate && styles.buttonDisabled]}
+            >
+              <Text style={styles.buttonText}>
+                {draftBody ? "Post" : "Create zone"}
+              </Text>
+            </Pressable>
+          </ScrollView>
+        </View>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#FFFFFF", paddingTop: 60 },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    paddingHorizontal: 14,
-    paddingBottom: 12,
+  root: {
+    flex: 1,
+    flexDirection: "row-reverse",
+    backgroundColor: "rgba(0, 0, 0, 0.15)",
   },
-  headerTitle: { fontSize: 14, fontWeight: "400", color: "#1A1A1A" },
-  content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
-  body: { padding: 14 },
+  scrim: { ...StyleSheet.absoluteFillObject },
+  column: { width: "80%", maxWidth: 360, justifyContent: "flex-end" },
+  sheet: {
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    paddingHorizontal: 18,
+    paddingTop: 10,
+    paddingBottom: 28,
+    maxHeight: "55%",
+  },
+  handle: {
+    alignSelf: "center",
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: "#DDDDDD",
+    marginBottom: 12,
+  },
+  title: { fontSize: 15, fontWeight: "600", color: "#1A1A1A", marginBottom: 12 },
+  body: { paddingBottom: 8 },
   label: {
     fontSize: 11,
     letterSpacing: 0.3,
