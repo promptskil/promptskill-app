@@ -5,22 +5,13 @@
 // Back arrow: router.replace to Main — entry from Main only
 
 import { useState, useEffect } from "react";
-import { View, Text, Pressable, StyleSheet, ActionSheetIOS, Share } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import EmailField from "../../components/EmailField";
 import LogoutButton from "../../components/LogoutButton";
 import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
 import { clearToken, clearBusinessContext } from "../../storage/storage";
-
-// Guarded clipboard import — native module not guaranteed across build contexts.
-// Matches pattern established in CopyPromptButton.tsx.
-let ExpoClipboard: { setStringAsync: (text: string) => Promise<boolean> } | null = null;
-try {
-  ExpoClipboard = require("expo-clipboard");
-} catch {
-  // Native module unavailable — Copy falls back to Share.share()
-}
 
 export default function Profile() {
   const router = useRouter();
@@ -71,28 +62,6 @@ export default function Profile() {
     }
   }
 
-  const SUPPORT_EMAIL = "support@vaineai.com";
-
-  function handleSupportEmailPress() {
-    ActionSheetIOS.showActionSheetWithOptions(
-      {
-        options: ["Cancel", "Copy", "Share"],
-        cancelButtonIndex: 0,
-      },
-      (buttonIndex) => {
-        if (buttonIndex === 1) {
-          if (ExpoClipboard) {
-            ExpoClipboard.setStringAsync(SUPPORT_EMAIL);
-          } else {
-            Share.share({ message: SUPPORT_EMAIL });
-          }
-        } else if (buttonIndex === 2) {
-          Share.share({ message: SUPPORT_EMAIL });
-        }
-      }
-    );
-  }
-
   async function handleLogout() {
     try {
       await apiCall("POST", "/auth/logout");
@@ -133,13 +102,6 @@ export default function Profile() {
         <View style={styles.section}>
           <LogoutButton onLogout={handleLogout} />
         </View>
-
-        <View style={styles.supportSection}>
-          <Text style={styles.supportLabel}>Contact support</Text>
-          <Pressable onPress={handleSupportEmailPress}>
-            <Text style={styles.supportEmail}>{SUPPORT_EMAIL}</Text>
-          </Pressable>
-        </View>
       </View>
     </View>
   );
@@ -179,22 +141,5 @@ const styles = StyleSheet.create({
     color: "#999",
     textAlign: "center",
     marginTop: 32,
-  },
-  supportSection: {
-    marginTop: "auto",
-    paddingTop: 24,
-    borderTopWidth: 1,
-    borderTopColor: "#f0f0f0",
-  },
-  supportLabel: {
-    fontSize: 12,
-    color: "#999",
-    marginBottom: 4,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  supportEmail: {
-    fontSize: 14,
-    color: "#4F46E5",
   },
 });
