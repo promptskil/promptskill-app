@@ -39,16 +39,17 @@ export default function Onboarding() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Vaine</Text>
-      <Text style={styles.subtitle}>
-        Turn your thoughts, questions, and ideas into clear AI instructions that ChatGPT, Claude, Gemini, and Grok can execute. No back and forth.
-      </Text>
+      <View style={styles.content}>
+        <Text style={styles.title}>Welcome to Vaine</Text>
+        <Text style={styles.subtitle}>
+          Turn your thoughts, questions, and ideas into clear AI instructions that ChatGPT, Claude, Gemini, and Grok can execute. No back and forth.
+        </Text>
 
-      <View style={styles.actions}>
-        <Pressable style={styles.primaryButton} onPress={handleComplete}>
-          <Text style={styles.primaryButtonText}>Get started</Text>
-        </Pressable>
-
+        <View style={styles.actions}>
+          <Pressable style={styles.primaryButton} onPress={handleComplete}>
+            <Text style={styles.primaryButtonText}>Get started</Text>
+          </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -60,6 +61,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 24,
     backgroundColor: "#fff",
+  },
+  content: {
+    width: "100%",
+    maxWidth: 400,
+    alignSelf: "center",
   },
   title: {
     fontSize: 28,
