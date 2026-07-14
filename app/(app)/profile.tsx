@@ -11,7 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import EmailField from "../../components/EmailField";
 import LogoutButton from "../../components/LogoutButton";
 import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
-import { clearToken, clearBusinessContext } from "../../storage/storage";
+import { clearToken } from "../../storage/storage";
 
 export default function Profile() {
   const router = useRouter();
@@ -69,7 +69,6 @@ export default function Profile() {
       // Proceed with local cleanup even if server call fails
     }
     await clearToken();
-    await clearBusinessContext();
     router.replace("/(auth)/login");
   }
 

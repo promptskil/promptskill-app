@@ -16,15 +16,9 @@ import { apiCall, SessionExpiredError } from "../services/api";
 // Public routes — session gate is bypassed for these
 const PUBLIC_ROUTES = [
   "/privacy",
-  "/business",
-  "/business/login",
-  "/invite/accept",
   "/reset-password",
   "/login",
 ];
-
-// Domain-specific routing — hostname maps to landing route
-const BUSINESS_HOSTNAME = "business.vaineai.com";
 
 export default function RootLayout() {
   const router = useRouter();
@@ -39,11 +33,6 @@ export default function RootLayout() {
     const initializeSession = async () => {
       try {
         const token = await getToken();
-
-        const onBusinessHost =
-          Platform.OS === "web" &&
-          typeof window !== "undefined" &&
-          window.location.hostname === BUSINESS_HOSTNAME;
 
         // Stripe checkout return (web). Handle before the normal gate so
         // a cancel escapes to login and a success lands on Main — never
@@ -87,11 +76,7 @@ export default function RootLayout() {
         // Home (web) / Login (iOS). Authenticated users are NOT bounced
         // to the landing (so a reload on the business host stays put).
         if (!token) {
-          if (onBusinessHost) {
-            router.replace("/business");
-          } else {
-            router.replace("/(auth)/login");
-          }
+          router.replace("/(auth)/login");
           return;
         }
 
@@ -119,14 +104,13 @@ export default function RootLayout() {
             // Checkout gate is WEB only — an unpaid account goes to Stripe.
             // Mobile payment is handled by Apple (backend 402 + IAP), so iOS
             // never routes on checkout_required.
-            if (checkout_required && !onBusinessHost && Platform.OS === "web") {
+            if (checkout_required && Platform.OS === "web") {
               const { startCheckout } = await import("../services/billing");
               await startCheckout();
               return;
             }
 
-            // Token valid -> Main (everyone). Admins reach the org panel via
-            // the "Manage org" entry on Main (gated on account_type).
+            // Token valid -> Main (everyone).
             router.replace("/(app)");
             return;
           } catch (error) {
@@ -156,9 +140,6 @@ export default function RootLayout() {
     <Stack screenOptions={{ headerShown: false, title: "Vaine" }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="privacy" />
-      <Stack.Screen name="business" />
-      <Stack.Screen name="business/login" />
-      <Stack.Screen name="invite/accept" />
       <Stack.Screen name="(auth)" />
       <Stack.Screen name="(app)" />
       <Stack.Screen name="onboarding" />

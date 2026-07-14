@@ -15,11 +15,8 @@ import {
 import { useLocalSearchParams, useRouter } from "expo-router";
 import EmailInput from "../../components/EmailInput";
 import PasswordInput from "../../components/PasswordInput";
-import { apiCall, ApiError, loginPath, onBusinessHost } from "../../services/api";
-import {
-  setToken,
-  setBusinessContext,
-} from "../../storage/storage";
+import { apiCall, ApiError } from "../../services/api";
+import { setToken } from "../../storage/storage";
 import { startCheckout } from "../../services/billing";
 import VerifyCodeForm from "../../components/VerifyCodeForm";
 import { loginAndRoute } from "../../services/session";
@@ -36,7 +33,7 @@ export default function Login() {
   const canSubmit = email.length > 0 && password.length > 0 && !loading;
   const emailVerified = verified === "1";
 
-  const showSignupLink = !onBusinessHost();
+  const showSignupLink = true;
 
   // Rule 1 (unverified re-entry): re-issue the verification email and hold
   // the user on the verify view. Server always returns {success:true}, so
@@ -56,16 +53,13 @@ export default function Login() {
     try {
       const data = await apiCall<{
         token: string;
-        business_id: string | null;
-        account_type: string;
         checkout_required: boolean;
-      }>("POST", loginPath(), {
+      }>("POST", "/auth/login", {
         email,
         password,
       });
       await setToken(data.token);
-      await setBusinessContext(data.business_id, data.account_type);
-      if (data.checkout_required && !onBusinessHost()) {
+      if (data.checkout_required) {
         if (Platform.OS === "web") {
           await startCheckout();
           return;
@@ -83,8 +77,6 @@ export default function Login() {
       ) {
         await sendVerification(email);
         return;
-      } else if (err instanceof ApiError && err.status === 403) {
-        setError("This login is for business accounts. Use the email you were invited with.");
       } else if (err instanceof ApiError && err.status === 401) {
         setError("Incorrect email or password.");
       } else {

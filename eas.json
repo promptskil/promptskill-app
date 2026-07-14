@@ -26,5 +26,10 @@
         "APP_VARIANT": "staging"
       }
     }
+  },
+  "submit": {
+    "production": {
+      "ios": {}
+    }
   }
 }

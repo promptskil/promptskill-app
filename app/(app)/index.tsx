@@ -28,10 +28,8 @@ import {
   apiCall,
   ApiError,
   SessionExpiredError,
-  businessContextHeader,
 } from "../../services/api";
 import { startCheckout } from "../../services/billing";
-import { getRole } from "../../storage/storage";
 import type { Model } from "../../types";
 
 interface ResultItem {
@@ -54,14 +52,9 @@ export default function Main() {
 
   // Accumulated results — prompt display only
   const [results, setResults] = useState<ResultItem[]>([]);
-  const [accountType, setAccountType] = useState<string | null>(null);
   const [globeOpen, setGlobeOpen] = useState(false);
 
   const { compose } = useLocalSearchParams<{ compose?: string }>();
-
-  useEffect(() => {
-    getRole().then(setAccountType);
-  }, []);
 
   useEffect(() => {
     if (compose) {
@@ -97,13 +90,11 @@ export default function Main() {
     const controller = new AbortController();
     abortRef.current = controller;
     try {
-      const ctx = await businessContextHeader();
       const data = await apiCall<{ prompt_id: string; prompt: string }>(
         "POST",
         "/generate",
         { model: selectedModel, topic },
-        controller.signal,
-        ctx
+        controller.signal
       );
       setResults(prev => [...prev, {
         id: Date.now().toString(),
@@ -179,11 +170,6 @@ export default function Main() {
               resizeMode="contain"
             />
             </Pressable>
-            {Platform.OS === "web" && accountType === "admin" && (
-              <Pressable onPress={() => router.push("/(app)/business")}>
-                <Ionicons name="business-outline" size={26} color="#333" />
-              </Pressable>
-            )}
           </View>
         </View>
 
