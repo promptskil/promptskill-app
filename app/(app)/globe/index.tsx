@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Image,
   Platform,
   Pressable,
   StyleSheet,
@@ -124,6 +125,19 @@ export default function GlobeFeed() {
         <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
         <View style={styles.warmTint} />
 
+        <View style={styles.topIcons}>
+          <Pressable onPress={() => {}} hitSlop={8}>
+            <Ionicons name="document-text-outline" size={24} color="#333" />
+          </Pressable>
+          <Pressable onPress={() => router.back()} hitSlop={8}>
+            <Image
+              source={require("../../../assets/globe.png")}
+              style={styles.globeIcon}
+              resizeMode="contain"
+            />
+          </Pressable>
+        </View>
+
         <Text style={styles.heading}>Share with others</Text>
         <Text style={styles.subheading}>Find solutions together</Text>
 
@@ -238,7 +252,7 @@ export default function GlobeFeed() {
         </Pressable>
       </View>
 
-      <Pressable style={styles.scrim} onPress={() => router.back()} />
+      <View style={styles.scrim} />
     </View>
   );
 }
@@ -252,12 +266,21 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(255, 249, 240, 0.35)",
   },
+  topIcons: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    gap: 16,
+    paddingHorizontal: 16,
+    marginBottom: 4,
+  },
+  globeIcon: { width: 26, height: 26 },
   heading: {
     fontSize: 22,
     fontWeight: "400",
     color: "#1A1A1A",
     paddingHorizontal: 24,
-    marginTop: 24,
+    marginTop: 8,
   },
   subheading: {
     fontSize: 13,
