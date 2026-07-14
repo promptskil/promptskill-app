@@ -14,43 +14,83 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { apiCall, SessionExpiredError } from "../../../services/api";
 import { setGlobeUsername } from "../../../services/globeDraft";
+import {
+  appendCachedFeed,
+  getCachedFeed,
+  removeCachedZone,
+  setCachedFeed,
+  type FeedItem,
+} from "../../../services/globeFeedStore";
 import { relativeTime } from "../../../utils/globe";
 
-interface FeedItem {
-  post_id: string;
-  zone_id: string;
-  zone_title: string;
-  zone_domain: string;
-  author_username: string;
-  body: string;
-  created_at: string;
+interface FeedResponse {
+  items: FeedItem[];
+  next_cursor: string | null;
 }
+
+const FEED_TIMEOUT_MS = 8000;
 
 export default function GlobeFeed() {
   const router = useRouter();
-  const [feed, setFeed] = useState<FeedItem[]>([]);
+  const cached = getCachedFeed();
+  const [feed, setFeed] = useState<FeedItem[]>(cached.items);
+  const [cursor, setCursor] = useState<string | null>(cached.cursor);
   const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(true);
+  // Only block on a spinner when we have nothing cached to show (SWR).
+  const [loading, setLoading] = useState(cached.items.length === 0);
+  const [loadingMore, setLoadingMore] = useState(false);
 
+  // Stale-while-revalidate: render cache immediately, refresh in the
+  // background. On timeout/failure keep the cached thread — never blank it.
   const fetchFeed = useCallback(async () => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), FEED_TIMEOUT_MS);
     try {
-      const data = await apiCall<{ items: FeedItem[] }>(
+      const data = await apiCall<FeedResponse>(
         "GET",
-        "/globe/feed?limit=20&offset=0",
+        "/globe/feed?limit=20",
+        undefined,
+        controller.signal,
       );
       setFeed(data.items);
+      setCursor(data.next_cursor);
+      setCachedFeed(data.items, data.next_cursor);
     } catch (err) {
-      if (err instanceof SessionExpiredError) router.replace("/(auth)/login");
+      if (err instanceof SessionExpiredError) {
+        router.replace("/(auth)/login");
+        return;
+      }
+      // Timeout or network error — keep whatever is cached on screen.
     } finally {
+      clearTimeout(timer);
       setLoading(false);
     }
   }, [router]);
 
-  // Delete → move the zone to hidden; drop its posts from the feed locally.
+  const loadMore = useCallback(async () => {
+    if (!cursor || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const data = await apiCall<FeedResponse>(
+        "GET",
+        `/globe/feed?limit=20&cursor=${encodeURIComponent(cursor)}`,
+      );
+      setFeed((prev) => [...prev, ...data.items]);
+      setCursor(data.next_cursor);
+      appendCachedFeed(data.items, data.next_cursor);
+    } catch (err) {
+      if (err instanceof SessionExpiredError) router.replace("/(auth)/login");
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [cursor, loadingMore, router]);
+
+  // Delete → hide the zone; drop its posts from feed + cache locally.
   async function hideZone(zoneId: string) {
     try {
       await apiCall("POST", `/globe/zones/${zoneId}/hide`);
       setFeed((prev) => prev.filter((p) => p.zone_id !== zoneId));
+      removeCachedZone(zoneId);
     } catch (err) {
       if (err instanceof SessionExpiredError) router.replace("/(auth)/login");
     }
@@ -63,7 +103,6 @@ export default function GlobeFeed() {
       .catch(() => {});
   }, []);
 
-  // Refresh when the feed regains focus.
   useFocusEffect(
     useCallback(() => {
       fetchFeed();
@@ -114,6 +153,13 @@ export default function GlobeFeed() {
             keyExtractor={(p) => p.post_id}
             showsVerticalScrollIndicator={false}
             style={styles.feed}
+            onEndReached={loadMore}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={
+              loadingMore ? (
+                <ActivityIndicator color="#666666" style={{ marginVertical: 16 }} />
+              ) : null
+            }
             renderItem={({ item }) => (
               <Pressable
                 style={styles.post}
@@ -134,9 +180,7 @@ export default function GlobeFeed() {
                   </Text>
                 </View>
                 <View style={styles.zoneBubble}>
-                  <Text style={styles.zoneBubbleText}>
-                    Zone: {item.zone_domain}
-                  </Text>
+                  <Text style={styles.zoneBubbleText}>Zone: {item.zone_domain}</Text>
                 </View>
                 <Text style={styles.postBody} numberOfLines={4}>
                   {item.body}
@@ -151,11 +195,7 @@ export default function GlobeFeed() {
                     }
                     hitSlop={8}
                   >
-                    <Ionicons
-                      name="chatbubble-outline"
-                      size={16}
-                      color="#666666"
-                    />
+                    <Ionicons name="chatbubble-outline" size={16} color="#666666" />
                   </Pressable>
                   <Pressable
                     onPress={() =>
@@ -166,11 +206,7 @@ export default function GlobeFeed() {
                     }
                     hitSlop={8}
                   >
-                    <Ionicons
-                      name="create-outline"
-                      size={16}
-                      color="#666666"
-                    />
+                    <Ionicons name="create-outline" size={16} color="#666666" />
                   </Pressable>
                   <Pressable onPress={() => hideZone(item.zone_id)} hitSlop={8}>
                     <Ionicons name="trash-outline" size={16} color="#666666" />
@@ -240,7 +276,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     padding: 12,
     borderWidth: 1,
-    borderColor: "#EDE6D8",
+    borderColor: "#E5E5E5",
     borderRadius: 10,
     backgroundColor: "#FFFFFF",
   },
