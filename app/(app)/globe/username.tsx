@@ -9,6 +9,7 @@ import {
   getGlobeDraft,
   setGlobeUsername,
 } from "../../../services/globeDraft";
+import { prependCachedPost } from "../../../services/globeFeedStore";
 import type { GlobeZone } from "../../../types";
 
 const USERNAME_RE = /^[A-Za-z0-9_]{3,20}$/;
@@ -50,6 +51,25 @@ export default function CreateUsername() {
           domain: d.domain,
           title: d.title,
         });
+        if (d.body && d.body.trim()) {
+          const post = await apiCall<{
+            id: string;
+            author_username: string;
+            body: string;
+            created_at: string;
+          }>("POST", `/globe/zones/${zone.id}/posts`, {
+            body: d.body.trim(),
+          });
+          prependCachedPost({
+            post_id: post.id,
+            zone_id: zone.id,
+            zone_title: zone.title,
+            zone_domain: zone.domain,
+            author_username: post.author_username,
+            body: post.body,
+            created_at: post.created_at,
+          });
+        }
         clearGlobeDraft();
         router.replace({
           pathname: "/(app)/globe/[zoneId]",
