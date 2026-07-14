@@ -99,72 +99,85 @@ export default function Login() {
   if (verifySentTo) {
     return (
       <View style={styles.container}>
-        <Image source={require("../../assets/logo1.png")} style={styles.logo} resizeMode="contain" />
-        <VerifyCodeForm
-          email={verifySentTo}
-          onVerified={() => {
-            setVerifySentTo("");
-            loginAndRoute(email, password, router, true).catch(() =>
-              setError("Something went wrong. Please try again."),
-            );
-          }}
+        <View style={styles.centerContent}>
+          <VerifyCodeForm
+            email={verifySentTo}
+            onVerified={() => {
+              setVerifySentTo("");
+              loginAndRoute(email, password, router, true).catch(() =>
+                setError("Something went wrong. Please try again."),
+              );
+            }}
+          />
+          <Pressable
+            style={styles.signupLink}
+            onPress={() => {
+              setVerifySentTo("");
+              setError("");
+            }}
+          >
+            <Text style={styles.link}>Back to login</Text>
+          </Pressable>
+        </View>
+
+        <Image
+          source={require("../../assets/logo1.png")}
+          style={styles.logo}
+          resizeMode="contain"
         />
-        <Pressable
-          style={styles.signupLink}
-          onPress={() => {
-            setVerifySentTo("");
-            setError("");
-          }}
-        >
-          <Text style={styles.link}>Back to login</Text>
-        </Pressable>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Image source={require("../../assets/logo1.png")} style={styles.logo} resizeMode="contain" />
+      <View style={styles.centerContent}>
+        <View style={styles.form}>
+          <EmailInput value={email} onChangeText={setEmail} editable={!loading} />
+          <PasswordInput
+            value={password}
+            onChangeText={setPassword}
+            editable={!loading}
+          />
 
-      <View style={styles.form}>
-        <EmailInput value={email} onChangeText={setEmail} editable={!loading} />
-        <PasswordInput
-          value={password}
-          onChangeText={setPassword}
-          editable={!loading}
-        />
+          {emailVerified ? (
+            <Text style={styles.notice}>Email verified. Log in to continue.</Text>
+          ) : null}
 
-        {emailVerified ? (
-          <Text style={styles.notice}>Email verified. Log in to continue.</Text>
-        ) : null}
+          {error ? <Text style={styles.error}>{error}</Text> : null}
 
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+          <Pressable
+            style={[styles.button, !canSubmit && styles.buttonDisabled]}
+            onPress={handleLogin}
+            disabled={!canSubmit}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Log in</Text>
+            )}
+          </Pressable>
+        </View>
 
-        <Pressable
-          style={[styles.button, !canSubmit && styles.buttonDisabled]}
-          onPress={handleLogin}
-          disabled={!canSubmit}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Log in</Text>
-          )}
+        <Pressable onPress={() => router.push("/(auth)/forgot-password")}>
+          <Text style={styles.link}>Forgot password?</Text>
         </Pressable>
+
+        {showSignupLink && (
+          <Pressable
+            style={styles.signupLink}
+            onPress={() => router.push("/(auth)")}
+          >
+            <Text style={styles.link}>New here? Create an account</Text>
+          </Pressable>
+        )}
       </View>
 
-      <Pressable onPress={() => router.push("/(auth)/forgot-password")}>
-        <Text style={styles.link}>Forgot password?</Text>
-      </Pressable>
-
-      {showSignupLink && (
-        <Pressable
-          style={styles.signupLink}
-          onPress={() => router.push("/(auth)")}
-        >
-          <Text style={styles.link}>New here? Create an account</Text>
-        </Pressable>
-      )}
+      <Image
+        source={require("../../assets/logo1.png")}
+        style={styles.logo}
+        resizeMode="contain"
+      />
     </View>
   );
 }
@@ -172,15 +185,19 @@ export default function Login() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     padding: 24,
     backgroundColor: "#fff",
+  },
+  centerContent: {
+    flex: 1,
+    justifyContent: "center",
   },
   logo: {
     width: 90,
     height: 28,
     alignSelf: "center",
-    marginBottom: 24,
+    marginTop: 16,
+    marginBottom: 12,
   },
   header: {
     fontSize: 28,
