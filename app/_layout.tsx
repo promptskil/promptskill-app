@@ -90,7 +90,7 @@ export default function RootLayout() {
           if (onBusinessHost) {
             router.replace("/business");
           } else {
-            router.replace(Platform.OS === "web" ? "/home" : "/(auth)/login");
+            router.replace("/(auth)/login");
           }
           return;
         }
@@ -155,7 +155,6 @@ export default function RootLayout() {
   return (
     <Stack screenOptions={{ headerShown: false, title: "Vaine" }}>
       <Stack.Screen name="index" />
-      <Stack.Screen name="home" />
       <Stack.Screen name="privacy" />
       <Stack.Screen name="business" />
       <Stack.Screen name="business/login" />

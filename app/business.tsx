@@ -27,7 +27,7 @@ export default function Business() {
     >
       {/* Header — logo + Sign in */}
       <View style={styles.header}>
-        <Pressable onPress={() => router.push("/home")}>
+        <Pressable onPress={() => router.push("/(auth)/login")}>
           <Image
             source={require("../assets/logo1.png")}
             style={styles.logo}
