@@ -39,7 +39,7 @@ export default function AppLayout() {
         name="globe/index"
         options={{
           presentation: "transparentModal",
-          animation: "slide_from_left",
+          animation: "slide_from_right",
           gestureEnabled: true,
         }}
       />

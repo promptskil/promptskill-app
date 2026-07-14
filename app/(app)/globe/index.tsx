@@ -203,8 +203,8 @@ export default function GlobeFeed() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, flexDirection: "row", backgroundColor: "transparent" },
-  panel: { width: "50%", backgroundColor: "#FFFFFF", paddingTop: 60 },
+  root: { flex: 1, flexDirection: "row-reverse", backgroundColor: "transparent" },
+  panel: { width: "80%", maxWidth: 360, backgroundColor: "#FFFFFF", paddingTop: 60 },
   scrim: { flex: 1 },
   feed: { flex: 1 },
   pageTitle: {
