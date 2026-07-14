@@ -2,13 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  Image,
   Platform,
   Pressable,
   StyleSheet,
   Text,
   TextInput,
-  useWindowDimensions,
   View,
 } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -17,7 +15,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { apiCall, SessionExpiredError } from "../../../services/api";
 import { setGlobeUsername } from "../../../services/globeDraft";
 import { relativeTime } from "../../../utils/globe";
-import type { GlobeZone } from "../../../types";
 
 interface FeedItem {
   post_id: string;
@@ -31,21 +28,17 @@ interface FeedItem {
 
 export default function GlobeFeed() {
   const router = useRouter();
-  const { width } = useWindowDimensions();
-  const wide = width >= 768;
   const [feed, setFeed] = useState<FeedItem[]>([]);
-  const [hiddenZones, setHiddenZones] = useState<GlobeZone[]>([]);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
   const fetchFeed = useCallback(async () => {
     try {
-      const [data, hid] = await Promise.all([
-        apiCall<{ items: FeedItem[] }>("GET", "/globe/feed?limit=20&offset=0"),
-        apiCall<{ zones: GlobeZone[] }>("GET", "/globe/zones/hidden"),
-      ]);
+      const data = await apiCall<{ items: FeedItem[] }>(
+        "GET",
+        "/globe/feed?limit=20&offset=0",
+      );
       setFeed(data.items);
-      setHiddenZones(hid.zones);
     } catch (err) {
       if (err instanceof SessionExpiredError) router.replace("/(auth)/login");
     } finally {
@@ -53,20 +46,11 @@ export default function GlobeFeed() {
     }
   }, [router]);
 
-  // Delete on a post → hide its zone, then resync feed + hidden panel.
+  // Delete → move the zone to hidden; drop its posts from the feed locally.
   async function hideZone(zoneId: string) {
     try {
       await apiCall("POST", `/globe/zones/${zoneId}/hide`);
-      await fetchFeed();
-    } catch (err) {
-      if (err instanceof SessionExpiredError) router.replace("/(auth)/login");
-    }
-  }
-
-  async function unhideZone(id: string) {
-    try {
-      await apiCall("DELETE", `/globe/zones/${id}/hide`);
-      await fetchFeed();
+      setFeed((prev) => prev.filter((p) => p.zone_id !== zoneId));
     } catch (err) {
       if (err instanceof SessionExpiredError) router.replace("/(auth)/login");
     }
@@ -94,128 +78,107 @@ export default function GlobeFeed() {
       )
     : feed;
 
-  const hiddenContent = (
-    <>
-      <Text style={styles.hiddenHeading}>Hidden</Text>
-      {hiddenZones.length === 0 ? (
-        <Text style={styles.hiddenEmpty}>Nothing hidden.</Text>
-      ) : (
-        hiddenZones.map((z) => (
-          <View key={z.id} style={styles.hiddenRow}>
-            <Text style={styles.hiddenTitle} numberOfLines={1}>
-              {z.title}
-            </Text>
-            <Pressable style={styles.unhideBtn} onPress={() => unhideZone(z.id)}>
-              <Text style={styles.unhideText}>Unhide</Text>
-            </Pressable>
-          </View>
-        ))
-      )}
-    </>
-  );
-
-  const feedList = (
-    <FlatList
-      data={shown}
-      keyExtractor={(p) => p.post_id}
-      showsVerticalScrollIndicator={false}
-      style={styles.feedList}
-      renderItem={({ item }) => (
-        <Pressable
-          style={styles.post}
-          onPress={() =>
-            router.push({
-              pathname: "/(app)/globe/[zoneId]",
-              params: { zoneId: item.zone_id },
-            })
-          }
-        >
-          <View style={styles.postTop}>
-            <Text style={styles.postTitle} numberOfLines={1}>
-              {item.zone_title}
-            </Text>
-            <Text style={styles.postUser}>@{item.author_username}</Text>
-            <Text style={styles.postTime}>
-              · {relativeTime(item.created_at)}
-            </Text>
-          </View>
-          <View style={styles.zoneBubble}>
-            <Text style={styles.zoneBubbleText}>Zone: {item.zone_domain}</Text>
-          </View>
-          <Text style={styles.postBody} numberOfLines={4}>
-            {item.body}
-          </Text>
-          <View style={styles.postActions}>
-            <Pressable
-              onPress={() =>
-                router.push({
-                  pathname: "/(app)/globe/[zoneId]",
-                  params: { zoneId: item.zone_id },
-                })
-              }
-              hitSlop={8}
-            >
-              <Ionicons name="chatbubble-outline" size={16} color="#666666" />
-            </Pressable>
-            <Pressable
-              onPress={() =>
-                router.push({
-                  pathname: "/(app)/globe/[zoneId]",
-                  params: { zoneId: item.zone_id },
-                })
-              }
-              hitSlop={8}
-            >
-              <Ionicons name="create-outline" size={16} color="#666666" />
-            </Pressable>
-            <Pressable onPress={() => hideZone(item.zone_id)} hitSlop={8}>
-              <Ionicons name="trash-outline" size={16} color="#666666" />
-            </Pressable>
-          </View>
-        </Pressable>
-      )}
-      ListEmptyComponent={<Text style={styles.empty}>No posts yet.</Text>}
-    />
-  );
-
   return (
     <View style={styles.root}>
-      <Image
-        source={require("../../../assets/zone.png")}
-        style={styles.zoneLogo}
-        resizeMode="contain"
-      />
+      <Text style={styles.pageTitle}>Share with others</Text>
 
-      <View style={[styles.content, wide && styles.contentWide]}>
-        <View style={styles.searchRow}>
-          <Ionicons name="search" size={15} color="#666666" />
-          <TextInput
-            style={[
-              styles.searchInput,
-              Platform.OS === "web" && ({ outlineStyle: "none" } as any),
-            ]}
-            placeholder="Search"
-            placeholderTextColor="#666666"
-            value={query}
-            onChangeText={setQuery}
-            autoCapitalize="none"
-          />
+      <View style={styles.content}>
+        <View style={styles.toolRow}>
+          <View style={styles.searchRow}>
+            <Ionicons name="search" size={15} color="#666666" />
+            <TextInput
+              style={[
+                styles.searchInput,
+                Platform.OS === "web" && ({ outlineStyle: "none" } as any),
+              ]}
+              placeholder="Search"
+              placeholderTextColor="#666666"
+              value={query}
+              onChangeText={setQuery}
+              autoCapitalize="none"
+            />
+          </View>
+          <Pressable
+            onPress={() => router.push("/(app)/globe/hidden")}
+            hitSlop={8}
+          >
+            <Ionicons name="ellipsis-horizontal" size={20} color="#444444" />
+          </Pressable>
         </View>
 
         {loading ? (
           <ActivityIndicator color="#666666" style={{ marginTop: 32 }} />
-        ) : wide ? (
-          <View style={styles.wideRow}>
-            <View style={styles.hiddenPanelWide}>{hiddenContent}</View>
-            <View style={styles.feedCol}>{feedList}</View>
-          </View>
         ) : (
-          <>
-            {hiddenZones.length > 0 ? (
-              <View style={styles.hiddenPanelNarrow}>{hiddenContent}</View>
-            ) : null}
-            {feedList}
-          </>
+          <FlatList
+            data={shown}
+            keyExtractor={(p) => p.post_id}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <Pressable
+                style={styles.post}
+                onPress={() =>
+                  router.push({
+                    pathname: "/(app)/globe/[zoneId]",
+                    params: { zoneId: item.zone_id },
+                  })
+                }
+              >
+                <View style={styles.postTop}>
+                  <Text style={styles.postTitle} numberOfLines={1}>
+                    {item.zone_title}
+                  </Text>
+                  <Text style={styles.postUser}>@{item.author_username}</Text>
+                  <Text style={styles.postTime}>
+                    · {relativeTime(item.created_at)}
+                  </Text>
+                </View>
+                <View style={styles.zoneBubble}>
+                  <Text style={styles.zoneBubbleText}>
+                    Zone: {item.zone_domain}
+                  </Text>
+                </View>
+                <Text style={styles.postBody} numberOfLines={4}>
+                  {item.body}
+                </Text>
+                <View style={styles.postActions}>
+                  <Pressable
+                    onPress={() =>
+                      router.push({
+                        pathname: "/(app)/globe/[zoneId]",
+                        params: { zoneId: item.zone_id },
+                      })
+                    }
+                    hitSlop={8}
+                  >
+                    <Ionicons
+                      name="chatbubble-outline"
+                      size={16}
+                      color="#666666"
+                    />
+                  </Pressable>
+                  <Pressable
+                    onPress={() =>
+                      router.push({
+                        pathname: "/(app)/globe/[zoneId]",
+                        params: { zoneId: item.zone_id },
+                      })
+                    }
+                    hitSlop={8}
+                  >
+                    <Ionicons
+                      name="create-outline"
+                      size={16}
+                      color="#666666"
+                    />
+                  </Pressable>
+                  <Pressable onPress={() => hideZone(item.zone_id)} hitSlop={8}>
+                    <Ionicons name="trash-outline" size={16} color="#666666" />
+                  </Pressable>
+                </View>
+              </Pressable>
+            )}
+            ListEmptyComponent={<Text style={styles.empty}>No posts yet.</Text>}
+          />
         )}
       </View>
 
@@ -234,69 +197,28 @@ export default function GlobeFeed() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: "#FFFFFF", paddingTop: 60 },
-  zoneLogo: { width: 86, height: 40, marginLeft: 16, marginBottom: 8 },
-  content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
-  contentWide: { maxWidth: 940 },
-  wideRow: { flex: 1, flexDirection: "row" },
-  feedCol: { flex: 1 },
-  feedList: { flex: 1 },
-  hiddenPanelWide: {
-    width: 220,
-    paddingLeft: 12,
-    paddingRight: 8,
-    borderRightWidth: 0.5,
-    borderRightColor: "#EEEEEE",
-  },
-  hiddenPanelNarrow: {
-    paddingHorizontal: 12,
-    marginBottom: 10,
-  },
-  hiddenHeading: {
-    fontSize: 13,
-    fontWeight: "700",
+  pageTitle: {
+    fontSize: 16,
+    fontWeight: "600",
     color: "#1A1A1A",
-    marginTop: 4,
-    marginBottom: 8,
+    textAlign: "center",
+    marginBottom: 12,
   },
-  hiddenEmpty: { fontSize: 12, color: "#666666" },
-  hiddenRow: {
+  content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
+  toolRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 8,
-  },
-  hiddenTitle: { flex: 1, fontSize: 12.5, color: "#1A1A1A", marginRight: 8 },
-  unhideBtn: {
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-    borderRadius: 6,
-    borderWidth: 0.5,
-    borderColor: "#DDDDDD",
-  },
-  unhideText: { fontSize: 11, color: "#1A1A1A" },
-  homeBar: {
-    position: "absolute",
-    left: 24,
-    bottom: 32,
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 4,
+    justifyContent: "flex-end",
+    gap: 12,
+    marginHorizontal: 12,
+    marginBottom: 10,
   },
   searchRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+    width: "50%",
     height: 34,
-    marginHorizontal: 12,
-    marginBottom: 10,
     paddingHorizontal: 10,
     borderRadius: 8,
     backgroundColor: "#F5F5F5",
@@ -332,6 +254,22 @@ const styles = StyleSheet.create({
   postBody: { fontSize: 14, lineHeight: 20, color: "#1A1A1A", marginTop: 8 },
   postActions: { flexDirection: "row", gap: 20, marginTop: 10 },
   empty: { color: "#666666", textAlign: "center", marginTop: 32, fontSize: 13 },
+  homeBar: {
+    position: "absolute",
+    left: 24,
+    bottom: 32,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 4,
+  },
   newFab: {
     position: "absolute",
     right: 24,
