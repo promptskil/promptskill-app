@@ -50,7 +50,12 @@ export default function NewZone() {
     if (!cleanDomain || !cleanTitle || submitting) return;
     setError("");
     setSubmitting(true);
-    setGlobeDraft({ kind: "zone", domain: cleanDomain, title: cleanTitle });
+    setGlobeDraft({
+      kind: "zone",
+      domain: cleanDomain,
+      title: cleanTitle,
+      body: draftBody?.trim() || undefined,
+    });
     try {
       let username = getGlobeUsername();
       if (username === undefined) {

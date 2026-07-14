@@ -1,9 +1,10 @@
 import type { GlobeDomain } from "../types";
 
-// Held across the username gate; carries the pending intent (no body — the
-// compose gate fires before typing).
+// Held across the username gate; carries the pending intent. The "zone" draft
+// (compose-first flow) also carries the typed post body so it survives the
+// gate — otherwise a first-time poster's post is created only as a zone.
 export type GlobeDraft =
-  | { kind: "zone"; domain: GlobeDomain; title: string }
+  | { kind: "zone"; domain: GlobeDomain; title: string; body?: string }
   | { kind: "compose"; zoneId: string; postId?: string; parentReplyId?: string }
   | null;
 
