@@ -15,7 +15,6 @@ import {
   apiCall,
   ApiError,
   SessionExpiredError,
-  businessContextHeader,
 } from "../services/api";
 import type { Model } from "../types";
 
@@ -62,14 +61,11 @@ export default function InlineResultItem({
     setError("");
     setRegenerating(true);
     try {
-      const ctx = await businessContextHeader();
       const data = await apiCall<{ prompt_id: string; prompt: string }>(
         "POST",
         "/generate",
         // Original topic + the refinement — backend connects both.
         { model, topic, refinement: refineText },
-        undefined,
-        ctx
       );
       setLatest(data.prompt);
       setLatestPromptId(data.prompt_id);
