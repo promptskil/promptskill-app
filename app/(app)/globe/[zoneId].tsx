@@ -488,7 +488,7 @@ export default function GlobeThread() {
       </View>
 
       <Pressable style={styles.writeFab} onPress={startPost}>
-        <Ionicons name="create-outline" size={26} color="#1A1A1A" />
+        <Ionicons name="add" size={28} color="#1A1A1A" />
       </Pressable>
     </View>
   );

@@ -204,7 +204,7 @@ export default function GlobeFeed() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, flexDirection: "row", backgroundColor: "transparent" },
-  panel: { width: "86%", backgroundColor: "#FFFFFF", paddingTop: 60 },
+  panel: { width: "50%", backgroundColor: "#FFFFFF", paddingTop: 60 },
   scrim: { flex: 1 },
   feed: { flex: 1 },
   pageTitle: {
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     height: 34,
     paddingHorizontal: 10,
     borderRadius: 8,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#ECECEC",
   },
   searchInput: { flex: 1, color: "#1A1A1A", fontSize: 13, padding: 0 },
   post: {
