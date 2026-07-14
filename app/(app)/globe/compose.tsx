@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function GlobeCompose() {
   const router = useRouter();
@@ -31,6 +32,13 @@ export default function GlobeCompose() {
       <View style={styles.column}>
         <View style={styles.sheet}>
           <View style={styles.handle} />
+          <Pressable
+            style={styles.closeBtn}
+            onPress={() => router.back()}
+            hitSlop={8}
+          >
+            <Ionicons name="close" size={22} color="#666666" />
+          </Pressable>
           <View style={styles.postCard}>
             <TextInput
               style={[
@@ -84,6 +92,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#DDDDDD",
     marginBottom: 12,
   },
+  closeBtn: { position: "absolute", top: 10, right: 12, padding: 4, zIndex: 2 },
   postCard: {
     borderWidth: 1,
     borderColor: "#E5E5E5",
