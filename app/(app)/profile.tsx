@@ -114,29 +114,33 @@ export default function Profile() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerRow}>
-        <Pressable
-          onPress={() => (router.canGoBack() ? router.back() : router.replace("/(app)"))}
-          style={styles.backBtn}
-        >
-          <Ionicons name="arrow-back" size={24} color="#333" />
-        </Pressable>
-        <Text style={styles.header}>Profile</Text>
-      </View>
+      <View style={styles.content}>
+        <View style={styles.headerRow}>
+          <Pressable
+            onPress={() =>
+              router.canGoBack() ? router.back() : router.replace("/(app)")
+            }
+            style={styles.backBtn}
+          >
+            <Ionicons name="arrow-back" size={24} color="#333" />
+          </Pressable>
+          <Text style={styles.header}>Profile</Text>
+        </View>
 
-      <View style={styles.section}>
-        <EmailField email={email} onSave={handleEmailSave} />
-      </View>
+        <View style={styles.section}>
+          <EmailField email={email} onSave={handleEmailSave} />
+        </View>
 
-      <View style={styles.section}>
-        <LogoutButton onLogout={handleLogout} />
-      </View>
+        <View style={styles.section}>
+          <LogoutButton onLogout={handleLogout} />
+        </View>
 
-      <View style={styles.supportSection}>
-        <Text style={styles.supportLabel}>Contact support</Text>
-        <Pressable onPress={handleSupportEmailPress}>
-          <Text style={styles.supportEmail}>{SUPPORT_EMAIL}</Text>
-        </Pressable>
+        <View style={styles.supportSection}>
+          <Text style={styles.supportLabel}>Contact support</Text>
+          <Pressable onPress={handleSupportEmailPress}>
+            <Text style={styles.supportEmail}>{SUPPORT_EMAIL}</Text>
+          </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -148,6 +152,12 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingTop: 60,
     backgroundColor: "#fff",
+  },
+  content: {
+    flex: 1,
+    width: "100%",
+    maxWidth: 480,
+    alignSelf: "center",
   },
   headerRow: {
     flexDirection: "row",
