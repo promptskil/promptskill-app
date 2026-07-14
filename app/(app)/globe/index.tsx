@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 10,
     borderRadius: 8,
-    backgroundColor: "#EDE6D8",
+    backgroundColor: "#F5F5F5",
   },
   searchInput: { flex: 1, color: "#1A1A1A", fontSize: 13, padding: 0 },
   row: {

@@ -382,13 +382,7 @@ export default function GlobeThread() {
       ) : null}
 
       <View style={styles.content}>
-      {composer?.kind === "post" ? (
-        composerBar("Write a post")
-      ) : (
-        <Pressable style={styles.composerIdle} onPress={startPost}>
-          <Text style={styles.composerIdleText}>Write a post</Text>
-        </Pressable>
-      )}
+      {composer?.kind === "post" ? composerBar("Write a post") : null}
 
       {loading ? (
         <ActivityIndicator color="#666666" style={{ marginTop: 32 }} />
@@ -569,7 +563,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 12,
     borderRadius: 8,
-    backgroundColor: "#EDE6D8",
+    backgroundColor: "#F5F5F5",
   },
   composerInput: {
     flex: 1,
