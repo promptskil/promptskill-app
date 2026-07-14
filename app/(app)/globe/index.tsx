@@ -80,9 +80,9 @@ export default function GlobeFeed() {
 
   return (
     <View style={styles.root}>
-      <Text style={styles.pageTitle}>Share with others</Text>
+      <View style={styles.panel}>
+        <Text style={styles.pageTitle}>Share with Others</Text>
 
-      <View style={styles.content}>
         <View style={styles.toolRow}>
           <View style={styles.searchRow}>
             <Ionicons name="search" size={15} color="#666666" />
@@ -113,6 +113,7 @@ export default function GlobeFeed() {
             data={shown}
             keyExtractor={(p) => p.post_id}
             showsVerticalScrollIndicator={false}
+            style={styles.feed}
             renderItem={({ item }) => (
               <Pressable
                 style={styles.post}
@@ -180,35 +181,45 @@ export default function GlobeFeed() {
             ListEmptyComponent={<Text style={styles.empty}>No posts yet.</Text>}
           />
         )}
+
+        <Pressable
+          style={styles.homeBar}
+          onPress={() => router.back()}
+          hitSlop={8}
+        >
+          <Ionicons name="home-outline" size={22} color="#1A1A1A" />
+        </Pressable>
+        <Pressable
+          style={styles.newFab}
+          onPress={() => router.push("/(app)/globe/compose")}
+        >
+          <Ionicons name="add" size={28} color="#1A1A1A" />
+        </Pressable>
       </View>
 
-      <Pressable style={styles.homeBar} onPress={() => router.back()} hitSlop={8}>
-        <Ionicons name="home-outline" size={22} color="#1A1A1A" />
-      </Pressable>
-      <Pressable
-        style={styles.newFab}
-        onPress={() => router.push("/(app)/globe/compose")}
-      >
-        <Ionicons name="add" size={28} color="#1A1A1A" />
-      </Pressable>
+      <Pressable style={styles.scrim} onPress={() => router.back()} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#FFFFFF", paddingTop: 60 },
+  root: { flex: 1, flexDirection: "row", backgroundColor: "transparent" },
+  panel: { width: "86%", backgroundColor: "#FFFFFF", paddingTop: 60 },
+  scrim: { flex: 1 },
+  feed: { flex: 1 },
   pageTitle: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 32,
+    fontWeight: "800",
+    fontStyle: "italic",
+    letterSpacing: 0.5,
     color: "#1A1A1A",
     textAlign: "center",
-    marginBottom: 12,
+    marginBottom: 16,
   },
-  content: { flex: 1, width: "100%", maxWidth: 680, alignSelf: "center" },
   toolRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     gap: 12,
     marginHorizontal: 12,
     marginBottom: 10,
