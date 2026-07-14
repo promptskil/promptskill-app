@@ -1,7 +1,7 @@
 // Menu screen — left drawer. Glass footer (settings only); history scrolls
 // the full height underneath, visible through the frosted panel.
 
-import { View, Image, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -27,14 +27,13 @@ export default function Menu() {
         </View>
 
         <View style={styles.topLogoWrap} pointerEvents="box-none">
-          <Image
-            source={require("../../assets/logo-vaine.png")}
-            style={styles.topLogo}
-            resizeMode="contain"
-          />
+          <Text style={styles.brandText}>Vaine</Text>
         </View>
 
         <View style={styles.footer} pointerEvents="box-none">
+          <Pressable onPress={() => router.back()} style={styles.editBubble}>
+            <Ionicons name="create-outline" size={20} color="#FFFFFF" />
+          </Pressable>
           <Pressable
             onPress={() => router.push("/(app)/settings")}
             style={[styles.fab, styles.fabSettings]}
@@ -77,8 +76,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     left: 0,
+    right: 0,
     flexDirection: "row",
-    gap: 16,
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 24,
     paddingTop: 12,
     paddingBottom: 32,
@@ -96,4 +97,23 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   fabSettings: { backgroundColor: "#fff" },
+  brandText: {
+    fontSize: 20,
+    fontWeight: "700",
+    letterSpacing: 0.5,
+    color: "#1A1A1A",
+  },
+  editBubble: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#1A1A1A",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 4,
+  },
 });
