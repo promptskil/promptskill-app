@@ -65,56 +65,60 @@ export default function AccountCreation() {
   if (submittedEmail) {
     return (
       <View style={styles.container}>
-        <VerifyCodeForm
-          email={submittedEmail}
-          onVerified={async () => {
-            try {
-              await loginAndRoute(submittedEmail, password, router, true);
-            } catch {
-              router.push("/(auth)/login?verified=1");
-            }
-          }}
-        />
-        <Pressable
-          style={{ marginTop: 16 }}
-          onPress={() => router.push("/(auth)/login")}
-        >
-          <Text style={styles.link}>Back to login</Text>
-        </Pressable>
+        <View style={styles.content}>
+          <VerifyCodeForm
+            email={submittedEmail}
+            onVerified={async () => {
+              try {
+                await loginAndRoute(submittedEmail, password, router, true);
+              } catch {
+                router.push("/(auth)/login?verified=1");
+              }
+            }}
+          />
+          <Pressable
+            style={{ marginTop: 16 }}
+            onPress={() => router.push("/(auth)/login")}
+          >
+            <Text style={styles.link}>Back to login</Text>
+          </Pressable>
+        </View>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Create account</Text>
+      <View style={styles.content}>
+        <Text style={styles.header}>Create account</Text>
 
-      <View style={styles.form}>
-        <EmailInput value={email} onChangeText={setEmail} editable={!loading} />
-        <PasswordInput
-          value={password}
-          onChangeText={setPassword}
-          editable={!loading}
-        />
+        <View style={styles.form}>
+          <EmailInput value={email} onChangeText={setEmail} editable={!loading} />
+          <PasswordInput
+            value={password}
+            onChangeText={setPassword}
+            editable={!loading}
+          />
 
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+          {error ? <Text style={styles.error}>{error}</Text> : null}
 
-        <Pressable
-          style={[styles.button, !canSubmit && styles.buttonDisabled]}
-          onPress={handleSignup}
-          disabled={!canSubmit}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Create account</Text>
-          )}
+          <Pressable
+            style={[styles.button, !canSubmit && styles.buttonDisabled]}
+            onPress={handleSignup}
+            disabled={!canSubmit}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Create account</Text>
+            )}
+          </Pressable>
+        </View>
+
+        <Pressable onPress={() => router.push("/(auth)/login")}>
+          <Text style={styles.link}>Already have an account? Log in</Text>
         </Pressable>
       </View>
-
-      <Pressable onPress={() => router.push("/(auth)/login")}>
-        <Text style={styles.link}>Already have an account? Log in</Text>
-      </Pressable>
     </View>
   );
 }
@@ -125,6 +129,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 24,
     backgroundColor: "#fff",
+  },
+  content: {
+    width: "100%",
+    maxWidth: 400,
+    alignSelf: "center",
   },
   header: {
     fontSize: 28,

@@ -10,7 +10,6 @@ import {
   Pressable,
   StyleSheet,
   ActivityIndicator,
-  Image,
   Platform,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -120,11 +119,7 @@ export default function Login() {
           </Pressable>
         </View>
 
-        <Image
-          source={require("../../assets/logo1.png")}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+        <Text style={styles.brand}>Vaine</Text>
       </View>
     );
   }
@@ -173,11 +168,7 @@ export default function Login() {
         )}
       </View>
 
-      <Image
-        source={require("../../assets/logo1.png")}
-        style={styles.logo}
-        resizeMode="contain"
-      />
+      <Text style={styles.brand}>Vaine</Text>
     </View>
   );
 }
@@ -191,10 +182,15 @@ const styles = StyleSheet.create({
   centerContent: {
     flex: 1,
     justifyContent: "center",
+    width: "100%",
+    maxWidth: 400,
+    alignSelf: "center",
   },
-  logo: {
-    width: 90,
-    height: 28,
+  brand: {
+    fontSize: 20,
+    fontWeight: "700",
+    letterSpacing: 0.5,
+    color: "#1A1A1A",
     alignSelf: "center",
     marginTop: 16,
     marginBottom: 12,
