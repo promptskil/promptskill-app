@@ -114,19 +114,18 @@ export default function Profile() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.headerRow}>
+        <Pressable
+          onPress={() =>
+            router.canGoBack() ? router.back() : router.replace("/(app)")
+          }
+          style={styles.backBtn}
+        >
+          <Ionicons name="arrow-back" size={24} color="#333" />
+        </Pressable>
+        <Text style={styles.header}>Profile</Text>
+      </View>
       <View style={styles.content}>
-        <View style={styles.headerRow}>
-          <Pressable
-            onPress={() =>
-              router.canGoBack() ? router.back() : router.replace("/(app)")
-            }
-            style={styles.backBtn}
-          >
-            <Ionicons name="arrow-back" size={24} color="#333" />
-          </Pressable>
-          <Text style={styles.header}>Profile</Text>
-        </View>
-
         <View style={styles.section}>
           <EmailField email={email} onSave={handleEmailSave} />
         </View>
