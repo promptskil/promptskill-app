@@ -31,20 +31,21 @@ export default function GlobeCompose() {
       <View style={styles.column}>
         <View style={styles.sheet}>
           <View style={styles.handle} />
-          <Text style={styles.title}>Write a post</Text>
-          <TextInput
-            style={[
-              styles.input,
-              Platform.OS === "web" && ({ outlineStyle: "none" } as any),
-            ]}
-            placeholder="Write a post"
-            placeholderTextColor="#666666"
-            value={body}
-            onChangeText={setBody}
-            multiline
-            autoFocus
-            textAlignVertical="top"
-          />
+          <View style={styles.postCard}>
+            <TextInput
+              style={[
+                styles.input,
+                Platform.OS === "web" && ({ outlineStyle: "none" } as any),
+              ]}
+              placeholder="Write a post"
+              placeholderTextColor="#666666"
+              value={body}
+              onChangeText={setBody}
+              multiline
+              autoFocus
+              textAlignVertical="top"
+            />
+          </View>
           <Pressable
             onPress={next}
             disabled={!body.trim()}
@@ -83,14 +84,21 @@ const styles = StyleSheet.create({
     backgroundColor: "#DDDDDD",
     marginBottom: 12,
   },
-  title: { fontSize: 15, fontWeight: "600", color: "#1A1A1A", marginBottom: 10 },
+  postCard: {
+    borderWidth: 1,
+    borderColor: "#E5E5E5",
+    borderRadius: 10,
+    backgroundColor: "#FFFFFF",
+    padding: 12,
+    marginBottom: 14,
+  },
   input: {
     minHeight: 90,
     maxHeight: 200,
-    fontSize: 16,
+    fontSize: 14,
+    lineHeight: 20,
     color: "#1A1A1A",
-    paddingTop: 4,
-    marginBottom: 14,
+    padding: 0,
   },
   postBtn: {
     height: 44,
