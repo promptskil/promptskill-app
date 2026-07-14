@@ -1,5 +1,6 @@
-// Globe compose — small bottom sheet over the feed (feed stays visible behind).
-// Write a post, then "Post" carries the body to globe/new (choose/create zone).
+// Globe compose — small bottom sheet confined to the globe drawer's column
+// (right 80% / maxWidth 360), so it opens inside the globe screen, not edge to
+// edge. Write a post, then "Post" carries the body to globe/new.
 
 import { useState } from "react";
 import {
@@ -27,29 +28,31 @@ export default function GlobeCompose() {
   return (
     <View style={styles.root}>
       <Pressable style={styles.scrim} onPress={() => router.back()} />
-      <View style={styles.sheet}>
-        <View style={styles.handle} />
-        <Text style={styles.title}>Write a post</Text>
-        <TextInput
-          style={[
-            styles.input,
-            Platform.OS === "web" && ({ outlineStyle: "none" } as any),
-          ]}
-          placeholder="Write a post"
-          placeholderTextColor="#666666"
-          value={body}
-          onChangeText={setBody}
-          multiline
-          autoFocus
-          textAlignVertical="top"
-        />
-        <Pressable
-          onPress={next}
-          disabled={!body.trim()}
-          style={[styles.postBtn, !body.trim() && styles.postBtnDisabled]}
-        >
-          <Text style={styles.postBtnText}>Post</Text>
-        </Pressable>
+      <View style={styles.column}>
+        <View style={styles.sheet}>
+          <View style={styles.handle} />
+          <Text style={styles.title}>Write a post</Text>
+          <TextInput
+            style={[
+              styles.input,
+              Platform.OS === "web" && ({ outlineStyle: "none" } as any),
+            ]}
+            placeholder="Write a post"
+            placeholderTextColor="#666666"
+            value={body}
+            onChangeText={setBody}
+            multiline
+            autoFocus
+            textAlignVertical="top"
+          />
+          <Pressable
+            onPress={next}
+            disabled={!body.trim()}
+            style={[styles.postBtn, !body.trim() && styles.postBtnDisabled]}
+          >
+            <Text style={styles.postBtnText}>Post</Text>
+          </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -58,10 +61,11 @@ export default function GlobeCompose() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    justifyContent: "flex-end",
+    flexDirection: "row-reverse",
     backgroundColor: "rgba(0, 0, 0, 0.15)",
   },
   scrim: { ...StyleSheet.absoluteFillObject },
+  column: { width: "80%", maxWidth: 360, justifyContent: "flex-end" },
   sheet: {
     backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 18,
