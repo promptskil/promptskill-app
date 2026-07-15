@@ -12,6 +12,7 @@ import { Platform } from "react-native";
 import { clearFeedCache } from "../services/globeFeedStore";
 import { clearGlobeDraft, clearGlobeUsername } from "../services/globeDraft";
 import { clearHistoryCache } from "../services/historyCache";
+import { clearProfileCache } from "../services/profileCache";
 
 const KEYS = {
   SESSION_TOKEN: "promptskill_session_token",
@@ -28,6 +29,7 @@ export async function setToken(token: string): Promise<void> {
   // branch, which returns early.
   clearHistoryCache();
   clearFeedCache();
+  clearProfileCache();
   clearGlobeUsername();
   clearGlobeDraft();
 
@@ -52,6 +54,7 @@ export async function clearToken(): Promise<void> {
   // would otherwise inherit User A's history/feed/identity.
   clearHistoryCache();
   clearFeedCache();
+  clearProfileCache();
   clearGlobeUsername();
   clearGlobeDraft();
 
