@@ -11,20 +11,36 @@ import { Ionicons } from "@expo/vector-icons";
 import EmailField from "../../components/EmailField";
 import LogoutButton from "../../components/LogoutButton";
 import { apiCall, ApiError, SessionExpiredError } from "../../services/api";
+import {
+  getCachedProfile,
+  isProfileCacheStale,
+  setCachedProfile,
+  updateCachedProfileEmail,
+} from "../../services/profileCache";
 import { clearToken } from "../../storage/storage";
 
 export default function Profile() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState(
+    () => getCachedProfile().profile?.email ?? ""
+  );
+  const [loading, setLoading] = useState(
+    () => getCachedProfile().profile === null
+  );
 
   useEffect(() => {
     async function loadProfile() {
+      // Cache-first: render what we have; only hit /user if empty or aged out.
+      if (!isProfileCacheStale()) {
+        setLoading(false);
+        return;
+      }
       try {
         const user = await apiCall<{ id: string; email: string }>(
           "GET",
           "/user"
         );
+        setCachedProfile(user);
         setEmail(user.email);
       } catch (err) {
         if (err instanceof SessionExpiredError) {
@@ -46,6 +62,7 @@ export default function Profile() {
         { email: newEmail }
       );
       setEmail(data.email);
+      updateCachedProfileEmail(data.email);
     } catch (err) {
       if (err instanceof SessionExpiredError) {
         router.replace("/(auth)/login");
