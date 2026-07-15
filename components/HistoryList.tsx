@@ -1,23 +1,24 @@
 // HistoryList — fetches and renders the user's prompt history (scrollable list
 // + in-place detail). Shared by the standalone History screen and the menu.
 
-import { useState, useEffect, useCallback, ReactElement } from "react";
+import { useState, useEffect, useCallback, useRef, ReactElement } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import PromptList from "./PromptList";
 import InlineResultItem from "./InlineResultItem";
 import { apiCall, SessionExpiredError } from "../services/api";
+import {
+  appendCachedHistory,
+  getCachedHistory,
+  isHistoryCacheStale,
+  removeCachedPrompt,
+  setCachedHistory,
+} from "../services/historyCache";
+import type { PromptRecord } from "../services/historyCache";
 import type { Model } from "../types";
 
-interface PromptRecord {
-  prompt_id: string;
-  model: string;
-  topic: string;
-  prompt_text: string;
-  feedback_vote: "up" | "down" | null;
-  created_at: string;
-}
+const PAGE_SIZE = 20;
 
 interface HistoryResponse {
   items: PromptRecord[];
@@ -37,10 +38,15 @@ export default function HistoryList({
   contentPaddingBottom,
 }: HistoryListProps) {
   const router = useRouter();
-  const [historyItems, setHistoryItems] = useState<PromptRecord[]>([]);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [historyItems, setHistoryItems] = useState<PromptRecord[]>(
+    () => getCachedHistory().items
+  );
+  const [total, setTotal] = useState(() => getCachedHistory().total);
+  const [loading, setLoading] = useState(
+    () => getCachedHistory().items.length === 0
+  );
+  const [loadingMore, setLoadingMore] = useState(false);
+  const inFlight = useRef(false);
   const [selected, setSelected] = useState<{
     id: string;
     model: string;
@@ -50,37 +56,49 @@ export default function HistoryList({
   } | null>(null);
 
   const fetchHistory = useCallback(
-    async (pageNum: number) => {
+    async (offset: number) => {
+      if (inFlight.current) return;
+      inFlight.current = true;
+      if (offset > 0) setLoadingMore(true);
       try {
         const data = await apiCall<HistoryResponse>(
           "GET",
-          `/history?limit=20&offset=${pageNum * 20}`
+          `/history?limit=${PAGE_SIZE}&offset=${offset}`
         );
-        if (pageNum === 0) {
+        if (offset === 0) {
           setHistoryItems(data.items);
+          setCachedHistory(data.items, data.total);
         } else {
           setHistoryItems((prev) => [...prev, ...data.items]);
+          appendCachedHistory(data.items, data.total);
         }
         setTotal(data.total);
-        setPage(pageNum);
       } catch (err) {
         if (err instanceof SessionExpiredError) {
           router.replace("/(auth)/login");
         }
       } finally {
+        inFlight.current = false;
         setLoading(false);
+        setLoadingMore(false);
       }
     },
     [router]
   );
 
   useEffect(() => {
-    fetchHistory(0);
+    // Cache-first: render what we have; only hit the DB if empty or aged out.
+    if (getCachedHistory().items.length === 0 || isHistoryCacheStale()) {
+      fetchHistory(0);
+    } else {
+      setLoading(false);
+    }
   }, [fetchHistory]);
 
   function handleLoadMore() {
+    if (loadingMore || inFlight.current) return;
     if (total > historyItems.length) {
-      fetchHistory(page + 1);
+      fetchHistory(historyItems.length); // offset derives from current length
     }
   }
 
@@ -98,7 +116,8 @@ export default function HistoryList({
     try {
       await apiCall("PATCH", `/prompts/${id}/delete`);
       setHistoryItems((prev) => prev.filter((item) => item.prompt_id !== id));
-      setTotal((prev) => prev - 1);
+      setTotal((prev) => Math.max(0, prev - 1));
+      removeCachedPrompt(id);
     } catch (err) {
       if (err instanceof SessionExpiredError) {
         router.replace("/(auth)/login");
