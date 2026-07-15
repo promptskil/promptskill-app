@@ -37,3 +37,10 @@ export function prependCachedPost(item: FeedItem) {
 export function removeCachedZone(zoneId: string) {
   items = items.filter((p) => p.zone_id !== zoneId);
 }
+
+// Session-scoped: cleared at both account boundaries via storage.ts —
+// setToken() (session start) and clearToken() (logout + 401 expiry).
+export function clearFeedCache() {
+  items = [];
+  cursor = null;
+}

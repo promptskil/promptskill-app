@@ -9,6 +9,9 @@
 import * as SecureStore from "expo-secure-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
+import { clearFeedCache } from "../services/globeFeedStore";
+import { clearGlobeDraft, clearGlobeUsername } from "../services/globeDraft";
+import { clearHistoryCache } from "../services/historyCache";
 
 const KEYS = {
   SESSION_TOKEN: "promptskill_session_token",
@@ -19,6 +22,15 @@ const KEYS = {
 // ── SecureStore — session token ──────────────────────────────────────
 
 export async function setToken(token: string): Promise<void> {
+  // Account boundary — a new token means a new session. Clear user-scoped
+  // in-memory state BEFORE storing, so a login that skipped clearToken()
+  // can never inherit the previous account's data. Must run above the web
+  // branch, which returns early.
+  clearHistoryCache();
+  clearFeedCache();
+  clearGlobeUsername();
+  clearGlobeDraft();
+
   if (Platform.OS === "web") {
     localStorage.setItem(KEYS.SESSION_TOKEN, token);
     return;
@@ -34,6 +46,15 @@ export async function getToken(): Promise<string | null> {
 }
 
 export async function clearToken(): Promise<void> {
+  // Session end — logout (profile.tsx) and 401 expiry (api.ts) both land here.
+  // Clear ALL user-scoped in-memory state BEFORE the platform branch: a
+  // module-level cache survives logout in the same web JS runtime, so User B
+  // would otherwise inherit User A's history/feed/identity.
+  clearHistoryCache();
+  clearFeedCache();
+  clearGlobeUsername();
+  clearGlobeDraft();
+
   if (Platform.OS === "web") {
     localStorage.removeItem(KEYS.SESSION_TOKEN);
     return;
