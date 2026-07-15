@@ -21,12 +21,8 @@ import { clearToken } from "../../storage/storage";
 
 export default function Profile() {
   const router = useRouter();
-  const [email, setEmail] = useState(
-    () => getCachedProfile().profile?.email ?? ""
-  );
-  const [loading, setLoading] = useState(
-    () => getCachedProfile().profile === null
-  );
+  const [email, setEmail] = useState(() => getCachedProfile()?.email ?? "");
+  const [loading, setLoading] = useState(() => getCachedProfile() === null);
 
   useEffect(() => {
     async function loadProfile() {
