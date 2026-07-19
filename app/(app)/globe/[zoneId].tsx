@@ -20,6 +20,13 @@ import {
   setGlobeDraft,
   setGlobeUsername,
 } from "../../../services/globeDraft";
+import { removeCachedZone } from "../../../services/globeFeedStore";
+import {
+  getCachedThread,
+  isThreadCacheStale,
+  removeCachedThread,
+  setCachedThread,
+} from "../../../services/globeThreadStore";
 import { buildReplyTree, initials, relativeTime } from "../../../utils/globe";
 import type { GlobePost, GlobeReplyNode, GlobeZone } from "../../../types";
 
@@ -43,10 +50,16 @@ function flatten(
 export default function GlobeThread() {
   const router = useRouter();
   const { zoneId } = useLocalSearchParams<{ zoneId: string }>();
-  const [zoneTitle, setZoneTitle] = useState("");
-  const [zoneDomain, setZoneDomain] = useState("");
-  const [posts, setPosts] = useState<GlobePost[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [zoneTitle, setZoneTitle] = useState(
+    () => getCachedThread(zoneId)?.zone.title ?? "",
+  );
+  const [zoneDomain, setZoneDomain] = useState(
+    () => getCachedThread(zoneId)?.zone.domain ?? "",
+  );
+  const [posts, setPosts] = useState<GlobePost[]>(
+    () => getCachedThread(zoneId)?.posts ?? [],
+  );
+  const [loading, setLoading] = useState(() => getCachedThread(zoneId) === null);
   const [composer, setComposer] = useState<Composer>(null);
   const [text, setText] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -71,6 +84,7 @@ export default function GlobeThread() {
       setZoneTitle(data.zone.title);
       setZoneDomain(data.zone.domain);
       setPosts(data.posts);
+      setCachedThread(zoneId, data.zone, data.posts);
     } catch (err) {
       if (err instanceof SessionExpiredError) {
         router.replace("/(auth)/login");
@@ -83,8 +97,13 @@ export default function GlobeThread() {
   }, [zoneId, router]);
 
   useEffect(() => {
+    // Cache-first: render what we have; only refetch if empty or aged out.
+    if (!isThreadCacheStale(zoneId)) {
+      setLoading(false);
+      return;
+    }
     load();
-  }, [load]);
+  }, [load, zoneId]);
 
   // Resume a compose intent after a username claim.
   useEffect(() => {
@@ -208,6 +227,8 @@ export default function GlobeThread() {
     setMenuOpen(false);
     try {
       await apiCall("POST", `/globe/zones/${zoneId}/hide`);
+      removeCachedZone(zoneId);
+      removeCachedThread(zoneId);
       router.back();
     } catch (err) {
       if (err instanceof SessionExpiredError) router.replace("/(auth)/login");
