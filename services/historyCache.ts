@@ -16,18 +16,14 @@ export interface PromptRecord {
   created_at: string;
 }
 
-export const HISTORY_TTL_MS = 60_000;
+const HISTORY_TTL_MS = 60_000;
 
 let items: PromptRecord[] = [];
 let total = 0;
 let fetchedAt = 0;
 
-export function getCachedHistory(): {
-  items: PromptRecord[];
-  total: number;
-  fetchedAt: number;
-} {
-  return { items, total, fetchedAt };
+export function getCachedHistory(): { items: PromptRecord[]; total: number } {
+  return { items, total };
 }
 
 export function isHistoryCacheStale(): boolean {
