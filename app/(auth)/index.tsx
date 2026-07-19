@@ -21,14 +21,23 @@ export default function AccountCreation() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState("");
 
-  const canSubmit = email.length > 0 && password.length > 0 && !loading;
+  const canSubmit =
+    email.length > 0 &&
+    password.length > 0 &&
+    confirmPassword.length > 0 &&
+    !loading;
 
   async function handleSignup() {
     setError("");
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
     setLoading(true);
     try {
       const data = await apiCall<{
@@ -98,6 +107,14 @@ export default function AccountCreation() {
             value={password}
             onChangeText={setPassword}
             editable={!loading}
+            textContentType="newPassword"
+          />
+          <PasswordInput
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            editable={!loading}
+            placeholder="Confirm password"
+            textContentType="newPassword"
           />
 
           {error ? <Text style={styles.error}>{error}</Text> : null}
