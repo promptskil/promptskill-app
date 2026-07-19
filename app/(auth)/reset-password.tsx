@@ -66,6 +66,7 @@ export default function ResetPassword() {
           onChangeText={setPassword}
           editable={!loading}
           placeholder="New password"
+          textContentType="newPassword"
         />
 
         {error ? (
