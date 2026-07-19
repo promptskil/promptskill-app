@@ -11,6 +11,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
 import { clearFeedCache } from "../services/globeFeedStore";
 import { clearGlobeDraft, clearGlobeUsername } from "../services/globeDraft";
+import { clearThreadCache } from "../services/globeThreadStore";
 import { clearHistoryCache } from "../services/historyCache";
 import { clearProfileCache } from "../services/profileCache";
 
@@ -29,6 +30,7 @@ export async function setToken(token: string): Promise<void> {
   // branch, which returns early.
   clearHistoryCache();
   clearFeedCache();
+  clearThreadCache();
   clearProfileCache();
   clearGlobeUsername();
   clearGlobeDraft();
@@ -54,6 +56,7 @@ export async function clearToken(): Promise<void> {
   // would otherwise inherit User A's history/feed/identity.
   clearHistoryCache();
   clearFeedCache();
+  clearThreadCache();
   clearProfileCache();
   clearGlobeUsername();
   clearGlobeDraft();
