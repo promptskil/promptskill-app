@@ -9,16 +9,13 @@ export interface ProfileRecord {
   email: string;
 }
 
-export const PROFILE_TTL_MS = 5 * 60_000;
+const PROFILE_TTL_MS = 5 * 60_000;
 
 let profile: ProfileRecord | null = null;
 let fetchedAt = 0;
 
-export function getCachedProfile(): {
-  profile: ProfileRecord | null;
-  fetchedAt: number;
-} {
-  return { profile, fetchedAt };
+export function getCachedProfile(): ProfileRecord | null {
+  return profile;
 }
 
 export function isProfileCacheStale(): boolean {
