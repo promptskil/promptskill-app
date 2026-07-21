@@ -83,6 +83,7 @@ export async function apiCall<T>(
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method,
       headers,
+      credentials: "include", // send/receive the HttpOnly session cookie (web; no-op on native)
       body: body ? JSON.stringify(body) : undefined,
       signal: controller.signal,
     });
