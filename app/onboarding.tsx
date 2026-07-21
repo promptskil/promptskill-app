@@ -4,7 +4,7 @@
 
 import { View, Text, Pressable, StyleSheet, Platform } from "react-native";
 import { useRouter } from "expo-router";
-import { setOnboardingComplete, getToken } from "../storage/storage";
+import { setOnboardingComplete } from "../storage/storage";
 import { apiCall } from "../services/api";
 
 export default function Onboarding() {
@@ -16,14 +16,9 @@ export default function Onboarding() {
     // when a card is required or when access can't be confirmed.
     if (Platform.OS === "web") {
       try {
-        const token = await getToken();
-        if (!token) {
-          router.replace("/(auth)/login");
-          return;
-        }
         const { checkout_required } = await apiCall<{
           checkout_required?: boolean;
-        }>("POST", "/auth/validate", { token });
+        }>("GET", "/auth/me");
         if (checkout_required) {
           const { startCheckout } = await import("../services/billing");
           await startCheckout();
