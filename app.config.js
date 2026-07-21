@@ -46,7 +46,7 @@ module.exports = {
     extra: {
       apiBaseUrl: IS_STAGING
         ? "https://web-production-5627b7.up.railway.app"
-        : "https://web-production-3a6e3.up.railway.app",
+        : "https://api.vaineai.com",
       router: {},
       eas: {
         projectId: "b82e1985-eab5-4c51-ba8f-621d5f505d33",
