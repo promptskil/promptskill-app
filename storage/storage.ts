@@ -36,7 +36,9 @@ export async function setToken(token: string): Promise<void> {
   clearGlobeDraft();
 
   if (Platform.OS === "web") {
-    localStorage.setItem(KEYS.SESSION_TOKEN, token);
+    // Web: the token lives only in the HttpOnly cookie the backend set on
+    // login — never localStorage. Sweep any legacy pre-cutover copy. (S2 3.8b)
+    localStorage.removeItem(KEYS.SESSION_TOKEN);
     return;
   }
   await SecureStore.setItemAsync(KEYS.SESSION_TOKEN, token);
@@ -44,7 +46,11 @@ export async function setToken(token: string): Promise<void> {
 
 export async function getToken(): Promise<string | null> {
   if (Platform.OS === "web") {
-    return localStorage.getItem(KEYS.SESSION_TOKEN);
+    // Web auth is the HttpOnly session cookie (unreadable by JS). Sweep any
+    // pre-cutover token so nothing JS-readable lingers, and return null so
+    // callers send no bearer — the cookie authenticates. (S2 3.8b)
+    localStorage.removeItem(KEYS.SESSION_TOKEN);
+    return null;
   }
   return SecureStore.getItemAsync(KEYS.SESSION_TOKEN);
 }

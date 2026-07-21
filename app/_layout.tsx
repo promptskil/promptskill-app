@@ -10,7 +10,6 @@
 import { useEffect } from "react";
 import { Platform } from "react-native";
 import { Stack, useRouter, usePathname } from "expo-router";
-import { getToken, clearToken } from "../storage/storage";
 import { apiCall, SessionExpiredError } from "../services/api";
 
 // Public routes — session gate is bypassed for these
@@ -32,11 +31,8 @@ export default function RootLayout() {
     }
     const initializeSession = async () => {
       try {
-        const token = await getToken();
-
-        // Stripe checkout return (web). Handle before the normal gate so
-        // a cancel escapes to login and a success lands on Main — never
-        // onboarding, never a re-checkout loop.
+        // Stripe checkout return (web). Handle before the normal gate so a
+        // cancel escapes to login and a success lands on Main.
         const checkoutParam =
           Platform.OS === "web" && typeof window !== "undefined"
             ? new URLSearchParams(window.location.search).get("checkout")
@@ -47,22 +43,25 @@ export default function RootLayout() {
           return;
         }
 
-        if (checkoutParam === "success" && token) {
-          // Just paid — poll until the Stripe webhook activates the
-          // subscription, then Main. Loading spinner shows meanwhile.
+        if (checkoutParam === "success") {
+          // Just paid — poll /auth/me until the Stripe webhook activates the
+          // subscription (checkout_required flips false), then Main.
           for (let i = 0; i < 15; i++) {
             try {
-              const res = await apiCall<{
-                valid: boolean;
+              const { checkout_required } = await apiCall<{
                 checkout_required?: boolean;
-              }>("POST", "/auth/validate", { token });
-              if (!res.valid) break;
-              if (!res.checkout_required) {
+              }>("GET", "/auth/me");
+              if (!checkout_required) {
                 router.replace("/(app)");
                 return;
               }
-            } catch {
-              // transient — keep polling
+            } catch (error) {
+              // 401 = no valid session — go to login, don't keep polling.
+              if (error instanceof SessionExpiredError) {
+                router.replace("/(auth)/login");
+                return;
+              }
+              // other transient — keep polling
             }
             await new Promise((resolve) => setTimeout(resolve, 2000));
           }
@@ -72,60 +71,33 @@ export default function RootLayout() {
           return;
         }
 
-        // No token: business host → business landing; otherwise
-        // Home (web) / Login (iOS). Authenticated users are NOT bounced
-        // to the landing (so a reload on the business host stays put).
-        if (!token) {
+        // Normal gate — probe the authenticated session (cookie on web,
+        // bearer on native) via /auth/me. 200 -> Main (or Stripe on web if
+        // unpaid); 401 -> Login. The token is never read by JS on web.
+        try {
+          const { checkout_required } = await apiCall<{
+            checkout_required?: boolean;
+          }>("GET", "/auth/me");
+
+          // Checkout gate is WEB only — an unpaid account goes to Stripe.
+          // Mobile payment is Apple (backend 402 + IAP), so iOS never routes
+          // on checkout_required.
+          if (checkout_required && Platform.OS === "web") {
+            const { startCheckout } = await import("../services/billing");
+            await startCheckout();
+            return;
+          }
+
+          router.replace("/(app)");
+          return;
+        } catch {
+          // 401 (SessionExpiredError, already cleared by apiCall) or network
+          // — not authenticated. Fail closed to login.
           router.replace("/(auth)/login");
           return;
         }
-
-        // Token present -- validate with server.
-        // /auth/validate reads the token from the request BODY (always 200,
-        // body carries {valid}); the Bearer header alone yields a 422.
-        if (token) {
-          try {
-            const { valid, checkout_required } = await apiCall<{
-              valid: boolean;
-              checkout_required?: boolean;
-            }>(
-              "POST",
-              "/auth/validate",
-              { token },
-            );
-
-            // Server rejected the token (expired/invalid) -> Login
-            if (!valid) {
-              await clearToken();
-              router.replace("/(auth)/login");
-              return;
-            }
-
-            // Checkout gate is WEB only — an unpaid account goes to Stripe.
-            // Mobile payment is handled by Apple (backend 402 + IAP), so iOS
-            // never routes on checkout_required.
-            if (checkout_required && Platform.OS === "web") {
-              const { startCheckout } = await import("../services/billing");
-              await startCheckout();
-              return;
-            }
-
-            // Token valid -> Main (everyone).
-            router.replace("/(app)");
-            return;
-          } catch (error) {
-            // State 5/6: Token invalid or expired
-            if (error instanceof SessionExpiredError) {
-              // clearToken already called by apiCall on 401
-            } else {
-              await clearToken();
-            }
-            router.replace("/(auth)/login");
-            return;
-          }
-        }
       } catch {
-        // Fallback -- storage read failure
+        // Fallback -- unexpected failure
         router.replace("/(auth)");
       }
     };
