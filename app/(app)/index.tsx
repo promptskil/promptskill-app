@@ -60,6 +60,16 @@ export default function Main() {
   const [frontierAnswer, setFrontierAnswer] = useState<string | null>(null);
   const [frontierLoading, setFrontierLoading] = useState(false);
   const [frontierError, setFrontierError] = useState<string | null>(null);
+  const frontierScrollPending = useRef(false);
+
+  function scheduleFrontierScroll() {
+    if (frontierScrollPending.current) return;
+    frontierScrollPending.current = true;
+    requestAnimationFrame(() => {
+      frontierScrollPending.current = false;
+      scrollRef.current?.scrollToEnd({ animated: false });
+    });
+  }
 
   const { compose } = useLocalSearchParams<{ compose?: string }>();
 
@@ -262,20 +272,28 @@ export default function Main() {
       <ModelDropdownComposer
         onStart={(model) => {
           setFrontierModel(model);
-          setFrontierAnswer(null);
+          setFrontierAnswer("");
           setFrontierError(null);
           setFrontierLoading(true);
         }}
-        onAnswer={(answer) => {
-          setFrontierAnswer(answer);
-          setFrontierLoading(false);
-          scrollRef.current?.scrollToEnd({ animated: true });
+        onChunk={(delta) => {
+          setFrontierAnswer((prev) => (prev ?? "") + delta);
+          setFrontierLoading(false); // first token flips spinner → text
+          scheduleFrontierScroll();
+        }}
+        onDone={() => {
+          setFrontierLoading(false); // covers a zero-token response
+          scheduleFrontierScroll();
         }}
         onError={(message) => {
           setFrontierError(message);
           setFrontierLoading(false);
         }}
-        onCancelled={() => setFrontierLoading(false)}
+        onCancelled={() => {
+          setFrontierLoading(false);
+          // no chunks yet → drop the empty block; keep any partial text
+          setFrontierAnswer((prev) => (prev === "" ? null : prev));
+        }}
       />
       {globeOpen && (
         <View style={styles.globeOverlay}>
