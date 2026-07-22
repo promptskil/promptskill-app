@@ -23,6 +23,7 @@ import TopicInput from "../../components/TopicInput";
 import InlineResultItem from "../../components/InlineResultItem";
 import PromptDisplay from "../../components/PromptDisplay";
 import ModelDropdownComposer from "../../components/ModelDropdownComposer";
+import FrontierResult from "../../components/FrontierResult";
 import GlobeFeedPanel from "../../components/GlobeFeedPanel";
 import {
   apiCall,
@@ -53,6 +54,12 @@ export default function Main() {
   // Accumulated results — prompt display only
   const [results, setResults] = useState<ResultItem[]>([]);
   const [globeOpen, setGlobeOpen] = useState(false);
+
+  // Engine 2 (frontier) — single answer, rendered in the body (flowing, centered)
+  const [frontierModel, setFrontierModel] = useState<string | null>(null);
+  const [frontierAnswer, setFrontierAnswer] = useState<string | null>(null);
+  const [frontierLoading, setFrontierLoading] = useState(false);
+  const [frontierError, setFrontierError] = useState<string | null>(null);
 
   const { compose } = useLocalSearchParams<{ compose?: string }>();
 
@@ -238,8 +245,38 @@ export default function Main() {
           <PromptDisplay prompt="" loading error={null} model={selectedModel ?? "claude"} />
         )}
 
+        {(frontierLoading || frontierError || frontierAnswer !== null) && (
+          <FrontierResult
+            model={frontierModel}
+            loading={frontierLoading}
+            error={frontierError}
+            answer={frontierAnswer}
+            onClear={() => {
+              setFrontierAnswer(null);
+              setFrontierError(null);
+            }}
+          />
+        )}
+
       </ScrollView>
-      <ModelDropdownComposer />
+      <ModelDropdownComposer
+        onStart={(model) => {
+          setFrontierModel(model);
+          setFrontierAnswer(null);
+          setFrontierError(null);
+          setFrontierLoading(true);
+        }}
+        onAnswer={(answer) => {
+          setFrontierAnswer(answer);
+          setFrontierLoading(false);
+          scrollRef.current?.scrollToEnd({ animated: true });
+        }}
+        onError={(message) => {
+          setFrontierError(message);
+          setFrontierLoading(false);
+        }}
+        onCancelled={() => setFrontierLoading(false)}
+      />
       {globeOpen && (
         <View style={styles.globeOverlay}>
           <GlobeFeedPanel onClose={() => setGlobeOpen(false)} />
