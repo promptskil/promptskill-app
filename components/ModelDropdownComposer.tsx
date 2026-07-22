@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { apiCall, ApiError, SessionExpiredError } from "../services/api";
+import { apiStream, ApiError, SessionExpiredError } from "../services/api";
 
 const MODELS = ["ChatGPT 5.5", "Claude Sonnet", "Gemini", "Grok"];
 const MODEL_KEYS: Record<string, string> = {
@@ -27,14 +27,16 @@ const MIN_HEIGHT = 24;
 
 interface Props {
   onStart: (model: string) => void;
-  onAnswer: (answer: string) => void;
+  onChunk: (delta: string) => void;
+  onDone: () => void;
   onError: (message: string) => void;
   onCancelled: () => void;
 }
 
 export default function ModelDropdownComposer({
   onStart,
-  onAnswer,
+  onChunk,
+  onDone,
   onError,
   onCancelled,
 }: Props) {
@@ -62,13 +64,13 @@ export default function ModelDropdownComposer({
     const controller = new AbortController();
     abortRef.current = controller;
     try {
-      const data = await apiCall<{ model: string; answer: string }>(
-        "POST",
-        "/run",
+      await apiStream(
+        "/run/stream",
         { model: MODEL_KEYS[selected], text },
+        onChunk,
         controller.signal
       );
-      onAnswer(data.answer);
+      onDone();
       setText("");
       setHeight(MIN_HEIGHT);
     } catch (err) {

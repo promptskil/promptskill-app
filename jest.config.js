@@ -7,6 +7,7 @@ module.exports = {
   moduleNameMapper: {
     "^@expo/vector-icons$": "<rootDir>/__mocks__/@expo/vector-icons.ts",
     "^@expo/vector-icons/(.*)$": "<rootDir>/__mocks__/@expo/vector-icons.ts",
+    "^expo/fetch$": "<rootDir>/__mocks__/expo/fetch.ts",
   },
   collectCoverageFrom: [
     "storage/**/*.ts",
