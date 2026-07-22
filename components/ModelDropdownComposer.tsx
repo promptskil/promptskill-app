@@ -1,6 +1,7 @@
-// ModelDropdownComposer — Engine 2 (Frontier Executor).
-// Paste a prompt, pick a model, run it against the real frontier LLM.
-// Independent of the Vaine (top) composer.
+// ModelDropdownComposer — Engine 2 (Frontier Executor) input.
+// Paste a prompt, pick a model, run it. The answer is rendered by the parent
+// (index.tsx) in the main scroll body via FrontierResult — this component only
+// owns the input + model dropdown and reports run state up.
 
 import { useState, useRef } from "react";
 import {
@@ -10,14 +11,10 @@ import {
   Pressable,
   StyleSheet,
   Platform,
-  ScrollView,
-  Dimensions,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import Markdown from "react-native-markdown-display";
 import { apiCall, ApiError, SessionExpiredError } from "../services/api";
-import Spinner from "./Spinner";
 
 const MODELS = ["ChatGPT 5.5", "Claude Sonnet", "Gemini", "Grok"];
 const MODEL_KEYS: Record<string, string> = {
@@ -27,18 +24,26 @@ const MODEL_KEYS: Record<string, string> = {
   "Grok": "grok",
 };
 const MIN_HEIGHT = 24;
-const EXPANDED_H = Math.round(Dimensions.get("window").height * 0.7);
 
-export default function ModelDropdownComposer() {
+interface Props {
+  onStart: (model: string) => void;
+  onAnswer: (answer: string) => void;
+  onError: (message: string) => void;
+  onCancelled: () => void;
+}
+
+export default function ModelDropdownComposer({
+  onStart,
+  onAnswer,
+  onError,
+  onCancelled,
+}: Props) {
   const router = useRouter();
   const [selected, setSelected] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
   const [height, setHeight] = useState(MIN_HEIGHT);
   const [loading, setLoading] = useState(false);
-  const [answer, setAnswer] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [expanded, setExpanded] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
   const canSend = selected !== null && text.length > 0 && !loading;
@@ -47,12 +52,12 @@ export default function ModelDropdownComposer() {
     abortRef.current?.abort();
     abortRef.current = null;
     setLoading(false);
+    onCancelled();
   }
 
   async function handleRun() {
     if (selected === null || text.length === 0 || loading) return;
-    setError(null);
-    setAnswer(null);
+    onStart(selected);
     setLoading(true);
     const controller = new AbortController();
     abortRef.current = controller;
@@ -63,25 +68,29 @@ export default function ModelDropdownComposer() {
         { model: MODEL_KEYS[selected], text },
         controller.signal
       );
-      setAnswer(data.answer);
+      onAnswer(data.answer);
       setText("");
       setHeight(MIN_HEIGHT);
     } catch (err) {
-      if (err instanceof Error && err.name === "AbortError") return;
+      if (err instanceof Error && err.name === "AbortError") {
+        onCancelled();
+        return;
+      }
       if (err instanceof SessionExpiredError) {
+        onCancelled();
         router.replace("/(auth)/login");
         return;
       }
       if (err instanceof ApiError) {
         if (err.status === 429) {
-          setError("Limit reached for this model. Try again later.");
+          onError("Limit reached for this model. Try again later.");
         } else if (err.status === 502) {
-          setError("The model couldn't complete the request.");
+          onError("The model couldn't complete the request.");
         } else {
-          setError("Something went wrong. Please try again.");
+          onError("Something went wrong. Please try again.");
         }
       } else {
-        setError("Something went wrong. Please try again.");
+        onError("Something went wrong. Please try again.");
       }
     } finally {
       abortRef.current = null;
@@ -91,45 +100,6 @@ export default function ModelDropdownComposer() {
 
   return (
     <View style={styles.bar}>
-      {(loading || error || answer !== null) && (
-        <View style={[styles.panel, (loading || answer !== null) && styles.panelBare, expanded && { maxHeight: EXPANDED_H }]}>
-          {loading ? (
-            <View style={styles.panelCenter}>
-              <Spinner />
-              <Text style={styles.panelHint}>Running {selected}…</Text>
-            </View>
-          ) : error ? (
-            <Text style={styles.error}>{error}</Text>
-          ) : (
-            <>
-              <View style={styles.panelHeader}>
-                <Text style={styles.panelModel}>{selected}</Text>
-                <View style={styles.panelActions}>
-                  <Pressable onPress={() => setExpanded((e) => !e)} hitSlop={8}>
-                    <Ionicons name={expanded ? "contract" : "expand"} size={16} color="#888" />
-                  </Pressable>
-                  <Pressable
-                    onPress={() => {
-                      setAnswer(null);
-                      setExpanded(false);
-                    }}
-                    hitSlop={8}
-                  >
-                    <Ionicons name="close" size={18} color="#888" />
-                  </Pressable>
-                </View>
-              </View>
-              <ScrollView
-                style={[styles.panelScroll, expanded && { maxHeight: EXPANDED_H - 50 }]}
-                keyboardShouldPersistTaps="handled"
-              >
-                <Markdown style={mdStyles}>{answer}</Markdown>
-              </ScrollView>
-            </>
-          )}
-        </View>
-      )}
-
       <View style={styles.box}>
         <TextInput
           style={[
@@ -230,31 +200,6 @@ export default function ModelDropdownComposer() {
 
 const styles = StyleSheet.create({
   bar: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 32, backgroundColor: "#fff" },
-  panel: {
-    width: "100%",
-    maxWidth: 680,
-    alignSelf: "center",
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: "#eee",
-    borderRadius: 12,
-    backgroundColor: "#fafafa",
-    padding: 12,
-    maxHeight: 260,
-  },
-  panelBare: { borderWidth: 0, backgroundColor: "transparent" },
-  panelCenter: { flexDirection: "row", alignItems: "center", gap: 8, justifyContent: "center" },
-  panelHint: { fontSize: 13, color: "#888" },
-  panelHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 6,
-  },
-  panelActions: { flexDirection: "row", alignItems: "center", gap: 14 },
-  panelModel: { fontSize: 12, color: "#888", fontWeight: "600" },
-  panelScroll: { maxHeight: 210 },
-  error: { color: "#d00", fontSize: 14, textAlign: "center" },
   box: {
     width: "100%",
     maxWidth: 680,
@@ -315,14 +260,3 @@ const styles = StyleSheet.create({
   },
   sendBtnDisabled: { backgroundColor: "#ccc" },
 });
-
-const mdStyles = {
-  body: { fontSize: 15, lineHeight: 21, color: "#111" },
-  heading1: { fontWeight: "700" as const, fontSize: 15, marginTop: 10, marginBottom: 6 },
-  heading2: { fontWeight: "700" as const, fontSize: 15, marginTop: 10, marginBottom: 6 },
-  strong: { fontWeight: "700" as const },
-  bullet_list: { paddingLeft: 18, marginBottom: 8 },
-  ordered_list: { paddingLeft: 18, marginBottom: 8 },
-  list_item: { fontSize: 15, lineHeight: 21, color: "#111" },
-  paragraph: { marginTop: 0, marginBottom: 8 },
-};
