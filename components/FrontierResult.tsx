@@ -5,6 +5,7 @@
 
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import Markdown from "react-native-markdown-display";
 import Spinner from "./Spinner";
 
 interface Props {
@@ -39,9 +40,7 @@ export default function FrontierResult({
               <Ionicons name="close" size={18} color="#888" />
             </Pressable>
           </View>
-          <Text style={styles.answerText} selectable>
-            {answer ?? ""}
-          </Text>
+          <Markdown style={mdStyles}>{answer ?? ""}</Markdown>
         </>
       )}
     </View>
@@ -60,5 +59,17 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   model: { fontSize: 12, color: "#888", fontWeight: "600" },
-  answerText: { fontSize: 15, lineHeight: 21, color: "#111" },
 });
+
+const mdStyles = {
+  body: { fontSize: 15, lineHeight: 22, color: "#111" },
+  heading1: { fontSize: 18, fontWeight: "700" as const, marginTop: 12, marginBottom: 6 },
+  heading2: { fontSize: 16, fontWeight: "700" as const, marginTop: 12, marginBottom: 6 },
+  heading3: { fontSize: 15, fontWeight: "700" as const, marginTop: 10, marginBottom: 4 },
+  strong: { fontWeight: "700" as const },
+  bullet_list: { marginBottom: 8 },
+  ordered_list: { marginBottom: 8 },
+  list_item: { fontSize: 15, lineHeight: 22, color: "#111" },
+  paragraph: { marginTop: 0, marginBottom: 10 },
+  link: { color: "#2563eb" },
+};
