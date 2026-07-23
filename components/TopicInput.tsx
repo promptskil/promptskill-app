@@ -44,7 +44,7 @@ export default function TopicInput({
             }
           : undefined
       }
-      placeholder="Express your thoughts with Vaine"
+      placeholder="Express your thoughts"
       placeholderTextColor="#999"
       multiline
       scrollEnabled={false}

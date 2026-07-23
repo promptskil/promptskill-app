@@ -180,7 +180,6 @@ export default function Main() {
     } finally {
       abortRef.current = null;
       setLoading(false);
-      setSelectedModel(null); // clear AFTER the run so the composer/stop stayed up
     }
   }
 
@@ -217,41 +216,6 @@ export default function Main() {
 
         <ModelSelector selectedModel={selectedModel} onSelect={handleModelSelect} />
 
-        {selectedModel !== null && (
-          <View style={styles.composer}>
-            <View style={styles.inputWrapper}>
-              <TopicInput
-                topic={topic}
-                onChangeText={setTopic}
-                editable={!loading}
-                onFocus={() => scrollRef.current?.scrollToEnd({ animated: true })}
-                onBlur={() => {}}
-                onSubmit={() => {
-                  if (canSubmit) handleSubmit();
-                }}
-              />
-              {topic.length > 0 && !loading && (
-                <Pressable style={styles.clearBtn} onPress={() => setTopic("")} hitSlop={8}>
-                  <Ionicons name="close-circle" size={22} color="#bbb" />
-                </Pressable>
-              )}
-              {loading ? (
-                <Pressable style={styles.sendBtn} onPress={handleCancel}>
-                  <Ionicons name="stop" size={14} color="#fff" />
-                </Pressable>
-              ) : (
-                <Pressable
-                  style={[styles.sendBtn, !canSubmit && styles.sendBtnDisabled]}
-                  onPress={handleSubmit}
-                  disabled={!canSubmit}
-                >
-                  <Ionicons name="arrow-up" size={18} color="#fff" />
-                </Pressable>
-              )}
-            </View>
-          </View>
-        )}
-
         {items.map((item) => (
           <ConversationCard
             key={item.id}
@@ -264,6 +228,41 @@ export default function Main() {
           />
         ))}
       </ScrollView>
+
+      {/* Docked topic input — stays visible at the bottom while a model is picked */}
+      {selectedModel !== null && (
+        <View style={styles.dock}>
+          <View style={styles.inputWrapper}>
+            <TopicInput
+              topic={topic}
+              onChangeText={setTopic}
+              editable={!loading}
+              onFocus={() => scrollRef.current?.scrollToEnd({ animated: true })}
+              onSubmit={() => {
+                if (canSubmit) handleSubmit();
+              }}
+            />
+            {topic.length > 0 && !loading && (
+              <Pressable style={styles.clearBtn} onPress={() => setTopic("")} hitSlop={8}>
+                <Ionicons name="close-circle" size={22} color="#bbb" />
+              </Pressable>
+            )}
+            {loading ? (
+              <Pressable style={styles.sendBtn} onPress={handleCancel}>
+                <Ionicons name="stop" size={14} color="#fff" />
+              </Pressable>
+            ) : (
+              <Pressable
+                style={[styles.sendBtn, !canSubmit && styles.sendBtnDisabled]}
+                onPress={handleSubmit}
+                disabled={!canSubmit}
+              >
+                <Ionicons name="arrow-up" size={18} color="#fff" />
+              </Pressable>
+            )}
+          </View>
+        </View>
+      )}
 
       {globeOpen && (
         <View style={styles.globeOverlay}>
@@ -302,7 +301,14 @@ const styles = StyleSheet.create({
   menuBtn: { gap: 4 },
   menuBar: { height: 2, borderRadius: 1, backgroundColor: "#333" },
   globeIcon: { width: 26, height: 26 },
-  composer: { gap: 8, marginTop: 8 },
+  dock: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 24,
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderTopColor: "#f0f0f0",
+  },
   inputWrapper: {
     position: "relative",
     width: "100%",
