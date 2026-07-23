@@ -1,13 +1,11 @@
-// Screen 2 — Main — Phase 12, Step 12.3
-// ModelSelector top, TopicInput pinned to bottom (Claude-style).
-// Input floats up with keyboard via KeyboardAvoidingView.
-// Result renders inline — PromptDisplay only, no interactions. Copy/edit/thumbs in History only.
-// Back gesture: DISABLED
+// Screen 2 — Main — unified Engine 1 + Engine 2 flow.
+// Pick a model + enter a topic → auto-generate the prompt (/generate), then
+// stream the live-search answer (/run/stream) against the SAME model. Results
+// accumulate as prompt+answer cards. Back gesture: DISABLED.
 
 import { useState, useEffect, useRef } from "react";
 import {
   View,
-  Text,
   ScrollView,
   StyleSheet,
   Pressable,
@@ -18,27 +16,36 @@ import {
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import ModelSelector from "../../components/ModelSelector";
-import ModelInfoCard from "../../components/ModelInfoCard";
 import TopicInput from "../../components/TopicInput";
-import InlineResultItem from "../../components/InlineResultItem";
-import PromptDisplay from "../../components/PromptDisplay";
-import ModelDropdownComposer from "../../components/ModelDropdownComposer";
-import FrontierResult from "../../components/FrontierResult";
+import ConversationCard from "../../components/ConversationCard";
 import GlobeFeedPanel from "../../components/GlobeFeedPanel";
 import {
   apiCall,
+  apiStream,
   ApiError,
   SessionExpiredError,
 } from "../../services/api";
 import { startCheckout } from "../../services/billing";
 import type { Model } from "../../types";
 
-interface ResultItem {
+// Vaine model (Engine 1 selector) → Engine 2 /run key. Only claude differs.
+const VAINE_TO_RUN: Record<Model, string> = {
+  claude: "claude-sonnet",
+  chatgpt: "chatgpt",
+  gemini: "gemini",
+  grok: "grok",
+};
+
+type Status = "generating" | "searching" | "streaming" | "done" | "error";
+
+interface ConversationItem {
   id: string;
-  promptId: string | null;
   model: Model;
   topic: string;
-  prompt: string;
+  prompt: string | null;
+  answer: string;
+  status: Status;
+  error: string | null;
 }
 
 export default function Main() {
@@ -46,115 +53,134 @@ export default function Main() {
   const [selectedModel, setSelectedModel] = useState<Model | null>(null);
   const [topic, setTopic] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [topicFocused, setTopicFocused] = useState(false);
+  const [items, setItems] = useState<ConversationItem[]>([]);
+  const [globeOpen, setGlobeOpen] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const scrollRef = useRef<ScrollView>(null);
+  const scrollPending = useRef(false);
 
-  // Accumulated results — prompt display only
-  const [results, setResults] = useState<ResultItem[]>([]);
-  const [globeOpen, setGlobeOpen] = useState(false);
-
-  // Engine 2 (frontier) — single answer, rendered in the body (flowing, centered)
-  const [frontierModel, setFrontierModel] = useState<string | null>(null);
-  const [frontierAnswer, setFrontierAnswer] = useState<string | null>(null);
-  const [frontierLoading, setFrontierLoading] = useState(false);
-  const [frontierError, setFrontierError] = useState<string | null>(null);
-  const frontierScrollPending = useRef(false);
-
-  function scheduleFrontierScroll() {
-    if (frontierScrollPending.current) return;
-    frontierScrollPending.current = true;
+  function scheduleScroll() {
+    if (scrollPending.current) return;
+    scrollPending.current = true;
     requestAnimationFrame(() => {
-      frontierScrollPending.current = false;
+      scrollPending.current = false;
       scrollRef.current?.scrollToEnd({ animated: false });
     });
   }
 
   const { compose } = useLocalSearchParams<{ compose?: string }>();
-
   useEffect(() => {
-    if (compose) {
-      setSelectedModel(compose as Model);
-    }
+    if (compose) setSelectedModel(compose as Model);
   }, [compose]);
 
   function handleMenuNav() {
     router.push("/(app)/menu");
   }
-
   function handleGlobeNav() {
     setGlobeOpen((v) => !v);
   }
-
-  const canGenerate =
-    selectedModel !== null && topic.length > 0 && !loading;
-
   function handleModelSelect(model: Model) {
     setSelectedModel((prev) => (prev === model ? null : model));
   }
-
   function handleCancel() {
     abortRef.current?.abort();
     abortRef.current = null;
     setLoading(false);
   }
 
-  async function handleGenerate() {
-    if (selectedModel === null) return;
-    setError("");
-    setLoading(true);
+  const canSubmit = selectedModel !== null && topic.length > 0 && !loading;
+
+  async function handleSubmit() {
+    if (selectedModel === null || topic.length === 0 || loading) return;
+    const id = Date.now().toString();
+    const model = selectedModel;
+    const submittedTopic = topic;
+
+    setItems((prev) => [
+      ...prev,
+      { id, model, topic: submittedTopic, prompt: null, answer: "", status: "generating", error: null },
+    ]);
+    setTopic("");
+    setLoading(true); // keep selectedModel mounted so the stop button stays visible
     const controller = new AbortController();
     abortRef.current = controller;
+    scheduleScroll();
+
+    const patch = (p: Partial<ConversationItem>) =>
+      setItems((prev) => prev.map((it) => (it.id === id ? { ...it, ...p } : it)));
+
     try {
-      const data = await apiCall<{ prompt_id: string; prompt: string }>(
+      const gen = await apiCall<{ prompt_id: string; prompt: string }>(
         "POST",
         "/generate",
-        { model: selectedModel, topic },
+        { model, topic: submittedTopic },
         controller.signal
       );
-      setResults(prev => [...prev, {
-        id: Date.now().toString(),
-        promptId: data.prompt_id,
-        model: selectedModel,
-        topic: topic,
-        prompt: data.prompt,
-      }]);
-      setTopic("");
-      setSelectedModel(null);   // Rule: composer disappears after submit
+      patch({ prompt: gen.prompt, status: "searching" });
+      scheduleScroll();
+
+      await apiStream(
+        "/run/stream",
+        { model: VAINE_TO_RUN[model], text: gen.prompt },
+        (delta) => {
+          setItems((prev) =>
+            prev.map((it) =>
+              it.id === id
+                ? { ...it, answer: it.answer + delta, status: "streaming" }
+                : it
+            )
+          );
+          scheduleScroll();
+        },
+        controller.signal
+      );
+      patch({ status: "done" });
+      scheduleScroll();
     } catch (err) {
-      // User cancelled — swallow silently
       if (err instanceof Error && err.name === "AbortError") {
+        // Keep a card with partial content; drop an empty one (cancelled
+        // before /generate returned).
+        setItems((prev) =>
+          prev
+            .map((it) =>
+              it.id === id && (it.prompt !== null || it.answer.length > 0)
+                ? { ...it, status: "done" as const }
+                : it
+            )
+            .filter(
+              (it) => it.id !== id || it.prompt !== null || it.answer.length > 0
+            )
+        );
         return;
       }
       if (err instanceof SessionExpiredError) {
         router.replace("/(auth)/login");
         return;
       }
+      let message = "Something went wrong. Please try again.";
       if (err instanceof ApiError) {
         if (err.status === 402) {
           if (Platform.OS === "web") {
-            startCheckout().catch(() => setError("Could not start checkout."));
-          } else {
-            setError("A subscription is required to continue.");
+            startCheckout().catch(() => {});
+            patch({ status: "error", error: "Checkout required to continue." });
+            return;
           }
-          return;
-        }
-        if (err.status === 429) {
-          setError("Too many requests. Try again later.");
+          message = "A subscription is required to continue.";
+        } else if (err.status === 429) {
+          message = "Too many requests. Try again later.";
         } else if (err.status === 504) {
-          setError("Generation timed out. Please try again.");
+          message = "Timed out. Please try again.";
+        } else if (err.status === 502) {
+          message = "The model couldn't complete the request.";
         } else if (err.status === 400) {
-          setError("Invalid request. Please check your input.");
-        } else {
-          setError("Something went wrong. Please try again.");
+          message = "Invalid request. Please check your input.";
         }
-      } else {
-        setError("Something went wrong. Please try again.");
       }
+      patch({ status: "error", error: message });
     } finally {
       abortRef.current = null;
       setLoading(false);
+      setSelectedModel(null); // clear AFTER the run so the composer/stop stayed up
     }
   }
 
@@ -163,7 +189,6 @@ export default function Main() {
       style={styles.root}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      {/* Top — scrollable model selection + accumulated results */}
       <ScrollView
         ref={scrollRef}
         style={styles.scroll}
@@ -182,43 +207,31 @@ export default function Main() {
             </Pressable>
             <Pressable onPress={handleGlobeNav}>
               <Image
-              source={require("../../assets/globe.png")}
-              style={styles.globeIcon}
-              resizeMode="contain"
-            />
+                source={require("../../assets/globe.png")}
+                style={styles.globeIcon}
+                resizeMode="contain"
+              />
             </Pressable>
           </View>
         </View>
 
-        <ModelSelector
-          selectedModel={selectedModel}
-          onSelect={handleModelSelect}
-        />
+        <ModelSelector selectedModel={selectedModel} onSelect={handleModelSelect} />
 
-        {/* Composer — pops in only after a model is chosen (X-compose style) */}
         {selectedModel !== null && (
           <View style={styles.composer}>
-            {error ? <Text style={styles.error}>{error}</Text> : null}
             <View style={styles.inputWrapper}>
               <TopicInput
                 topic={topic}
                 onChangeText={setTopic}
                 editable={!loading}
-                onFocus={() => {
-                  setTopicFocused(true);
-                  scrollRef.current?.scrollTo({ y: 0, animated: true });
-                }}
-                onBlur={() => setTopicFocused(false)}
+                onFocus={() => scrollRef.current?.scrollToEnd({ animated: true })}
+                onBlur={() => {}}
                 onSubmit={() => {
-                  if (canGenerate) handleGenerate();
+                  if (canSubmit) handleSubmit();
                 }}
               />
               {topic.length > 0 && !loading && (
-                <Pressable
-                  style={styles.clearBtn}
-                  onPress={() => setTopic("")}
-                  hitSlop={8}
-                >
+                <Pressable style={styles.clearBtn} onPress={() => setTopic("")} hitSlop={8}>
                   <Ionicons name="close-circle" size={22} color="#bbb" />
                 </Pressable>
               )}
@@ -228,9 +241,9 @@ export default function Main() {
                 </Pressable>
               ) : (
                 <Pressable
-                  style={[styles.sendBtn, !canGenerate && styles.sendBtnDisabled]}
-                  onPress={handleGenerate}
-                  disabled={!canGenerate}
+                  style={[styles.sendBtn, !canSubmit && styles.sendBtnDisabled]}
+                  onPress={handleSubmit}
+                  disabled={!canSubmit}
                 >
                   <Ionicons name="arrow-up" size={18} color="#fff" />
                 </Pressable>
@@ -239,62 +252,19 @@ export default function Main() {
           </View>
         )}
 
-        {/* Accumulated results — topic bubble + prompt + edit actions */}
-        {results.map(item => (
-          <InlineResultItem
+        {items.map((item) => (
+          <ConversationCard
             key={item.id}
-            topic={item.topic}
             model={item.model}
-            promptId={item.promptId}
-            initialPrompt={item.prompt}
-            animate={false}
+            topic={item.topic}
+            prompt={item.prompt}
+            answer={item.answer}
+            status={item.status}
+            error={item.error}
           />
         ))}
-
-        {loading && (
-          <PromptDisplay prompt="" loading error={null} model={selectedModel ?? "claude"} />
-        )}
-
-        {(frontierLoading || frontierError || frontierAnswer !== null) && (
-          <FrontierResult
-            model={frontierModel}
-            loading={frontierLoading}
-            error={frontierError}
-            answer={frontierAnswer}
-            onClear={() => {
-              setFrontierAnswer(null);
-              setFrontierError(null);
-            }}
-          />
-        )}
-
       </ScrollView>
-      <ModelDropdownComposer
-        onStart={(model) => {
-          setFrontierModel(model);
-          setFrontierAnswer("");
-          setFrontierError(null);
-          setFrontierLoading(true);
-        }}
-        onChunk={(delta) => {
-          setFrontierAnswer((prev) => (prev ?? "") + delta);
-          setFrontierLoading(false); // first token flips spinner → text
-          scheduleFrontierScroll();
-        }}
-        onDone={() => {
-          setFrontierLoading(false); // covers a zero-token response
-          scheduleFrontierScroll();
-        }}
-        onError={(message) => {
-          setFrontierError(message);
-          setFrontierLoading(false);
-        }}
-        onCancelled={() => {
-          setFrontierLoading(false);
-          // no chunks yet → drop the empty block; keep any partial text
-          setFrontierAnswer((prev) => (prev === "" ? null : prev));
-        }}
-      />
+
       {globeOpen && (
         <View style={styles.globeOverlay}>
           <GlobeFeedPanel onClose={() => setGlobeOpen(false)} />
@@ -305,10 +275,7 @@ export default function Main() {
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
+  root: { flex: 1, backgroundColor: "#fff" },
   globeOverlay: {
     position: "absolute",
     top: 96,
@@ -317,9 +284,7 @@ const styles = StyleSheet.create({
     width: "62%",
     maxWidth: 360,
   },
-  scroll: {
-    flex: 1,
-  },
+  scroll: { flex: 1 },
   scrollContent: {
     flexGrow: 1,
     padding: 24,
@@ -333,36 +298,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 8,
   },
-  topLogo: {
-    height: 22,
-    width: 76,
-    marginBottom: 12,
-  },
-  headerRight: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "700",
-  },
-  menuBtn: {
-    gap: 4,
-  },
-  menuBar: {
-    height: 2,
-    borderRadius: 1,
-    backgroundColor: "#333",
-  },
-  globeIcon: {
-    width: 26,
-    height: 26,
-  },
-  composer: {
-    gap: 8,
-    marginTop: 8,
-  },
+  headerRight: { flexDirection: "row", alignItems: "center", gap: 12 },
+  menuBtn: { gap: 4 },
+  menuBar: { height: 2, borderRadius: 1, backgroundColor: "#333" },
+  globeIcon: { width: 26, height: 26 },
+  composer: { gap: 8, marginTop: 8 },
   inputWrapper: {
     position: "relative",
     width: "100%",
@@ -380,17 +320,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  sendBtnDisabled: {
-    backgroundColor: "#ccc",
-  },
-  clearBtn: {
-    position: "absolute",
-    right: 46,
-    bottom: 13,
-  },
-  error: {
-    color: "#d00",
-    fontSize: 14,
-    textAlign: "center",
-  },
+  sendBtnDisabled: { backgroundColor: "#ccc" },
+  clearBtn: { position: "absolute", right: 46, bottom: 13 },
 });
