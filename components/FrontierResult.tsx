@@ -1,7 +1,8 @@
 // FrontierResult — Engine 2 (Frontier Executor) output, rendered in the main
 // scroll body as a borderless, centered, free-flowing column (ChatGPT/Claude
-// style). No card, no border, no height cap. Provider output is shown verbatim
-// as plain selectable text — no Markdown, so no app-side formatting re-enters.
+// style). No card, no border, no height cap. The model's own Markdown is
+// rendered (headings/bold/lists/links) — the engine imposes no formatting; this
+// only displays what the model emits, like the provider platforms do.
 
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
