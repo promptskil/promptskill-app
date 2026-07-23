@@ -60,7 +60,7 @@ describe("TopicInput", () => {
     const { getByPlaceholderText } = render(
       <TopicInput topic="" onChangeText={onChangeText} />
     );
-    const input = getByPlaceholderText("Express your thoughts with Vaine");
+    const input = getByPlaceholderText("Express your thoughts");
     fireEvent.changeText(input, "AI trends");
     expect(onChangeText).toHaveBeenCalledWith("AI trends");
   });
